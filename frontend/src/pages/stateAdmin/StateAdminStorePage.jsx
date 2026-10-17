@@ -22,7 +22,18 @@ import {
 
 export const StateAdminStorePage = () => {
   const { states, orders = [], updatePayoutStatus, addProduct, deleteProduct, products = [], showToast, currentUser } = useApp();
-  const myState = states.find((s) => s.name === currentUser?.state || s.code === currentUser?.stateCode) || states[0] || { name: 'Tennessee', code: 'TN', id: 'state-1' };
+  const myState =
+    states.find(
+      (s) =>
+        s.name === currentUser?.state ||
+        s.code === currentUser?.stateCode ||
+        s.name === currentUser?.scope ||
+        currentUser?.scope?.includes(s.name) ||
+        s.code === currentUser?.scope
+    ) ||
+    states.find((s) => s.code === 'TN' || s.name === 'Tennessee') ||
+    states[0] ||
+    { name: 'Tennessee', code: 'TN', id: 'state-1' };
 
   const [dateFilter, setDateFilter] = useState('All Time');
   const [channelFilter, setChannelFilter] = useState('ALL'); // 'ALL' | 'CLUB' | 'STATE'
@@ -150,10 +161,12 @@ export const StateAdminStorePage = () => {
   });
 
   // Calculate Metrics
+  const isPaid = (status) => ['paid', 'settled', 'approved'].includes((status || '').toLowerCase());
   const totalStateSalesGross = stateOrders.reduce((a, b) => a + (Number(b.sellingPrice || b.total) || 0), 0);
   const totalStateShare7 = stateOrders.reduce((a, b) => a + (Number(b.stateShare) || 0), 0);
-  const pendingStatePayout = stateOrders.filter((o) => o.payoutStatus === 'Pending').reduce((a, b) => a + (Number(b.stateShare) || 0), 0);
-  const settledStatePayout = stateOrders.filter((o) => o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved').reduce((a, b) => a + (Number(b.stateShare) || 0), 0);
+  const pendingStateOrders = stateOrders.filter((o) => !isPaid(o.payoutStatus));
+  const pendingStatePayout = pendingStateOrders.reduce((a, b) => a + (Number(b.stateShare) || 0), 0);
+  const settledStatePayout = stateOrders.filter((o) => isPaid(o.payoutStatus)).reduce((a, b) => a + (Number(b.stateShare) || 0), 0);
   const displayProducts = products.filter(
     (p) =>
       p.scopeChannel === 'STATE' ||
@@ -336,8 +349,22 @@ export const StateAdminStorePage = () => {
             </p>
           </div>
 
-          <div className="text-xs font-extrabold text-amber-950 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-300">
-            Assigned Scope: {myState.name} State Association
+          <div className="flex flex-wrap items-center gap-2">
+            {pendingStateOrders.length > 0 && (
+              <button
+                onClick={() => {
+                  pendingStateOrders.forEach((o) => updatePayoutStatus(o.id, 'Paid'));
+                  if (showToast) showToast(`Approved & settled ${pendingStateOrders.length} pending payouts totaling $${pendingStatePayout.toFixed(2)} to State Treasury!`, 'success');
+                }}
+                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
+              >
+                <CheckCircle2 className="w-3.5 h-3.5 text-tan-300" />
+                <span>Approve All ({pendingStateOrders.length} Pending • ${pendingStatePayout.toFixed(2)})</span>
+              </button>
+            )}
+            <div className="text-xs font-extrabold text-amber-950 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-300">
+              Assigned Scope: {myState.name} State Association
+            </div>
           </div>
         </div>
 
@@ -393,16 +420,29 @@ export const StateAdminStorePage = () => {
                     </div>
                   </div>
 
-                  <div className="pt-1 flex justify-end">
-                    <button
-                      onClick={() => updatePayoutStatus(o.id, o.payoutStatus === 'Paid' ? 'Pending' : 'Paid')}
-                      className={`w-full py-2 rounded-lg text-xs font-black shadow-xs transition-all cursor-pointer ${
-                        o.payoutStatus === 'Paid'
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
+                  <div className="pt-2 border-t border-surface-border flex items-center justify-between gap-2">
+                    <select
+                      value={isPaid(o.payoutStatus) ? 'Paid' : 'Pending'}
+                      onChange={(e) => updatePayoutStatus(o.id, e.target.value)}
+                      className={`px-2.5 py-1 text-xs font-black rounded-lg border cursor-pointer outline-none transition-colors ${
+                        isPaid(o.payoutStatus)
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          : 'bg-amber-50 text-amber-800 border-amber-300'
                       }`}
                     >
-                      {o.payoutStatus === 'Paid' ? 'Settled to State Treasury' : 'Approve State Payout'}
+                      <option value="Pending">🟡 Pending</option>
+                      <option value="Paid">🟢 Settled to State</option>
+                    </select>
+
+                    <button
+                      onClick={() => updatePayoutStatus(o.id, isPaid(o.payoutStatus) ? 'Pending' : 'Paid')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-black shadow-xs transition-all cursor-pointer ${
+                        isPaid(o.payoutStatus)
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                          : 'bg-amber-500 hover:bg-amber-600 text-forest-950'
+                      }`}
+                    >
+                      {isPaid(o.payoutStatus) ? '✓ Settled' : 'Approve Payout'}
                     </button>
                   </div>
                 </div>
@@ -491,17 +531,33 @@ export const StateAdminStorePage = () => {
                     </td>
 
                     {/* Payout Status */}
-                    <td className="p-3.5 text-center min-w-[130px] whitespace-nowrap">
-                      <button
-                        onClick={() => updatePayoutStatus(o.id, o.payoutStatus === 'Paid' ? 'Pending' : 'Paid')}
-                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black shadow-xs transition-all cursor-pointer ${
-                          o.payoutStatus === 'Paid'
-                            ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                            : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
-                        }`}
-                      >
-                        {o.payoutStatus === 'Paid' ? 'Settled to State' : 'Approve Payout'}
-                      </button>
+                    <td className="p-3.5 text-center min-w-[200px] whitespace-nowrap">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <select
+                          value={isPaid(o.payoutStatus) ? 'Paid' : 'Pending'}
+                          onChange={(e) => updatePayoutStatus(o.id, e.target.value)}
+                          className={`px-2.5 py-1 text-xs font-black rounded-lg border cursor-pointer outline-none transition-colors ${
+                            isPaid(o.payoutStatus)
+                              ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                              : 'bg-amber-50 text-amber-800 border-amber-300'
+                          }`}
+                        >
+                          <option value="Pending">🟡 Pending</option>
+                          <option value="Paid">🟢 Settled to State</option>
+                        </select>
+
+                        <button
+                          onClick={() => updatePayoutStatus(o.id, isPaid(o.payoutStatus) ? 'Pending' : 'Paid')}
+                          title={isPaid(o.payoutStatus) ? 'Click to reset back to Pending' : 'Click to Settle 7% Commission to State Treasury'}
+                          className={`px-3 py-1.5 rounded-lg text-[11px] font-black shadow-xs transition-all cursor-pointer active:scale-95 ${
+                            isPaid(o.payoutStatus)
+                              ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                              : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
+                          }`}
+                        >
+                          {isPaid(o.payoutStatus) ? '✓ Settled' : 'Approve Payout'}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 );

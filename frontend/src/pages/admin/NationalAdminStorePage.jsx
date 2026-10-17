@@ -420,16 +420,29 @@ export const NationalAdminStorePage = () => {
                     </div>
                   </div>
 
-                  <div className="pt-2 flex justify-end">
-                    <button
-                      onClick={() => updatePayoutStatus(o.id, o.payoutStatus === 'Paid' ? 'Pending' : 'Paid')}
-                      className={`w-full py-2 rounded-lg text-xs font-black shadow-xs transition-all cursor-pointer ${
-                        o.payoutStatus === 'Paid'
-                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                          : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
+                  <div className="pt-2 border-t border-surface-border flex items-center justify-between gap-2">
+                    <select
+                      value={o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved' ? 'Paid' : 'Pending'}
+                      onChange={(e) => updatePayoutStatus(o.id, e.target.value)}
+                      className={`px-2.5 py-1 text-xs font-black rounded-lg border cursor-pointer outline-none ${
+                        o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved'
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                          : 'bg-amber-50 text-amber-800 border-amber-300'
                       }`}
                     >
-                      {o.payoutStatus === 'Paid' ? 'Status: Paid / Settled' : 'Approve Payout'}
+                      <option value="Pending">🟡 Pending</option>
+                      <option value="Paid">🟢 Settled (Paid)</option>
+                    </select>
+
+                    <button
+                      onClick={() => updatePayoutStatus(o.id, (o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved') ? 'Pending' : 'Paid')}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-black shadow-xs transition-all cursor-pointer ${
+                        o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved'
+                          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                          : 'bg-amber-500 hover:bg-amber-600 text-forest-950'
+                      }`}
+                    >
+                      {o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved' ? '✓ Settled' : 'Approve Payout'}
                     </button>
                   </div>
                 </div>
@@ -526,17 +539,32 @@ export const NationalAdminStorePage = () => {
                       </td>
 
                       {/* Payout Status & Action */}
-                      <td className="p-3.5 text-center min-w-[130px] whitespace-nowrap">
-                        <button
-                          onClick={() => updatePayoutStatus(o.id, o.payoutStatus === 'Paid' ? 'Pending' : 'Paid')}
-                          className={`px-3 py-1.5 rounded-lg text-[10px] font-black shadow-xs transition-all cursor-pointer ${
-                            o.payoutStatus === 'Paid'
-                              ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                              : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
-                          }`}
-                        >
-                          {o.payoutStatus === 'Paid' ? 'Paid / Settled' : 'Approve Payout'}
-                        </button>
+                      <td className="p-3.5 text-center min-w-[200px] whitespace-nowrap">
+                        <div className="flex items-center justify-center gap-1.5">
+                          <select
+                            value={o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved' ? 'Paid' : 'Pending'}
+                            onChange={(e) => updatePayoutStatus(o.id, e.target.value)}
+                            className={`px-2.5 py-1 text-xs font-black rounded-lg border cursor-pointer outline-none transition-colors ${
+                              o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                                : 'bg-amber-50 text-amber-800 border-amber-300'
+                            }`}
+                          >
+                            <option value="Pending">🟡 Pending</option>
+                            <option value="Paid">🟢 Settled (Paid)</option>
+                          </select>
+
+                          <button
+                            onClick={() => updatePayoutStatus(o.id, (o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved') ? 'Pending' : 'Paid')}
+                            className={`px-3 py-1.5 rounded-lg text-[11px] font-black shadow-xs transition-all cursor-pointer active:scale-95 ${
+                              o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved'
+                                ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                                : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
+                            }`}
+                          >
+                            {o.payoutStatus === 'Paid' || o.payoutStatus === 'Approved' ? '✓ Settled' : 'Approve Payout'}
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   );

@@ -649,27 +649,39 @@ export const AppProvider = ({ children }) => {
     return { vendorAmount, clubShare, stateShare, nationalShare };
   };
 
-  const updateFulfillmentStatus = async (orderId, fulfillmentStatus, trackingNumber) => {
+  const updateFulfillmentStatus = async (orderId, fulfillmentStatus, trackingNumber, carrier) => {
     setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId
-          ? { ...o, fulfillmentStatus, status: fulfillmentStatus, trackingNumber: trackingNumber || o.trackingNumber }
-          : o
-      )
+      prev.map((o) => {
+        if (o.id !== orderId) return o;
+        const finalTracking =
+          trackingNumber !== undefined && trackingNumber !== null && trackingNumber !== ''
+            ? trackingNumber
+            : fulfillmentStatus === 'Processing'
+            ? 'Pending Dispatch'
+            : o.trackingNumber || `1Z${Math.floor(1000000000000000 + Math.random() * 9000000000000000)}`;
+
+        return {
+          ...o,
+          fulfillmentStatus,
+          status: fulfillmentStatus,
+          trackingNumber: finalTracking,
+          carrier: carrier || o.carrier || 'UPS Ground'
+        };
+      })
     );
 
     try {
       await fetch(`http://localhost:5050/api/v1/orders/${orderId}/fulfillment`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fulfillmentStatus, trackingNumber })
+        body: JSON.stringify({ fulfillmentStatus, trackingNumber, carrier })
       });
       console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/orders/${orderId}/fulfillment`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
 
-    showToast(`Order #${orderId} set to: ${fulfillmentStatus}`, 'success');
+    showToast(`Order #${orderId} dispatch updated to: ${fulfillmentStatus}`, 'success');
   };
 
   const updatePayoutStatus = async (orderId, payoutStatus) => {

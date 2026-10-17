@@ -71,8 +71,10 @@ export const MemberOrders = () => {
         <div className="flex items-center gap-1.5">
           <Truck className="w-3.5 h-3.5 text-tan-600 shrink-0" />
           <div>
-            <div className="font-extrabold text-[11px] text-forest-950">Direct Vendor Drop-Ship</div>
-            <div className="text-[9px] text-charcoal-muted font-mono font-bold">Tracking #UHC-99{r.id ? r.id.replace(/\D/g, '') : '812'}</div>
+            <div className="font-extrabold text-[11px] text-forest-950">{r.carrier || 'Direct Vendor Drop-Ship'}</div>
+            <div className="text-[9px] text-charcoal-muted font-mono font-bold">
+              {r.trackingNumber ? `Tracking #${r.trackingNumber}` : 'Pending Dispatch'}
+            </div>
           </div>
         </div>
       )

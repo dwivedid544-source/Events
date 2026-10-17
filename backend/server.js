@@ -436,14 +436,15 @@ app.put('/api/v1/events/entries/:id/payment', async (req, res) => {
 app.put('/api/v1/orders/:id/fulfillment', async (req, res) => {
   try {
     const { id } = req.params;
-    const { fulfillmentStatus, trackingNumber } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/orders/${id}/fulfillment]: Status -> ${fulfillmentStatus}, Tracking -> ${trackingNumber || 'N/A'}`);
+    const { fulfillmentStatus, trackingNumber, carrier } = req.body;
+    console.log(`📡 API Call [PUT /api/v1/orders/${id}/fulfillment]: Status -> ${fulfillmentStatus}, Tracking -> ${trackingNumber || 'N/A'}, Carrier -> ${carrier || 'UPS Ground'}`);
 
     return res.json({
       success: true,
       orderId: id,
       fulfillmentStatus,
       trackingNumber,
+      carrier: carrier || 'UPS Ground',
       message: `Order #${id} fulfillment status updated to ${fulfillmentStatus} in database`,
       timestamp: new Date().toISOString()
     });
