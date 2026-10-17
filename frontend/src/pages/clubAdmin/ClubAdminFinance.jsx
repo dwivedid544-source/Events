@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   DollarSign,
@@ -27,15 +27,33 @@ const MONTHS = [
 
 export const ClubAdminFinance = () => {
   const { currentUser, showToast } = useApp();
-  const [selectedMonth, setSelectedMonth] = useState('August');
+
+  const now = new Date();
+  const currentMonthIndex = now.getMonth(); // 9 = October (0-indexed)
+  const currentMonthName = MONTHS[currentMonthIndex] || 'October';
+
+  const [selectedMonth, setSelectedMonth] = useState(currentMonthName);
   const [selectedYear, setSelectedYear] = useState(2026);
-  const [selectedPeriodLabel, setSelectedPeriodLabel] = useState('August 2026');
+  const [selectedPeriodLabel, setSelectedPeriodLabel] = useState(`${currentMonthName} 2026`);
   const [periodType, setPeriodType] = useState('month'); // 'month' | 'quarter' | 'year' | 'custom'
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const [customRange, setCustomRange] = useState({
-    startDate: '2026-08-01',
-    endDate: '2026-08-31'
+    startDate: '2026-10-01',
+    endDate: '2026-10-31'
   });
 
   const isStateAdmin = currentUser?.role === 'STATE_ADMIN';
@@ -50,9 +68,138 @@ export const ClubAdminFinance = () => {
     ? 'National Charter Network'
     : (currentUser?.scope?.split('(')[0]?.trim() || 'Houston County Coon Hunters Association');
 
-  // Dynamic Financial Data calculation based on selected period
+  // Month-by-month financial data map (Benchmark values in August, current month active, future months $0.00)
+  const monthlyDataMap = {
+    January: {
+      memberships: 320.00,
+      merchandise: 540.00,
+      eventIncome: 750.00,
+      fundraisers: 200.00,
+      uhcMarketplaceCommissions: 180.00,
+      signupsCount: 12,
+      ordersCount: 20,
+      huntEntriesCount: 30
+    },
+    February: {
+      memberships: 350.00,
+      merchandise: 610.00,
+      eventIncome: 850.00,
+      fundraisers: 250.00,
+      uhcMarketplaceCommissions: 210.00,
+      signupsCount: 14,
+      ordersCount: 22,
+      huntEntriesCount: 34
+    },
+    March: {
+      memberships: 410.00,
+      merchandise: 690.00,
+      eventIncome: 980.00,
+      fundraisers: 300.00,
+      uhcMarketplaceCommissions: 240.00,
+      signupsCount: 17,
+      ordersCount: 26,
+      huntEntriesCount: 40
+    },
+    April: {
+      memberships: 450.00,
+      merchandise: 760.00,
+      eventIncome: 1200.00,
+      fundraisers: 380.00,
+      uhcMarketplaceCommissions: 275.00,
+      signupsCount: 18,
+      ordersCount: 29,
+      huntEntriesCount: 48
+    },
+    May: {
+      memberships: 480.00,
+      merchandise: 810.00,
+      eventIncome: 1350.00,
+      fundraisers: 400.00,
+      uhcMarketplaceCommissions: 290.00,
+      signupsCount: 20,
+      ordersCount: 31,
+      huntEntriesCount: 52
+    },
+    June: {
+      memberships: 380.00,
+      merchandise: 680.00,
+      eventIncome: 950.00,
+      fundraisers: 310.00,
+      uhcMarketplaceCommissions: 230.00,
+      signupsCount: 15,
+      ordersCount: 25,
+      huntEntriesCount: 38
+    },
+    July: {
+      memberships: 390.00,
+      merchandise: 710.00,
+      eventIncome: 1020.00,
+      fundraisers: 330.00,
+      uhcMarketplaceCommissions: 245.00,
+      signupsCount: 15,
+      ordersCount: 27,
+      huntEntriesCount: 41
+    },
+    August: {
+      // Benchmark values specified by client
+      memberships: 400.00,
+      merchandise: 725.00,
+      eventIncome: 1100.00,
+      fundraisers: 350.00,
+      uhcMarketplaceCommissions: 260.00,
+      signupsCount: 16,
+      ordersCount: 28,
+      huntEntriesCount: 44
+    },
+    September: {
+      memberships: 520.00,
+      merchandise: 890.00,
+      eventIncome: 1450.00,
+      fundraisers: 420.00,
+      uhcMarketplaceCommissions: 310.00,
+      signupsCount: 21,
+      ordersCount: 34,
+      huntEntriesCount: 58
+    },
+    October: {
+      // Current running month (Month-To-Date)
+      memberships: 425.00,
+      merchandise: 680.00,
+      eventIncome: 1250.00,
+      fundraisers: 350.00,
+      uhcMarketplaceCommissions: 240.00,
+      signupsCount: 17,
+      ordersCount: 27,
+      huntEntriesCount: 50,
+      isCurrent: true
+    },
+    November: {
+      // Future month — No transactions occurred yet ($0.00)
+      memberships: 0.00,
+      merchandise: 0.00,
+      eventIncome: 0.00,
+      fundraisers: 0.00,
+      uhcMarketplaceCommissions: 0.00,
+      signupsCount: 0,
+      ordersCount: 0,
+      huntEntriesCount: 0,
+      isFuture: true
+    },
+    December: {
+      // Future month — No transactions occurred yet ($0.00)
+      memberships: 0.00,
+      merchandise: 0.00,
+      eventIncome: 0.00,
+      fundraisers: 0.00,
+      uhcMarketplaceCommissions: 0.00,
+      signupsCount: 0,
+      ordersCount: 0,
+      huntEntriesCount: 0,
+      isFuture: true
+    }
+  };
+
   const getFinancialData = () => {
-    // Base benchmark for August: Memberships: 400, Merchandise: 725, Event Income: 1100, Fundraisers: 350, UHC: 260
     if (periodType === 'year') {
       return {
         memberships: 4600.00,
@@ -63,6 +210,7 @@ export const ClubAdminFinance = () => {
         totalClubIncome: 33100.00,
         signupsCount: 184,
         ordersCount: 312,
+        huntEntriesCount: 520,
         entriesCount: 520
       };
     }
@@ -77,6 +225,7 @@ export const ClubAdminFinance = () => {
         totalClubIncome: 8615.00,
         signupsCount: 48,
         ordersCount: 82,
+        huntEntriesCount: 135,
         entriesCount: 135
       };
     }
@@ -91,45 +240,24 @@ export const ClubAdminFinance = () => {
         totalClubIncome: 3490.00,
         signupsCount: 21,
         ordersCount: 34,
+        huntEntriesCount: 56,
         entriesCount: 56
       };
     }
 
-    // Monthly variations
-    const monthIndex = MONTHS.indexOf(selectedMonth);
-    const monthMultipliers = [
-      0.75, // Jan
-      0.80, // Feb
-      0.90, // Mar
-      0.95, // Apr
-      1.05, // May
-      1.10, // Jun
-      0.92, // Jul ($2,580)
-      1.00, // Aug ($2,835 - exact specification)
-      1.15, // Sep ($3,200 - fall trials)
-      1.25, // Oct ($3,540 - peak coonhound trials)
-      1.10, // Nov
-      0.85  // Dec
-    ];
-
-    const factor = monthMultipliers[monthIndex !== -1 ? monthIndex : 7];
-    const memberships = Number((400.00 * factor).toFixed(2));
-    const merchandise = Number((725.00 * factor).toFixed(2));
-    const eventIncome = Number((1100.00 * factor).toFixed(2));
-    const fundraisers = Number((350.00 * factor).toFixed(2));
-    const uhcMarketplaceCommissions = Number((260.00 * factor).toFixed(2));
-    const totalClubIncome = Number((memberships + merchandise + eventIncome + fundraisers + uhcMarketplaceCommissions).toFixed(2));
+    // Default: month
+    const base = monthlyDataMap[selectedMonth] || monthlyDataMap[currentMonthName];
+    const totalClubIncome =
+      base.memberships +
+      base.merchandise +
+      base.eventIncome +
+      base.fundraisers +
+      base.uhcMarketplaceCommissions;
 
     return {
-      memberships,
-      merchandise,
-      eventIncome,
-      fundraisers,
-      uhcMarketplaceCommissions,
+      ...base,
       totalClubIncome,
-      signupsCount: Math.round(16 * factor),
-      ordersCount: Math.round(28 * factor),
-      entriesCount: Math.round(44 * factor)
+      entriesCount: base.huntEntriesCount
     };
   };
 
@@ -139,6 +267,7 @@ export const ClubAdminFinance = () => {
     setSelectedMonth(month);
     setPeriodType('month');
     setSelectedPeriodLabel(`${month} ${selectedYear}`);
+    setIsDropdownOpen(false);
     setIsCalendarOpen(false);
     if (showToast) showToast(`Reporting period set to: ${month} ${selectedYear}`, 'success');
   };
@@ -150,6 +279,7 @@ export const ClubAdminFinance = () => {
       setSelectedMonth('All 12 Months');
     }
     setIsCalendarOpen(false);
+    setIsDropdownOpen(false);
     if (showToast) showToast(`Reporting period set to: ${label}`, 'success');
   };
 
@@ -163,8 +293,12 @@ export const ClubAdminFinance = () => {
     const label = `${customRange.startDate} to ${customRange.endDate}`;
     setSelectedPeriodLabel(label);
     setIsCalendarOpen(false);
+    setIsDropdownOpen(false);
     if (showToast) showToast(`Custom period applied: ${label}`, 'success');
   };
+
+  const isSelectedFuture = periodType === 'month' && MONTHS.indexOf(selectedMonth) > currentMonthIndex;
+  const isSelectedCurrent = periodType === 'month' && MONTHS.indexOf(selectedMonth) === currentMonthIndex;
 
   return (
     <div className="space-y-8">
@@ -191,223 +325,324 @@ export const ClubAdminFinance = () => {
             </p>
           </div>
 
-          {/* Interactive Calendar / Reporting Period Selector */}
-          <div className="relative">
+          {/* Interactive Month Selector / Calendar Dropdown */}
+          <div className="relative flex items-center gap-2" ref={dropdownRef}>
             <button
-              onClick={() => setIsCalendarOpen(!isCalendarOpen)}
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               className="flex items-center gap-2 bg-forest-900/90 hover:bg-forest-800 border-2 border-tan-500/60 hover:border-tan-400 p-1.5 rounded-2xl cursor-pointer transition-all shadow-md active:scale-95 group"
+              title="Click to select reporting month"
+              aria-label="Select Reporting Month"
             >
               <CalendarRange className="w-4 h-4 text-tan-400 ml-2 group-hover:rotate-6 transition-transform" />
               <span className="text-xs font-black text-tan-200">Reporting Period:</span>
               <span className="px-3 py-1 bg-tan-500 group-hover:bg-tan-400 text-forest-950 text-xs font-black rounded-xl flex items-center gap-1.5 shadow-sm transition-colors">
                 <span>{selectedPeriodLabel}</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isCalendarOpen ? 'rotate-180' : ''}`} />
+                {isSelectedCurrent && (
+                  <span className="text-[9px] font-black bg-forest-950 text-tan-300 px-1.5 py-0.2 rounded-full uppercase">
+                    Current
+                  </span>
+                )}
+                {isSelectedFuture && (
+                  <span className="text-[9px] font-black bg-amber-900 text-amber-200 px-1.5 py-0.2 rounded-full uppercase">
+                    Upcoming
+                  </span>
+                )}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </span>
             </button>
 
-            {/* Dropdown Calendar / Period Modal */}
-            {isCalendarOpen && (
-              <div
-                className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
-                onClick={() => setIsCalendarOpen(false)}
-              >
-                <div
-                  className="bg-surface-lowest text-forest-950 rounded-3xl border-2 border-tan-500/60 p-6 max-w-lg w-full shadow-2xl space-y-5 animate-in zoom-in-95 duration-200"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {/* Modal Header */}
-                  <div className="flex items-center justify-between pb-3 border-b border-surface-border">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-xl bg-tan-500/20 text-tan-700 flex items-center justify-center font-bold">
-                        <Calendar className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h3 className="font-extrabold text-base text-forest-950">
-                          Select Reporting Period
-                        </h3>
-                        <p className="text-[11px] text-charcoal-muted">
-                          Choose month, quarter, or custom date range to filter financial metrics
-                        </p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => setIsCalendarOpen(false)}
-                      className="p-1 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-surface-low transition-colors"
-                    >
-                      <X className="w-5 h-5" />
-                    </button>
+            {/* Dropdown Month Picker Grid */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-surface-lowest text-charcoal rounded-2xl border-2 border-tan-500/60 shadow-2xl p-4 z-50 animate-fade-in">
+                <div className="flex items-center justify-between pb-3 border-b border-surface-border mb-3">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-tan-700" />
+                    <span className="text-xs font-black text-forest-950">Select Reporting Month</span>
                   </div>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-tan-100 text-tan-900 border border-tan-300">
+                    2026 Season
+                  </span>
+                </div>
 
-                  {/* Quick Preset Buttons */}
-                  <div>
-                    <label className="text-[10px] font-black uppercase tracking-wider text-charcoal-muted block mb-2">
-                      Quick Fiscal Presets
-                    </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-3 gap-2">
+                  {MONTHS.map((m, idx) => {
+                    const isSelected = selectedMonth === m && periodType === 'month';
+                    const isFuture = idx > currentMonthIndex;
+                    const isCurrent = idx === currentMonthIndex;
+
+                    return (
                       <button
+                        key={m}
                         type="button"
-                        onClick={() => { setSelectedMonth('August'); handleSelectPreset('month', 'August 2026'); }}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left ${
-                          selectedPeriodLabel === 'August 2026'
-                            ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
-                            : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
+                        onClick={() => handleSelectMonth(m)}
+                        className={`relative py-2.5 px-2 rounded-xl transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 ${
+                          isSelected
+                            ? 'bg-tan-500 text-forest-950 font-black shadow-md scale-[1.02]'
+                            : isFuture
+                            ? 'bg-surface-low/50 text-charcoal-muted hover:bg-surface-low border border-dashed border-surface-border'
+                            : 'bg-surface-low text-charcoal hover:bg-tan-50 hover:text-forest-900 border border-surface-border'
                         }`}
                       >
-                        <div className="font-black">August 2026</div>
-                        <div className="text-[10px] opacity-75">Current Month</div>
+                        <span className="text-xs font-bold">{m}</span>
+                        {isCurrent && (
+                          <span className={`text-[8px] font-black uppercase px-1.5 py-0.2 rounded-full ${
+                            isSelected ? 'bg-forest-950 text-tan-300' : 'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            Current
+                          </span>
+                        )}
+                        {isFuture && (
+                          <span className="text-[8px] font-bold uppercase text-charcoal-light">
+                            Upcoming
+                          </span>
+                        )}
                       </button>
+                    );
+                  })}
+                </div>
 
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedMonth('July'); handleSelectPreset('month', 'July 2026'); }}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left ${
-                          selectedPeriodLabel === 'July 2026'
-                            ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
-                            : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
-                        }`}
-                      >
-                        <div className="font-black">July 2026</div>
-                        <div className="text-[10px] opacity-75">Previous Month</div>
-                      </button>
+                <div className="mt-3 pt-2.5 border-t border-surface-border flex items-center justify-between text-[11px] text-charcoal-muted">
+                  <span>Current: <strong>{currentMonthName} 2026</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectMonth(currentMonthName)}
+                    className="text-xs text-tan-800 hover:text-tan-900 font-extrabold hover:underline cursor-pointer"
+                  >
+                    Jump to Current ({currentMonthName.slice(0, 3)})
+                  </button>
+                </div>
 
-                      <button
-                        type="button"
-                        onClick={() => { setSelectedMonth('September'); handleSelectPreset('month', 'September 2026'); }}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left ${
-                          selectedPeriodLabel === 'September 2026'
-                            ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
-                            : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
-                        }`}
-                      >
-                        <div className="font-black">September 2026</div>
-                        <div className="text-[10px] opacity-75">Upcoming Month</div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleSelectPreset('quarter', 'Q3 2026 (Jul - Sep)')}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left ${
-                          selectedPeriodLabel.includes('Q3')
-                            ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
-                            : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
-                        }`}
-                      >
-                        <div className="font-black">Q3 2026</div>
-                        <div className="text-[10px] opacity-75">Jul - Sep 2026</div>
-                      </button>
-
-                      <button
-                        type="button"
-                        onClick={() => handleSelectPreset('year', 'Full Year 2026 (YTD)')}
-                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left col-span-2 sm:col-span-1 ${
-                          selectedPeriodLabel.includes('Full Year')
-                            ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
-                            : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
-                        }`}
-                      >
-                        <div className="font-black">Full Year 2026</div>
-                        <div className="text-[10px] opacity-75">YTD Reconciled</div>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* 12-Month Calendar Grid */}
-                  <div>
-                    <div className="flex items-center justify-between mb-2">
-                      <label className="text-[10px] font-black uppercase tracking-wider text-charcoal-muted">
-                        Select Fiscal Month
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedYear(selectedYear - 1)}
-                          className="p-1 rounded bg-surface-low border text-charcoal hover:bg-surface-border transition-colors text-xs"
-                          title="Previous Year"
-                        >
-                          <ChevronLeft className="w-3.5 h-3.5" />
-                        </button>
-                        <span className="font-black text-xs text-forest-950 font-mono px-1">
-                          {selectedYear}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => setSelectedYear(selectedYear + 1)}
-                          className="p-1 rounded bg-surface-low border text-charcoal hover:bg-surface-border transition-colors text-xs"
-                          title="Next Year"
-                        >
-                          <ChevronRight className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                      {MONTHS.map((month) => {
-                        const isCurrent = selectedMonth === month && periodType === 'month';
-                        return (
-                          <button
-                            key={month}
-                            type="button"
-                            onClick={() => handleSelectMonth(month)}
-                            className={`py-2 px-3 rounded-xl text-xs font-black transition-all text-center ${
-                              isCurrent
-                                ? 'bg-tan-500 text-forest-950 border-2 border-forest-900 shadow-md scale-102'
-                                : 'bg-surface-low hover:bg-surface-border text-charcoal border border-surface-border'
-                            }`}
-                          >
-                            {month.slice(0, 3)}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Custom Date Range Picker */}
-                  <form onSubmit={handleApplyCustomRange} className="pt-3 border-t border-surface-border space-y-2.5">
-                    <label className="text-[10px] font-black uppercase tracking-wider text-charcoal-muted block">
-                      Custom Date Range
-                    </label>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div>
-                        <span className="text-[10px] text-charcoal-muted block mb-0.5">Start Date</span>
-                        <input
-                          type="date"
-                          value={customRange.startDate}
-                          onChange={(e) => setCustomRange({ ...customRange, startDate: e.target.value })}
-                          className="w-full px-2.5 py-1.5 bg-surface border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
-                        />
-                      </div>
-                      <div>
-                        <span className="text-[10px] text-charcoal-muted block mb-0.5">End Date</span>
-                        <input
-                          type="date"
-                          value={customRange.endDate}
-                          onChange={(e) => setCustomRange({ ...customRange, endDate: e.target.value })}
-                          className="w-full px-2.5 py-1.5 bg-surface border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
-                        />
-                      </div>
-                    </div>
-                    <div className="flex justify-end gap-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setIsCalendarOpen(false)}
-                        className="px-3 py-1.5 rounded-xl border border-surface-border text-xs font-bold text-charcoal hover:bg-surface-low cursor-pointer"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="px-4 py-1.5 bg-forest-900 hover:bg-forest-950 text-white rounded-xl text-xs font-black shadow cursor-pointer transition-colors"
-                      >
-                        Apply Range
-                      </button>
-                    </div>
-                  </form>
+                <div className="mt-2 pt-2 border-t border-surface-border text-center">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDropdownOpen(false);
+                      setIsCalendarOpen(true);
+                    }}
+                    className="text-xs font-bold text-forest-900 hover:text-forest-950 hover:underline flex items-center justify-center gap-1 w-full py-1"
+                  >
+                    <Filter className="w-3.5 h-3.5" />
+                    <span>Quarterly, Annual & Custom Presets</span>
+                  </button>
                 </div>
               </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Dropdown Calendar / Period Modal */}
+      {isCalendarOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150"
+          onClick={() => setIsCalendarOpen(false)}
+        >
+          <div
+            className="bg-surface-lowest text-forest-950 rounded-3xl border-2 border-tan-500/60 p-6 max-w-lg w-full shadow-2xl space-y-5 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-surface-border">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-tan-500/20 text-tan-700 flex items-center justify-center font-bold">
+                  <Calendar className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-base text-forest-950">
+                    Select Reporting Period
+                  </h3>
+                  <p className="text-[11px] text-charcoal-muted">
+                    Choose month, quarter, or custom date range to filter financial metrics
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsCalendarOpen(false)}
+                className="p-1 rounded-lg text-charcoal-muted hover:text-charcoal hover:bg-surface-low transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Quick Preset Buttons */}
+            <div>
+              <label className="text-[10px] font-black uppercase tracking-wider text-charcoal-muted block mb-2">
+                Quick Fiscal Presets
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => handleSelectPreset('month', `${currentMonthName} 2026`)}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left cursor-pointer ${
+                    selectedPeriodLabel === `${currentMonthName} 2026`
+                      ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
+                      : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
+                  }`}
+                >
+                  <div className="font-black">{currentMonthName} 2026</div>
+                  <div className="text-[10px] opacity-75">Current Month</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setSelectedMonth('August'); handleSelectPreset('month', 'August 2026'); }}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left cursor-pointer ${
+                    selectedPeriodLabel === 'August 2026'
+                      ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
+                      : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
+                  }`}
+                >
+                  <div className="font-black">August 2026</div>
+                  <div className="text-[10px] opacity-75">Benchmark Month</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => { setSelectedMonth('September'); handleSelectPreset('month', 'September 2026'); }}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left cursor-pointer ${
+                    selectedPeriodLabel === 'September 2026'
+                      ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
+                      : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
+                  }`}
+                >
+                  <div className="font-black">September 2026</div>
+                  <div className="text-[10px] opacity-75">Previous Month</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectPreset('quarter', 'Q3 2026 (Jul - Sep)')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left cursor-pointer ${
+                    selectedPeriodLabel.includes('Q3')
+                      ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
+                      : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
+                  }`}
+                >
+                  <div className="font-black">Q3 2026</div>
+                  <div className="text-[10px] opacity-75">Jul - Sep 2026</div>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSelectPreset('year', 'Full Year 2026 (YTD)')}
+                  className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all text-left col-span-2 sm:col-span-1 cursor-pointer ${
+                    selectedPeriodLabel.includes('Full Year')
+                      ? 'bg-forest-900 text-white border-forest-900 shadow-sm'
+                      : 'bg-surface-low text-charcoal border-surface-border hover:border-tan-500'
+                  }`}
+                >
+                  <div className="font-black">Full Year 2026</div>
+                  <div className="text-[10px] opacity-75">YTD Reconciled</div>
+                </button>
+              </div>
+            </div>
+
+            {/* 12-Month Calendar Grid */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-[10px] font-black uppercase tracking-wider text-charcoal-muted">
+                  Select Fiscal Month
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedYear(selectedYear - 1)}
+                    className="p-1 rounded bg-surface-low border text-charcoal hover:bg-surface-border transition-colors text-xs cursor-pointer"
+                    title="Previous Year"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="font-black text-xs text-forest-950 font-mono px-1">
+                    {selectedYear}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedYear(selectedYear + 1)}
+                    className="p-1 rounded bg-surface-low border text-charcoal hover:bg-surface-border transition-colors text-xs cursor-pointer"
+                    title="Next Year"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                {MONTHS.map((month) => {
+                  const isCurrent = selectedMonth === month && periodType === 'month';
+                  return (
+                    <button
+                      key={month}
+                      type="button"
+                      onClick={() => handleSelectMonth(month)}
+                      className={`py-2 px-3 rounded-xl text-xs font-black transition-all text-center cursor-pointer ${
+                        isCurrent
+                          ? 'bg-tan-500 text-forest-950 border-2 border-forest-900 shadow-md scale-102'
+                          : 'bg-surface-low hover:bg-surface-border text-charcoal border border-surface-border'
+                      }`}
+                    >
+                      {month.slice(0, 3)}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Custom Date Range Picker */}
+            <form onSubmit={handleApplyCustomRange} className="pt-3 border-t border-surface-border space-y-2.5">
+              <label className="text-[10px] font-black uppercase tracking-wider text-charcoal-muted block">
+                Custom Date Range
+              </label>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span className="text-[10px] text-charcoal-muted block mb-0.5">Start Date</span>
+                  <input
+                    type="date"
+                    value={customRange.startDate}
+                    onChange={(e) => setCustomRange({ ...customRange, startDate: e.target.value })}
+                    className="w-full px-2.5 py-1.5 bg-surface border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
+                  />
+                </div>
+                <div>
+                  <span className="text-[10px] text-charcoal-muted block mb-0.5">End Date</span>
+                  <input
+                    type="date"
+                    value={customRange.endDate}
+                    onChange={(e) => setCustomRange({ ...customRange, endDate: e.target.value })}
+                    className="w-full px-2.5 py-1.5 bg-surface border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => setIsCalendarOpen(false)}
+                  className="px-3 py-1.5 rounded-xl border border-surface-border text-xs font-bold text-charcoal hover:bg-surface-low cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-1.5 bg-forest-900 hover:bg-forest-950 text-white rounded-xl text-xs font-black shadow cursor-pointer transition-colors"
+                >
+                  Apply Range
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Upcoming Period Informational Banner */}
+      {isSelectedFuture && (
+        <div className="bg-amber-50 border border-amber-300 text-amber-950 rounded-2xl p-4 flex items-center gap-3 shadow-xs animate-fade-in">
+          <CalendarRange className="w-5 h-5 text-amber-700 shrink-0" />
+          <div className="text-xs">
+            <span className="font-extrabold">Upcoming Reporting Period ({selectedPeriodLabel}): </span>
+            This is a future period. No financial transactions or dues have taken place yet, so revenue is currently recorded as <strong>$0.00</strong>. Income will automatically record once {selectedMonth} {selectedYear} begins.
+          </div>
+        </div>
+      )}
 
       {/* 5 CATEGORY CARDS + TOTAL INCOME CARD */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -435,7 +670,7 @@ export const ClubAdminFinance = () => {
 
           <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs text-charcoal-muted font-bold">
             <span>Period: {selectedPeriodLabel}</span>
-            <span className="text-emerald-800 font-black">{financialData.signupsCount} Active Sign-Ups</span>
+            <span className="text-emerald-800 font-black">{financialData.signupsCount ?? 16} Active Sign-Ups</span>
           </div>
         </div>
 
@@ -463,7 +698,7 @@ export const ClubAdminFinance = () => {
 
           <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs text-charcoal-muted font-bold">
             <span>Period: {selectedPeriodLabel}</span>
-            <span className="text-emerald-800 font-black">{financialData.ordersCount} Store Orders</span>
+            <span className="text-emerald-800 font-black">{financialData.ordersCount ?? 28} Store Orders</span>
           </div>
         </div>
 
@@ -491,7 +726,7 @@ export const ClubAdminFinance = () => {
 
           <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs text-charcoal-muted font-bold">
             <span>Period: {selectedPeriodLabel}</span>
-            <span className="text-emerald-800 font-black">{financialData.entriesCount} Hunt Entries</span>
+            <span className="text-emerald-800 font-black">{financialData.huntEntriesCount ?? financialData.entriesCount ?? 44} Hunt Entries</span>
           </div>
         </div>
 
@@ -613,7 +848,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.memberships.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.memberships / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.memberships / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -626,7 +863,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.merchandise.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.merchandise / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.merchandise / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -639,7 +878,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.eventIncome.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.eventIncome / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.eventIncome / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -652,7 +893,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.fundraisers.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.fundraisers / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.fundraisers / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -663,7 +906,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.uhcMarketplaceCommissions.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.uhcMarketplaceCommissions / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.uhcMarketplaceCommissions / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -676,7 +921,9 @@ export const ClubAdminFinance = () => {
                 <td className="p-4 text-right text-emerald-400 text-base">
                   ${financialData.totalClubIncome.toFixed(2)}
                 </td>
-                <td className="p-4 text-right text-tan-300 font-mono">100.0%</td>
+                <td className="p-4 text-right text-tan-300 font-mono">
+                  {financialData.totalClubIncome > 0 ? '100.0%' : '0.0%'}
+                </td>
               </tr>
             </tbody>
           </table>
