@@ -98,7 +98,7 @@ export const NewsManagementPage = () => {
       header: 'State News Category',
       accessor: 'category',
       render: (r) => (
-        <span className="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-tan-100 text-tan-900 border border-tan-300">
+        <span className="inline-flex items-center justify-center whitespace-nowrap px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wide bg-tan-100 text-tan-900 border border-tan-300">
           {r.category || 'State Hunt announcements'}
         </span>
       )
