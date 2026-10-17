@@ -118,7 +118,44 @@ export const ClubAdminStorePage = () => {
       (o.id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (o.product || o.items || '').toLowerCase().includes(searchQuery.toLowerCase());
 
-    return isClubRelated && matchesSearch;
+    const matchesDate = (() => {
+      if (dateFilter === 'All Time') return true;
+      if (!o.date) return false;
+
+      const orderDate = new Date(o.date);
+      if (isNaN(orderDate.getTime())) return true;
+
+      const now = new Date();
+
+      if (dateFilter === 'Today') {
+        return (
+          orderDate.getFullYear() === now.getFullYear() &&
+          orderDate.getMonth() === now.getMonth() &&
+          orderDate.getDate() === now.getDate()
+        );
+      }
+
+      if (dateFilter === 'This Week') {
+        const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        return orderDate >= startOfWeek && orderDate <= endOfToday;
+      }
+
+      if (dateFilter === 'This Month') {
+        return (
+          orderDate.getFullYear() === now.getFullYear() &&
+          orderDate.getMonth() === now.getMonth()
+        );
+      }
+
+      if (dateFilter === 'This Year') {
+        return orderDate.getFullYear() === now.getFullYear();
+      }
+
+      return true;
+    })();
+
+    return isClubRelated && matchesSearch && matchesDate;
   });
 
   // Calculate Metrics

@@ -95,6 +95,7 @@ export const StateAdminStorePage = () => {
       o.state === myState.name ||
       o.originType === 'STATE' ||
       o.originType === 'CLUB' ||
+      (o.orderSource && o.orderSource.toLowerCase().includes((myState.name || '').toLowerCase())) ||
       (o.orderSource && o.orderSource.toLowerCase().includes('tennessee'));
 
     const matchesChannel =
@@ -108,7 +109,44 @@ export const StateAdminStorePage = () => {
       (o.id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (o.product || o.items || '').toLowerCase().includes(searchQuery.toLowerCase());
 
-    return isStateRelated && matchesChannel && matchesSearch;
+    const matchesDate = (() => {
+      if (dateFilter === 'All Time') return true;
+      if (!o.date) return false;
+
+      const orderDate = new Date(o.date);
+      if (isNaN(orderDate.getTime())) return true;
+
+      const now = new Date();
+
+      if (dateFilter === 'Today') {
+        return (
+          orderDate.getFullYear() === now.getFullYear() &&
+          orderDate.getMonth() === now.getMonth() &&
+          orderDate.getDate() === now.getDate()
+        );
+      }
+
+      if (dateFilter === 'This Week') {
+        const startOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+        const endOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+        return orderDate >= startOfWeek && orderDate <= endOfToday;
+      }
+
+      if (dateFilter === 'This Month') {
+        return (
+          orderDate.getFullYear() === now.getFullYear() &&
+          orderDate.getMonth() === now.getMonth()
+        );
+      }
+
+      if (dateFilter === 'This Year') {
+        return orderDate.getFullYear() === now.getFullYear();
+      }
+
+      return true;
+    })();
+
+    return isStateRelated && matchesChannel && matchesSearch && matchesDate;
   });
 
   // Calculate Metrics
@@ -305,66 +343,71 @@ export const StateAdminStorePage = () => {
 
         {/* MOBILE CARDS VIEW */}
         <div className="block md:hidden p-4 space-y-4">
-          {stateOrders.map((o) => {
-            const price = Number(o.sellingPrice || o.total) || 0;
-            const stateVal = Number(o.stateShare) || 0;
+          {stateOrders.length === 0 ? (
+            <div className="py-8 text-center text-charcoal-muted text-xs font-semibold">
+              No store orders recorded for time range "{dateFilter}".
+            </div>
+          ) : (
+            stateOrders.map((o) => {
+              const price = Number(o.sellingPrice || o.total) || 0;
+              const stateVal = Number(o.stateShare) || 0;
 
-            return (
-              <div key={o.id} className="p-4 rounded-xl border border-surface-border bg-surface-low space-y-3 shadow-xs">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="font-black text-forest-950 text-sm flex items-center gap-1">
-                      <User className="w-3.5 h-3.5 text-amber-700 shrink-0" />
-                      <span>{o.customer || 'Lalit Panchole'}</span>
-                    </div>
-                    <div className="text-[11px] text-charcoal-muted font-medium flex items-center gap-1 mt-0.5">
-                      <Mail className="w-3 h-3 text-charcoal-light" />
-                      <span>{o.email || 'pancholelalit52@gmail.com'}</span>
-                    </div>
-                    <div className="text-[10px] text-charcoal-light font-mono mt-0.5">
-                      Order ID: <strong>{o.id}</strong> • {o.date || 'Aug 10'}
-                    </div>
-                  </div>
-                  <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase border bg-amber-50 text-amber-950 border-amber-300 shrink-0">
-                    {o.orderSource || o.originType}
-                  </span>
-                </div>
-
-                <div className="p-2.5 rounded-lg bg-surface-lowest border border-surface-border space-y-2 text-xs">
-                  <div className="flex items-center justify-between">
+              return (
+                <div key={o.id} className="p-4 rounded-xl border border-surface-border bg-surface-low space-y-3 shadow-xs">
+                  <div className="flex items-start justify-between gap-2">
                     <div>
-                      <span className="text-[10px] text-charcoal-muted block">Product Purchased</span>
-                      <span className="text-forest-950 font-extrabold">{o.product || o.items}</span>
+                      <div className="font-black text-forest-950 text-sm flex items-center gap-1">
+                        <User className="w-3.5 h-3.5 text-amber-700 shrink-0" />
+                        <span>{o.customer || 'Lalit Panchole'}</span>
+                      </div>
+                      <div className="text-[11px] text-charcoal-muted font-medium flex items-center gap-1 mt-0.5">
+                        <Mail className="w-3 h-3 text-charcoal-light" />
+                        <span>{o.email || 'pancholelalit52@gmail.com'}</span>
+                      </div>
+                      <div className="text-[10px] text-charcoal-light font-mono mt-0.5">
+                        Order ID: <strong>{o.id}</strong> • {o.date || 'Aug 10'}
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <span className="text-[10px] text-charcoal-muted block">Selling Price</span>
-                      <span className="text-base font-black text-forest-950">${price.toFixed(2)}</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-surface-border flex items-center justify-between font-bold">
-                    <span className="text-amber-950">Tennessee State Share (7%):</span>
-                    <span className="text-base font-black text-amber-950 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
-                      ${stateVal.toFixed(2)}
+                    <span className="px-2 py-0.5 rounded text-[10px] font-black uppercase border bg-amber-50 text-amber-950 border-amber-300 shrink-0">
+                      {o.orderSource || o.originType}
                     </span>
                   </div>
-                </div>
 
-                <div className="pt-1 flex justify-end">
-                  <button
-                    onClick={() => updatePayoutStatus(o.id, o.payoutStatus === 'Paid' ? 'Pending' : 'Paid')}
-                    className={`w-full py-2 rounded-lg text-xs font-black shadow-xs transition-all cursor-pointer ${
-                      o.payoutStatus === 'Paid'
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700'
-                        : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
-                    }`}
-                  >
-                    {o.payoutStatus === 'Paid' ? 'Settled to State Treasury' : 'Approve State Payout'}
-                  </button>
+                  <div className="p-2.5 rounded-lg bg-surface-lowest border border-surface-border space-y-2 text-xs">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <span className="text-[10px] text-charcoal-muted block">Product Purchased</span>
+                        <span className="text-forest-950 font-extrabold">{o.product || o.items}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-[10px] text-charcoal-muted block">Selling Price</span>
+                        <span className="text-base font-black text-forest-950">${price.toFixed(2)}</span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-surface-border flex items-center justify-between font-bold">
+                      <span className="text-amber-950">Tennessee State Share (7%):</span>
+                      <span className="text-base font-black text-amber-950 bg-amber-100 px-2 py-0.5 rounded border border-amber-300">
+                        ${stateVal.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="pt-1 flex justify-end">
+                    <button
+                      onClick={() => updatePayoutStatus(o.id, o.payoutStatus === 'Paid' ? 'Pending' : 'Paid')}
+                      className={`w-full py-2 rounded-lg text-xs font-black shadow-xs transition-all cursor-pointer ${
+                        o.payoutStatus === 'Paid'
+                          ? 'bg-emerald-600 text-white hover:bg-emerald-700'
+                          : 'bg-amber-500 text-forest-950 hover:bg-amber-600'
+                      }`}
+                    >
+                      {o.payoutStatus === 'Paid' ? 'Settled to State Treasury' : 'Approve State Payout'}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            }))}
         </div>
 
         {/* DESKTOP TABLE VIEW — Showing ONLY State Share (7%) */}
@@ -381,7 +424,20 @@ export const StateAdminStorePage = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface-border font-medium">
-              {stateOrders.map((o) => {
+              {stateOrders.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-charcoal-muted">
+                    <div className="flex flex-col items-center justify-center gap-1.5">
+                      <ShoppingBag className="w-8 h-8 text-charcoal-light/60" />
+                      <span className="font-extrabold text-sm text-forest-950">No store orders found</span>
+                      <span className="text-xs text-charcoal-muted">
+                        No orders recorded for time range "{dateFilter}".
+                      </span>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                stateOrders.map((o) => {
                 const price = Number(o.sellingPrice || o.total) || 0;
                 const stateVal = Number(o.stateShare) || 0;
 
@@ -449,7 +505,7 @@ export const StateAdminStorePage = () => {
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
