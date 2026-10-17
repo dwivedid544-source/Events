@@ -262,16 +262,33 @@ export const AppProvider = ({ children }) => {
   const [orders, setOrders] = useState(() => {
     const saved = localStorage.getItem('nh_orders_v2');
     const raw = saved ? JSON.parse(saved) : INITIAL_ORDERS;
-    return raw.map((o) => ({
-      ...o,
-      items: o.items || o.item || 'Official Product',
-      item: o.item || o.items || 'Official Product',
-      total: typeof o.total === 'number' ? o.total : (typeof o.amount === 'number' ? o.amount : 0),
-      amount: typeof o.amount === 'number' ? o.amount : (typeof o.total === 'number' ? o.total : 0),
-      paymentStatus: o.paymentStatus || 'Paid',
-      fulfillmentStatus: o.fulfillmentStatus || o.status || 'Delivered',
-      status: o.status || o.fulfillmentStatus || 'Delivered'
-    }));
+
+    const todayStr = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    const twelveDaysAgo = new Date(Date.now() - 12 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+
+    return raw.map((o) => {
+      let orderDate = o.date;
+      if (o.id === 'ORD-9018' && (o.date === 'Aug 07, 2026' || !o.date)) {
+        orderDate = todayStr;
+      } else if (o.id === 'ORD-9015' && (o.date === 'Aug 06, 2026' || !o.date)) {
+        orderDate = twoDaysAgo;
+      } else if (o.id === 'ORD-9012' && (o.date === 'Aug 04, 2026' || !o.date)) {
+        orderDate = twelveDaysAgo;
+      }
+
+      return {
+        ...o,
+        date: orderDate,
+        items: o.items || o.item || 'Official Product',
+        item: o.item || o.items || 'Official Product',
+        total: typeof o.total === 'number' ? o.total : (typeof o.amount === 'number' ? o.amount : 0),
+        amount: typeof o.amount === 'number' ? o.amount : (typeof o.total === 'number' ? o.total : 0),
+        paymentStatus: o.paymentStatus || 'Paid',
+        fulfillmentStatus: o.fulfillmentStatus || o.status || 'Delivered',
+        status: o.status || o.fulfillmentStatus || 'Delivered'
+      };
+    });
   });
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('nh_cart');
