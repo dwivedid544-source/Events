@@ -53,7 +53,7 @@ export const DataTable = ({
     } else if (['PENDING', 'PROCESSING', 'UNDER REVIEW', 'SHIPPED', 'NOT ARRIVED'].includes(s)) {
       colorClass = 'bg-amber-100/80 text-amber-900 border-amber-300';
       dotClass = 'bg-amber-500';
-    } else if (['EXPIRED', 'CANCELLED', 'REJECTED', 'UNPAID'].includes(s)) {
+    } else if (['EXPIRED', 'CANCELLED', 'REJECTED', 'UNPAID', 'INACTIVE', 'UNACTIVE', 'DEACTIVATED'].includes(s)) {
       colorClass = 'bg-red-100/80 text-red-900 border-red-300';
       dotClass = 'bg-red-500';
     } else if (['REGISTRATION OPEN', 'UPCOMING'].includes(s)) {

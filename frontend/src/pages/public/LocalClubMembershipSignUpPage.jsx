@@ -192,11 +192,11 @@ export const LocalClubMembershipSignUpPage = () => {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-surface-border flex items-center justify-between">
-            <span className="text-xs font-black text-forest-950">Total Membership Fee: ${formData.amount.toFixed(2)}</span>
+          <div className="pt-4 border-t border-surface-border flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+            <span className="text-xs font-black text-forest-950 text-center sm:text-left">Total Membership Fee: ${formData.amount.toFixed(2)}</span>
             <button
               type="submit"
-              className="px-6 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow flex items-center gap-2 cursor-pointer transition-all"
+              className="w-full sm:w-auto px-6 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
               <span>Proceed to Online Payment</span>
               <ChevronRight className="w-4 h-4" />
@@ -208,7 +208,7 @@ export const LocalClubMembershipSignUpPage = () => {
       {/* STEP 2: ONLINE PAYMENT FORM */}
       {step === 2 && (
         <form onSubmit={handlePaymentSubmit} className="bg-surface-lowest p-6 sm:p-8 rounded-3xl border border-surface-border shadow-ambient space-y-6">
-          <div className="border-b border-surface-border pb-3 flex items-center justify-between">
+          <div className="border-b border-surface-border pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
             <div>
               <h2 className="text-xl font-black text-forest-950 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-emerald-600" />
@@ -218,7 +218,7 @@ export const LocalClubMembershipSignUpPage = () => {
                 Complete online payment for {formData.name}'s membership under {formData.clubAffiliation}.
               </p>
             </div>
-            <span className="px-3 py-1 bg-emerald-100 text-emerald-900 font-black text-xs rounded-lg border border-emerald-300">
+            <span className="w-fit px-3 py-1 bg-emerald-100 text-emerald-900 font-black text-xs rounded-lg border border-emerald-300">
               Amount Due: ${formData.amount.toFixed(2)}
             </span>
           </div>

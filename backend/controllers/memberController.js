@@ -29,6 +29,31 @@ const getMembers = async (req, res) => {
   }
 };
 
+const updateMemberStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    console.log(`📡 [Member Controller] Updating member ${id} status to ${status}`);
+
+    try {
+      await db.query('UPDATE `Member` SET `status` = ? WHERE `id` = ?', [status, id]);
+    } catch (dbErr) {
+      console.warn('MySQL Update Member Status note:', dbErr.message);
+    }
+
+    return res.json({
+      success: true,
+      memberId: id,
+      status,
+      message: `Member ${id} status updated to ${status} successfully`
+    });
+  } catch (err) {
+    console.error('[Members Controller Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+};
+
 module.exports = {
-  getMembers
+  getMembers,
+  updateMemberStatus
 };

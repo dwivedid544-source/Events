@@ -4,7 +4,7 @@ import { DataTable } from '../../components/common/DataTable';
 import { Key, Shield, UserCheck, RefreshCw } from 'lucide-react';
 
 export const UsersRolesPage = () => {
-  const { users = [], updateUserRole, showToast } = useApp();
+  const { users = [], updateUserRole, updateUserStatus, showToast } = useApp();
 
   const columns = [
     {
@@ -40,7 +40,48 @@ export const UsersRolesPage = () => {
     },
     { header: 'Assigned Scope', accessor: 'scope' },
     { header: 'Last Active', accessor: 'lastActive', render: (r) => <span className="text-[11px] text-charcoal-muted">{r.lastActive || 'Just now'}</span> },
-    { header: 'Account Status', accessor: 'status', isStatus: true }
+    {
+      header: 'Account Status',
+      accessor: 'status',
+      render: (r) => {
+        const currentStatus = r.status || 'Active';
+        const isActive = currentStatus.toLowerCase() === 'active';
+        return (
+          <select
+            value={currentStatus}
+            onChange={(e) => updateUserStatus(r.id, e.target.value)}
+            className={`px-2.5 py-1 text-xs font-black rounded-lg border cursor-pointer transition-colors outline-none ${
+              isActive
+                ? 'bg-emerald-50 text-emerald-800 border-emerald-300'
+                : 'bg-red-50 text-red-800 border-red-300'
+            }`}
+          >
+            <option value="Active">🟢 Active</option>
+            <option value="Inactive">🔴 Inactive</option>
+          </select>
+        );
+      }
+    },
+    {
+      header: 'Quick Action',
+      accessor: 'id',
+      render: (r) => {
+        const isActive = (r.status || 'Active').toLowerCase() === 'active';
+        return (
+          <button
+            onClick={() => updateUserStatus(r.id, isActive ? 'Inactive' : 'Active')}
+            title={isActive ? 'Deactivate user' : 'Activate user'}
+            className={`px-3 py-1 rounded-md text-xs font-black transition-all shadow-sm ${
+              isActive
+                ? 'bg-red-100 text-red-800 hover:bg-red-200 border border-red-300'
+                : 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200 border border-emerald-300'
+            }`}
+          >
+            {isActive ? 'Deactivate' : 'Activate'}
+          </button>
+        );
+      }
+    }
   ];
 
   return (

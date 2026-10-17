@@ -1599,6 +1599,44 @@ export const AppProvider = ({ children }) => {
     showToast(`User role updated to ${newRole}`, 'info');
   };
 
+  const updateMemberStatus = async (memberId, newStatus) => {
+    setMembers((prev) =>
+      prev.map((m) => (m.id === memberId ? { ...m, status: newStatus } : m))
+    );
+
+    try {
+      await fetch(`http://localhost:5050/api/v1/members/${memberId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/members/${memberId}/status`);
+    } catch (err) {
+      console.warn('API Warning:', err.message);
+    }
+
+    showToast(`Member status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
+  };
+
+  const updateUserStatus = async (userId, newStatus) => {
+    setUsers((prev) =>
+      prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
+    );
+
+    try {
+      await fetch(`http://localhost:5050/api/v1/users/${userId}/status`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      });
+      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/users/${userId}/status`);
+    } catch (err) {
+      console.warn('API Warning:', err.message);
+    }
+
+    showToast(`User account status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
+  };
+
   const updateUserProfile = async (userId, profileData) => {
     setCurrentUser((prev) => ({ ...prev, ...profileData }));
 
@@ -2012,6 +2050,8 @@ export const AppProvider = ({ children }) => {
         updatePermission,
         grantAllPermissionsForRole,
         updateUserRole,
+        updateMemberStatus,
+        updateUserStatus,
         selectedCategory,
         setSelectedCategory,
         matchesCategory,

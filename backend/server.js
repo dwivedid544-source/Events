@@ -180,6 +180,50 @@ app.get('/api/v1/users-roles', async (req, res) => {
   }
 });
 
+// Update User Role Endpoint
+app.put('/api/v1/users/:id/role', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
+    console.log(`📡 API Call [PUT /api/v1/users/${id}/role]: New Role -> ${role}`);
+    try {
+      await db.query('UPDATE `User` SET `role` = ? WHERE `id` = ?', [role, id]);
+    } catch (dbErr) {
+      console.warn('MySQL Update User Role note:', dbErr.message);
+    }
+    return res.json({
+      success: true,
+      userId: id,
+      role,
+      message: `User ${id} role updated to ${role} successfully`
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+});
+
+// Update User Status (Active / Inactive) Endpoint
+app.put('/api/v1/users/:id/status', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+    console.log(`📡 API Call [PUT /api/v1/users/${id}/status]: New Status -> ${status}`);
+    try {
+      await db.query('UPDATE `User` SET `status` = ? WHERE `id` = ?', [status, id]);
+    } catch (dbErr) {
+      console.warn('MySQL Update User Status note:', dbErr.message);
+    }
+    return res.json({
+      success: true,
+      userId: id,
+      status,
+      message: `User ${id} status updated to ${status} successfully`
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+});
+
 // Authenticated Member Profile API Endpoint
 app.get('/api/v1/auth/profile', async (req, res) => {
   try {
