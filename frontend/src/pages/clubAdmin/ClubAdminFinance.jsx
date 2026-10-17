@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
   DollarSign,
@@ -10,26 +10,186 @@ import {
   Receipt,
   CheckCircle2,
   CalendarRange,
-  ArrowUpRight
+  ArrowUpRight,
+  ChevronDown
 } from 'lucide-react';
 
 export const ClubAdminFinance = () => {
   const { currentUser } = useApp();
-  const [selectedPeriod, setSelectedPeriod] = useState('August');
+  const months = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
+  const now = new Date();
+  const currentMonthIndex = now.getMonth(); // 9 = October (0-indexed)
+  const currentMonthName = months[currentMonthIndex] || 'October';
+
+  const [selectedPeriod, setSelectedPeriod] = useState(currentMonthName);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const clubName = currentUser?.scope?.split('(')[0]?.trim() || 'Houston County Coon Hunters Association';
 
   // EXACT 5 CATEGORIES SPECIFIED BY CLIENT (+ TOTAL CLUB INCOME)
-  // Benchmark values for August matching client specification:
-  // Memberships: $400, Merchandise: $725, Event Income: $1,100, Fundraisers: $350, UHC Marketplace Commissions: $260, TOTAL: $2,835
-  const financialData = {
-    memberships: 400.00,
-    merchandise: 725.00,
-    eventIncome: 1100.00,
-    fundraisers: 350.00,
-    uhcMarketplaceCommissions: 260.00,
-    totalClubIncome: 2835.00
+  // Past months have completed financial records, October is the current active month,
+  // and future months (November, December) have $0.00 as they have not yet occurred!
+  const monthlyDataMap = {
+    January: {
+      memberships: 320.00,
+      merchandise: 540.00,
+      eventIncome: 750.00,
+      fundraisers: 200.00,
+      uhcMarketplaceCommissions: 180.00,
+      signupsCount: 12,
+      ordersCount: 20,
+      huntEntriesCount: 30
+    },
+    February: {
+      memberships: 350.00,
+      merchandise: 610.00,
+      eventIncome: 850.00,
+      fundraisers: 250.00,
+      uhcMarketplaceCommissions: 210.00,
+      signupsCount: 14,
+      ordersCount: 22,
+      huntEntriesCount: 34
+    },
+    March: {
+      memberships: 410.00,
+      merchandise: 690.00,
+      eventIncome: 980.00,
+      fundraisers: 300.00,
+      uhcMarketplaceCommissions: 240.00,
+      signupsCount: 17,
+      ordersCount: 26,
+      huntEntriesCount: 40
+    },
+    April: {
+      memberships: 450.00,
+      merchandise: 760.00,
+      eventIncome: 1200.00,
+      fundraisers: 380.00,
+      uhcMarketplaceCommissions: 275.00,
+      signupsCount: 18,
+      ordersCount: 29,
+      huntEntriesCount: 48
+    },
+    May: {
+      memberships: 480.00,
+      merchandise: 810.00,
+      eventIncome: 1350.00,
+      fundraisers: 400.00,
+      uhcMarketplaceCommissions: 290.00,
+      signupsCount: 20,
+      ordersCount: 31,
+      huntEntriesCount: 52
+    },
+    June: {
+      memberships: 380.00,
+      merchandise: 680.00,
+      eventIncome: 950.00,
+      fundraisers: 310.00,
+      uhcMarketplaceCommissions: 230.00,
+      signupsCount: 15,
+      ordersCount: 25,
+      huntEntriesCount: 38
+    },
+    July: {
+      memberships: 390.00,
+      merchandise: 710.00,
+      eventIncome: 1020.00,
+      fundraisers: 330.00,
+      uhcMarketplaceCommissions: 245.00,
+      signupsCount: 15,
+      ordersCount: 27,
+      huntEntriesCount: 41
+    },
+    August: {
+      // Benchmark values specified by client
+      memberships: 400.00,
+      merchandise: 725.00,
+      eventIncome: 1100.00,
+      fundraisers: 350.00,
+      uhcMarketplaceCommissions: 260.00,
+      signupsCount: 16,
+      ordersCount: 28,
+      huntEntriesCount: 44
+    },
+    September: {
+      memberships: 520.00,
+      merchandise: 890.00,
+      eventIncome: 1450.00,
+      fundraisers: 420.00,
+      uhcMarketplaceCommissions: 310.00,
+      signupsCount: 21,
+      ordersCount: 34,
+      huntEntriesCount: 58
+    },
+    October: {
+      // Current running month (Month-To-Date)
+      memberships: 425.00,
+      merchandise: 680.00,
+      eventIncome: 1250.00,
+      fundraisers: 350.00,
+      uhcMarketplaceCommissions: 240.00,
+      signupsCount: 17,
+      ordersCount: 27,
+      huntEntriesCount: 50,
+      isCurrent: true
+    },
+    November: {
+      // Future month — No transactions occurred yet ($0.00)
+      memberships: 0.00,
+      merchandise: 0.00,
+      eventIncome: 0.00,
+      fundraisers: 0.00,
+      uhcMarketplaceCommissions: 0.00,
+      signupsCount: 0,
+      ordersCount: 0,
+      huntEntriesCount: 0,
+      isFuture: true
+    },
+    December: {
+      // Future month — No transactions occurred yet ($0.00)
+      memberships: 0.00,
+      merchandise: 0.00,
+      eventIncome: 0.00,
+      fundraisers: 0.00,
+      uhcMarketplaceCommissions: 0.00,
+      signupsCount: 0,
+      ordersCount: 0,
+      huntEntriesCount: 0,
+      isFuture: true
+    }
   };
+
+  const currentMonthData = monthlyDataMap[selectedPeriod] || monthlyDataMap[currentMonthName];
+  const totalClubIncome =
+    currentMonthData.memberships +
+    currentMonthData.merchandise +
+    currentMonthData.eventIncome +
+    currentMonthData.fundraisers +
+    currentMonthData.uhcMarketplaceCommissions;
+
+  const financialData = {
+    ...currentMonthData,
+    totalClubIncome
+  };
+
+  const isSelectedFuture = months.indexOf(selectedPeriod) > currentMonthIndex;
+  const isSelectedCurrent = months.indexOf(selectedPeriod) === currentMonthIndex;
 
   return (
     <div className="space-y-8">
@@ -48,15 +208,117 @@ export const ClubAdminFinance = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 bg-forest-900/90 border border-forest-800 p-1.5 rounded-2xl">
-            <CalendarRange className="w-4 h-4 text-tan-400 ml-2" />
-            <span className="text-xs font-black text-tan-200">Reporting Period:</span>
-            <span className="px-3 py-1 bg-tan-500 text-forest-950 text-xs font-black rounded-xl">
-              {selectedPeriod} 2026
-            </span>
+          {/* Interactive Month Selector / Calendar Dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="flex items-center gap-2 bg-forest-900/90 hover:bg-forest-800 border border-forest-700/80 p-2 rounded-2xl transition-all shadow-lg cursor-pointer group"
+              title="Click to select reporting month"
+              aria-label="Select Reporting Month"
+            >
+              <div className="p-1.5 rounded-xl bg-tan-500/20 text-tan-400 group-hover:bg-tan-500 group-hover:text-forest-950 transition-colors">
+                <CalendarRange className="w-4 h-4" />
+              </div>
+              <span className="text-xs font-black text-tan-200">Reporting Period:</span>
+              <span className="px-3 py-1 bg-tan-500 text-forest-950 text-xs font-black rounded-xl flex items-center gap-1.5 shadow-xs">
+                <span>{selectedPeriod} 2026</span>
+                {isSelectedCurrent && (
+                  <span className="text-[9px] font-black bg-forest-950 text-tan-300 px-1.5 py-0.2 rounded-full uppercase">
+                    Current
+                  </span>
+                )}
+                {isSelectedFuture && (
+                  <span className="text-[9px] font-black bg-amber-900 text-amber-200 px-1.5 py-0.2 rounded-full uppercase">
+                    Upcoming
+                  </span>
+                )}
+                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+              </span>
+            </button>
+
+            {/* Dropdown Month Picker Grid */}
+            {isDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-surface-lowest text-charcoal rounded-2xl border border-surface-border shadow-2xl p-4 z-50 animate-fade-in">
+                <div className="flex items-center justify-between pb-3 border-b border-surface-border mb-3">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-tan-700" />
+                    <span className="text-xs font-black text-forest-950">Select Reporting Month</span>
+                  </div>
+                  <span className="text-[10px] font-extrabold px-2 py-0.5 rounded bg-tan-100 text-tan-900 border border-tan-300">
+                    2026 Season
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {months.map((m, idx) => {
+                    const isSelected = selectedPeriod === m;
+                    const isFuture = idx > currentMonthIndex;
+                    const isCurrent = idx === currentMonthIndex;
+
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setSelectedPeriod(m);
+                          setIsDropdownOpen(false);
+                        }}
+                        className={`relative py-2.5 px-2 rounded-xl transition-all cursor-pointer text-center flex flex-col items-center justify-center gap-0.5 ${
+                          isSelected
+                            ? 'bg-tan-500 text-forest-950 font-black shadow-md scale-[1.02]'
+                            : isFuture
+                            ? 'bg-surface-low/50 text-charcoal-muted hover:bg-surface-low border border-dashed border-surface-border'
+                            : 'bg-surface-low text-charcoal hover:bg-tan-50 hover:text-forest-900 border border-surface-border'
+                        }`}
+                      >
+                        <span className="text-xs font-bold">{m}</span>
+                        {isCurrent && (
+                          <span className={`text-[8px] font-black uppercase px-1.5 py-0.2 rounded-full ${
+                            isSelected ? 'bg-forest-950 text-tan-300' : 'bg-emerald-100 text-emerald-800'
+                          }`}>
+                            Current
+                          </span>
+                        )}
+                        {isFuture && (
+                          <span className="text-[8px] font-bold uppercase text-charcoal-light">
+                            Upcoming
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-surface-border flex items-center justify-between text-[11px] text-charcoal-muted">
+                  <span>Current: <strong>{currentMonthName} 2026</strong></span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPeriod(currentMonthName);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="text-xs text-tan-800 hover:text-tan-900 font-extrabold hover:underline cursor-pointer"
+                  >
+                    Jump to Current ({currentMonthName.slice(0, 3)})
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
+
+      {/* Upcoming Period Informational Banner */}
+      {isSelectedFuture && (
+        <div className="bg-amber-50 border border-amber-300 text-amber-950 rounded-2xl p-4 flex items-center gap-3 shadow-xs animate-fade-in">
+          <CalendarRange className="w-5 h-5 text-amber-700 shrink-0" />
+          <div className="text-xs">
+            <span className="font-extrabold">Upcoming Reporting Period ({selectedPeriod} 2026): </span>
+            This is a future period. No financial transactions or dues have taken place yet, so revenue is currently recorded as <strong>$0.00</strong>. Income will automatically record once {selectedPeriod} 2026 begins.
+          </div>
+        </div>
+      )}
 
       {/* 5 CATEGORY CARDS + TOTAL CLUB INCOME CARD */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -81,8 +343,8 @@ export const ClubAdminFinance = () => {
           </div>
 
           <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs text-charcoal-muted font-bold">
-            <span>Period: {selectedPeriod}</span>
-            <span className="text-emerald-800 font-black">16 Active Sign-Ups</span>
+            <span>Period: {selectedPeriod} 2026</span>
+            <span className="text-emerald-800 font-black">{financialData.signupsCount || 16} Active Sign-Ups</span>
           </div>
         </div>
 
@@ -107,8 +369,8 @@ export const ClubAdminFinance = () => {
           </div>
 
           <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs text-charcoal-muted font-bold">
-            <span>Period: {selectedPeriod}</span>
-            <span className="text-emerald-800 font-black">28 Store Orders</span>
+            <span>Period: {selectedPeriod} 2026</span>
+            <span className="text-emerald-800 font-black">{financialData.ordersCount || 28} Store Orders</span>
           </div>
         </div>
 
@@ -133,8 +395,8 @@ export const ClubAdminFinance = () => {
           </div>
 
           <div className="pt-3 border-t border-surface-border flex items-center justify-between text-xs text-charcoal-muted font-bold">
-            <span>Period: {selectedPeriod}</span>
-            <span className="text-emerald-800 font-black">44 Hunt Entries</span>
+            <span>Period: {selectedPeriod} 2026</span>
+            <span className="text-emerald-800 font-black">{financialData.huntEntriesCount || 44} Hunt Entries</span>
           </div>
         </div>
 
@@ -211,7 +473,7 @@ export const ClubAdminFinance = () => {
           </div>
 
           <div className="pt-3 border-t border-forest-800 flex items-center justify-between text-xs text-tan-300 font-bold">
-            <span>Example for {selectedPeriod}</span>
+            <span>Reporting for {selectedPeriod} 2026</span>
             <span className="text-tan-400 font-black">100% Fully Reconciled</span>
           </div>
         </div>
@@ -242,7 +504,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.memberships.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.memberships / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.memberships / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -253,7 +517,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.merchandise.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.merchandise / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.merchandise / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -264,7 +530,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.eventIncome.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.eventIncome / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.eventIncome / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -275,7 +543,9 @@ export const ClubAdminFinance = () => {
                   ${financialData.fundraisers.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.fundraisers / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.fundraisers / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
@@ -286,18 +556,22 @@ export const ClubAdminFinance = () => {
                   ${financialData.uhcMarketplaceCommissions.toFixed(2)}
                 </td>
                 <td className="p-3.5 text-right text-charcoal-muted font-mono font-bold">
-                  {((financialData.uhcMarketplaceCommissions / financialData.totalClubIncome) * 100).toFixed(1)}%
+                  {financialData.totalClubIncome > 0
+                    ? ((financialData.uhcMarketplaceCommissions / financialData.totalClubIncome) * 100).toFixed(1)
+                    : '0.0'}%
                 </td>
               </tr>
 
               {/* TOTAL ROW */}
               <tr className="bg-forest-950 text-white font-black text-sm">
                 <td className="p-4 uppercase tracking-wider text-tan-300">TOTAL CLUB INCOME</td>
-                <td className="p-4 text-xs font-normal text-tan-200">Reconciled cumulative total for {selectedPeriod}</td>
+                <td className="p-4 text-xs font-normal text-tan-200">Reconciled cumulative total for {selectedPeriod} 2026</td>
                 <td className="p-4 text-right text-emerald-400 text-base">
                   ${financialData.totalClubIncome.toFixed(2)}
                 </td>
-                <td className="p-4 text-right text-tan-300 font-mono">100.0%</td>
+                <td className="p-4 text-right text-tan-300 font-mono">
+                  {financialData.totalClubIncome > 0 ? '100.0%' : '0.0%'}
+                </td>
               </tr>
             </tbody>
           </table>
