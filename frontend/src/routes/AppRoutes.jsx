@@ -61,6 +61,8 @@ import { EventPaymentsPage } from '../pages/eventAdmin/EventPaymentsPage';
 
 // National Admin Pages
 import { NationalAdminDashboard } from '../pages/nationalAdmin/NationalAdminDashboard';
+import { NationalAdminStates } from '../pages/nationalAdmin/NationalAdminStates';
+import { NationalAdminClubs } from '../pages/nationalAdmin/NationalAdminClubs';
 import { NationalAdminStorePage } from '../pages/admin/NationalAdminStorePage';
 
 // Super Admin Pages
@@ -191,8 +193,8 @@ export const AppRoutes = () => {
         {/* Role 5: National Admin Portal (13 entries) */}
         <Route path="/national-admin" element={<NationalAdminDashboard />} />
         <Route path="/national-admin/events" element={<ClubAdminEvents />} />
-        <Route path="/national-admin/states" element={<StateAdminClubs />} />
-        <Route path="/national-admin/clubs" element={<StateAdminClubs />} />
+        <Route path="/national-admin/states" element={<NationalAdminStates />} />
+        <Route path="/national-admin/clubs" element={<NationalAdminClubs />} />
         <Route path="/national-admin/members" element={<ClubAdminMembers />} />
         <Route path="/national-admin/news" element={<NewsManagementPage />} />
         <Route path="/national-admin/results" element={<PublicResultsPage />} />
