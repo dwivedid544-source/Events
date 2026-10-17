@@ -29,7 +29,7 @@ const getFinancialOverview = (req, res) => {
 
   const baseMembership = 940.00;
   const baseEvents = 5901.75;
-  const baseMerchandise = 0.00;
+  const baseMerchandise = 2129.97;
   const baseFundraising = 1850.00;
   const baseDonations = 1250.00;
 

@@ -27,7 +27,7 @@ import {
 export const PublicStatePage = () => {
   const { stateId } = useParams();
   const location = useLocation();
-  const { states, clubs, events, products, news, results, addToCart, showToast, submitClaimRequest } = useApp();
+  const { states, clubs, events, products, news, results, addToCart, showToast, submitClaimRequest, getStateCms } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [organizationFilter, setOrganizationFilter] = useState('All');
@@ -110,7 +110,9 @@ export const PublicStatePage = () => {
 
   // Data scoped to selected State
   const stateData = currentState || states[0];
-  const stateTitle = stateData.name.includes('Association') ? stateData.name : `${stateData.name} State Association`;
+  const cleanStateName = (stateData.name || 'Tennessee').replace(/\s*(State\s*)?Association.*$/i, '').trim();
+  const stateTitle = stateData.name.includes('Association') ? stateData.name : `${cleanStateName} State Association`;
+  const stateCms = getStateCms ? getStateCms(stateData.id || stateData.code || cleanStateName || stateData.name) : {};
   const stateClubs = clubs.filter((c) => c.state === stateData.name || c.stateCode === stateData.code || c.stateId === stateData.id);
   const stateEvents = events.filter((e) => e.state === stateData.name || e.stateCode === stateData.code || e.stateId === stateData.id);
 
@@ -290,6 +292,30 @@ export const PublicStatePage = () => {
   // -------------------------------------------------------------
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-8 space-y-8">
+      {/* 📢 CMS Header Announcement Ticker (If Enabled) */}
+      {stateCms?.enableBanner && stateCms?.announcementBanner && (
+        <div className="p-3.5 sm:p-4 bg-gradient-to-r from-forest-950 via-forest-900 to-forest-950 text-white rounded-2xl border-2 border-tan-500/50 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-3 min-w-0">
+            <span className="relative flex h-2.5 w-2.5 shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-tan-400"></span>
+            </span>
+            <span className="px-2.5 py-0.5 rounded text-[10px] font-black uppercase bg-tan-500 text-forest-950 shrink-0 shadow-sm">
+              {stateCms.bannerBadge || 'STATE ALERT'}
+            </span>
+            <span className="font-extrabold text-tan-100 tracking-wide truncate">{stateCms.announcementBanner}</span>
+          </div>
+          {stateCms.bannerLink && (
+            <Link
+              to={stateCms.bannerLink}
+              className="text-[11px] font-black text-tan-300 hover:text-white underline self-start sm:self-auto shrink-0 transition-colors"
+            >
+              View Details →
+            </Link>
+          )}
+        </div>
+      )}
+
       {/* Hierarchy Breadcrumbs */}
       <div className="flex items-center gap-2 text-xs font-bold text-charcoal-muted">
         <Link to="/" className="hover:text-forest-950 transition-colors">National</Link>
@@ -334,15 +360,15 @@ export const PublicStatePage = () => {
               <div className="flex flex-wrap items-center gap-4 text-xs text-tan-200 font-medium pt-1">
                 <div className="flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5 text-tan-400" />
-                  <span>(800) 555-0192</span>
+                  <span>{stateCms?.contactInfo?.match(/Phone:\s*([^\s|]+)/)?.[1] || '(800) 555-0192'}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Mail className="w-3.5 h-3.5 text-tan-400" />
-                  <span>contact@{stateData.code.toLowerCase()}hunting.org</span>
+                  <span>{stateCms?.contactInfo?.match(/Email:\s*([^\s|]+)/)?.[1] || `contact@${stateData.code.toLowerCase()}hunting.org`}</span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <MapPin className="w-3.5 h-3.5 text-tan-400" />
-                  <span>State Headquarters, {stateData.name}</span>
+                  <span>{stateCms?.contactInfo?.match(/Headquarters:\s*([^|]+)/)?.[1]?.trim() || `State Headquarters, ${stateData.name}`}</span>
                 </div>
               </div>
             </div>
@@ -422,38 +448,49 @@ export const PublicStatePage = () => {
       </nav>
 
       {/* SECTION 1: HOME */}
-      <section id="home" className="space-y-6">
-        <div className="bg-surface-lowest p-6 sm:p-8 rounded-2xl border border-surface-border shadow-ambient space-y-4">
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-tan-100 text-tan-900">
-              Welcome to {stateTitle}
-            </span>
+      <section id="home" className="space-y-6 scroll-mt-28">
+        {/* Visual Hero Banner with CMS Image & Titles */}
+        <div className="relative rounded-3xl overflow-hidden shadow-2xl border-2 border-tan-500/30">
+          <img
+            src={stateCms?.heroImage || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=1200&auto=format&fit=crop&q=80'}
+            alt="Hero Banner"
+            className="w-full h-64 sm:h-80 lg:h-96 object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-forest-950 via-forest-950/75 to-transparent flex flex-col justify-end p-6 sm:p-10 text-white space-y-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-tan-500 text-forest-950 w-max shadow-sm tracking-wider">
+                Official Sanctioned State Charter
+              </span>
+              <span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase bg-forest-900/80 text-tan-200 border border-forest-700/60 hidden sm:inline">
+                {cleanStateName} Coonhounds & Field Trials
+              </span>
+            </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-white leading-tight">
+              {stateCms?.heroTitle || `Official Public Portal of ${stateTitle}`}
+            </h2>
+            <p className="text-xs sm:text-sm text-tan-200 max-w-2xl font-medium leading-relaxed">
+              {stateCms?.heroSubtitle || stateData.description ||
+                `The ${stateTitle} is the governing state charter responsible for sanctioning field trials, coonhound night hunts, beagle pack trials, and state championships across ${cleanStateName}.`}
+            </p>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-black text-forest-950">
-            Official Public Portal of {stateTitle}
-          </h2>
-          <p className="text-xs sm:text-sm text-charcoal leading-relaxed font-medium">
-            {stateData.description ||
-              `The ${stateTitle} is the governing state charter responsible for sanctioning field trials, coonhound night hunts, beagle pack trials, and state championships across ${stateData.name}.`}
-          </p>
         </div>
       </section>
 
       {/* SECTION 2: ABOUT */}
-      <section id="about" className="space-y-6">
+      <section id="about" className="space-y-6 scroll-mt-28">
         <div className="bg-surface-lowest p-6 sm:p-8 rounded-2xl border border-surface-border shadow-ambient space-y-4">
           <h2 className="text-xl sm:text-2xl font-black text-forest-800 flex items-center gap-2">
             <Info className="w-5 h-5 text-tan-600" />
             <span>About {stateTitle}</span>
           </h2>
           <p className="text-xs sm:text-sm text-charcoal leading-relaxed font-medium">
-            Founded to advance ethical sporting dog trials, wildlife preservation, and youth education programs. {stateTitle} provides leadership to affiliated local clubs and enforces national sanctioning rules.
+            {stateCms?.aboutContent || `Founded to advance ethical sporting dog trials, wildlife preservation, and youth education programs. ${stateTitle} provides leadership to affiliated local clubs and enforces national sanctioning rules.`}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-surface-border text-xs font-medium">
             <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
               <strong className="block font-black text-forest-950 text-sm">Our Mission</strong>
-              <p className="text-charcoal-muted">Promoting ethical sporting hound competition, state championship qualifications, and hunter education across {stateData.name}.</p>
+              <p className="text-charcoal-muted">Promoting ethical sporting hound competition, state championship qualifications, and hunter education across {cleanStateName}.</p>
             </div>
             <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
               <strong className="block font-black text-forest-950 text-sm">State Charter Governance</strong>
@@ -464,7 +501,7 @@ export const PublicStatePage = () => {
       </section>
 
       {/* SECTION 3: STATE NEWS FEED */}
-      <section id="news" className="space-y-6">
+      <section id="news" className="space-y-6 scroll-mt-28">
         <div className="bg-surface-lowest p-6 sm:p-8 rounded-3xl border border-surface-border shadow-ambient space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-surface-border pb-4 gap-4">
             <div>
@@ -481,7 +518,7 @@ export const PublicStatePage = () => {
                 <span>{stateTitle} Official News Feed</span>
               </h2>
               <p className="text-xs text-charcoal-muted mt-0.5">
-                Controlled directly by the {stateData.name} State Association officers and board.
+                Controlled directly by the {stateTitle} officers and board.
               </p>
             </div>
 

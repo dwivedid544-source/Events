@@ -216,22 +216,65 @@ async function setupMySQL() {
       ON DUPLICATE KEY UPDATE \`name\`='Lalit Panchole';
     `);
 
-    // Seed State Associations
+    // Seed State Associations (All 50 US States)
     const states = [
-      ['tx', 'Texas Hound Association', 'TX', 'UKC,PKC', 'Austin Sterling', 54, 3920, 7, 245000],
       ['al', 'Alabama State Association', 'AL', 'UKC', 'Marcus Vance', 15, 950, 4, 45000],
       ['ak', 'Alaska State Association', 'AK', 'PKC', 'Cody Campbell', 8, 420, 2, 18000],
       ['az', 'Arizona State Association', 'AZ', 'UKC,PKC', 'Frank Reynolds', 18, 1100, 5, 62000],
       ['ar', 'Arkansas State Association', 'AR', 'UKC', 'Dominic Rossi', 36, 2240, 6, 115000],
       ['ca', 'California State Association', 'CA', 'PKC', 'Elena Rostova', 31, 1980, 5, 98000],
-      ['tn', 'Tennessee State Association', 'TN', 'UKC,PKC', 'Robert Miller', 42, 2890, 8, 185000]
+      ['co', 'Colorado State Association', 'CO', 'PKC', 'Colorado Admin', 20, 1300, 6, 85000],
+      ['ct', 'Connecticut State Association', 'CT', 'UKC', 'Connecticut Admin', 12, 750, 4, 48000],
+      ['de', 'Delaware State Association', 'DE', 'PKC', 'Delaware Admin', 9, 520, 3, 35000],
+      ['fl', 'Florida State Association', 'FL', 'UKC,PKC', 'Carlos Mendez', 27, 1760, 8, 122000],
+      ['ga', 'Georgia State Association', 'GA', 'UKC,PKC', 'Georgia Admin', 33, 2200, 10, 148000],
+      ['hi', 'Hawaii State Association', 'HI', 'UKC', 'Hawaii Admin', 5, 310, 2, 22000],
+      ['id', 'Idaho State Association', 'ID', 'PKC', 'Idaho Admin', 16, 980, 5, 67000],
+      ['il', 'Illinois State Association', 'IL', 'UKC,PKC', 'Illinois Admin', 36, 2350, 12, 158000],
+      ['in', 'Indiana State Association', 'IN', 'UKC,PKC', 'Indiana Admin', 34, 2250, 11, 152000],
+      ['ia', 'Iowa State Association', 'IA', 'UKC', 'Iowa Admin', 25, 1600, 8, 105000],
+      ['ks', 'Kansas State Association', 'KS', 'PKC', 'Kansas Admin', 21, 1400, 7, 90000],
+      ['ky', 'Kentucky State Association', 'KY', 'UKC,PKC', 'Thomas Shelby', 38, 2190, 11, 142100],
+      ['la', 'Louisiana State Association', 'LA', 'UKC,PKC', 'Louisiana Admin', 26, 1700, 8, 115000],
+      ['me', 'Maine State Association', 'ME', 'UKC', 'Maine Admin', 14, 880, 4, 58000],
+      ['md', 'Maryland State Association', 'MD', 'PKC', 'Maryland Admin', 19, 1200, 6, 82000],
+      ['ma', 'Massachusetts State Association', 'MA', 'UKC', 'Massachusetts Admin', 15, 960, 5, 64000],
+      ['mi', 'Michigan State Association', 'MI', 'UKC,PKC', 'Michigan Admin', 40, 2600, 13, 175000],
+      ['mn', 'Minnesota State Association', 'MN', 'UKC', 'Minnesota Admin', 28, 1800, 9, 120000],
+      ['ms', 'Mississippi State Association', 'MS', 'UKC,PKC', 'Mississippi Admin', 23, 1500, 7, 98000],
+      ['mo', 'Missouri State Association', 'MO', 'UKC,PKC', 'Missouri Admin', 35, 2300, 11, 155000],
+      ['mt', 'Montana State Association', 'MT', 'PKC', 'Montana Admin', 13, 820, 4, 54000],
+      ['ne', 'Nebraska State Association', 'NE', 'UKC', 'Nebraska Admin', 17, 1050, 5, 70000],
+      ['nv', 'Nevada State Association', 'NV', 'PKC', 'Nevada Admin', 11, 680, 4, 45000],
+      ['nh', 'New Hampshire State Association', 'NH', 'UKC', 'New Hampshire Admin', 10, 600, 3, 40000],
+      ['nj', 'New Jersey State Association', 'NJ', 'PKC', 'New Jersey Admin', 20, 1250, 6, 84000],
+      ['nm', 'New Mexico State Association', 'NM', 'UKC', 'New Mexico Admin', 14, 890, 4, 59000],
+      ['ny', 'New York State Association', 'NY', 'UKC,PKC', 'Dominic Rossi', 24, 1540, 7, 110000],
+      ['nc', 'North Carolina State Association', 'NC', 'UKC,PKC', 'Lucas Scott', 35, 2410, 14, 165000],
+      ['nd', 'North Dakota State Association', 'ND', 'PKC', 'North Dakota Admin', 9, 540, 3, 36000],
+      ['oh', 'Ohio State Association', 'OH', 'UKC,PKC', 'Jack Crawford', 48, 3120, 16, 205000],
+      ['ok', 'Oklahoma State Association', 'OK', 'UKC,PKC', 'Oklahoma Admin', 24, 1550, 7, 102000],
+      ['or', 'Oregon State Association', 'OR', 'UKC', 'Oregon Admin', 19, 1220, 6, 81000],
+      ['pa', 'Pennsylvania State Association', 'PA', 'UKC,PKC', 'Pennsylvania Admin', 37, 2450, 12, 162000],
+      ['ri', 'Rhode Island State Association', 'RI', 'UKC', 'Rhode Island Admin', 6, 380, 2, 25000],
+      ['sc', 'South Carolina State Association', 'SC', 'UKC,PKC', 'South Carolina Admin', 28, 1820, 9, 121000],
+      ['sd', 'South Dakota State Association', 'SD', 'PKC', 'South Dakota Admin', 11, 690, 4, 46000],
+      ['tn', 'Tennessee State Association', 'TN', 'UKC,PKC', 'Sarah Tennessee', 42, 2890, 8, 185000],
+      ['tx', 'Texas Hound Association', 'TX', 'UKC,PKC', 'Austin Sterling', 54, 3920, 7, 245000],
+      ['ut', 'Utah State Association', 'UT', 'PKC', 'Utah Admin', 15, 970, 5, 66000],
+      ['vt', 'Vermont State Association', 'VT', 'UKC', 'Vermont Admin', 8, 490, 3, 33000],
+      ['va', 'Virginia State Association', 'VA', 'UKC,PKC', 'Rachel Green', 29, 1850, 8, 118400],
+      ['wa', 'Washington State Association', 'WA', 'UKC', 'Washington Admin', 22, 1420, 7, 94000],
+      ['wv', 'West Virginia State Association', 'WV', 'UKC,PKC', 'West Virginia Admin', 21, 1380, 6, 91000],
+      ['wi', 'Wisconsin State Association', 'WI', 'UKC,PKC', 'Wisconsin Admin', 32, 2100, 10, 140000],
+      ['wy', 'Wyoming State Association', 'WY', 'PKC', 'Wyoming Admin', 10, 610, 3, 41000]
     ];
 
     for (const s of states) {
       await connection.query(
         `INSERT INTO \`StateAssociation\` (\`id\`, \`name\`, \`code\`, \`organizations\`, \`adminName\`, \`clubsCount\`, \`membersCount\`, \`eventsCount\`, \`revenue\`)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-         ON DUPLICATE KEY UPDATE \`name\`=VALUES(\`name\`), \`organizations\`=VALUES(\`organizations\`);`,
+         ON DUPLICATE KEY UPDATE \`name\`=VALUES(\`name\`), \`code\`=VALUES(\`code\`), \`organizations\`=VALUES(\`organizations\`), \`adminName\`=VALUES(\`adminName\`), \`clubsCount\`=VALUES(\`clubsCount\`), \`membersCount\`=VALUES(\`membersCount\`), \`eventsCount\`=VALUES(\`eventsCount\`), \`revenue\`=VALUES(\`revenue\`);`,
         s
       );
     }

@@ -42,10 +42,61 @@ export const AppProvider = ({ children }) => {
     return INITIAL_USERS[0];
   });
 
+  // Sync currentUser with localStorage
+  useEffect(() => {
+    if (currentUser) {
+      try {
+        localStorage.setItem('nh_currentUser', JSON.stringify(currentUser));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [currentUser]);
+
   const [backendConnected, setBackendConnected] = useState(false);
   const [states, setStates] = useState(INITIAL_STATES);
-  const [clubs, setClubs] = useState(INITIAL_CLUBS);
-  const [events, setEvents] = useState(INITIAL_EVENTS);
+  const [clubs, setClubs] = useState(() => {
+    const saved = localStorage.getItem('nh_clubs');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return INITIAL_CLUBS;
+  });
+  const [events, setEvents] = useState(() => {
+    const saved = localStorage.getItem('nh_events');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const map = new Map();
+          INITIAL_EVENTS.forEach((e) => map.set(e.id, e));
+          return parsed.map((e) => {
+            const fallback = map.get(e.id) || INITIAL_EVENTS[0];
+            return {
+              ...fallback,
+              ...e,
+              deadline: (e.deadline && String(e.deadline).trim()) ? e.deadline : (fallback.deadline || 'Sep 18, 2026'),
+              address: (e.address && String(e.address).trim()) ? e.address : (fallback.address || '1420 Hunting Ridge Rd, Knoxville, TN 37901'),
+              description: (e.description && String(e.description).trim()) ? e.description : (fallback.description || 'Annual night coon hunt and treeing championship. UKC rules apply. Trophies for top 5 hounds. Mandatory tracking collars required for all casts.'),
+              startTime: (e.startTime && String(e.startTime).trim()) ? e.startTime : (fallback.startTime || '7:00 PM'),
+              fee: Number(e.fee !== undefined ? e.fee : (fallback.fee || 30)),
+              maxCapacity: Number(e.maxCapacity !== undefined ? e.maxCapacity : (fallback.maxCapacity || 50))
+            };
+          });
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
+    return INITIAL_EVENTS;
+  });
 
   useEffect(() => {
     // 1. Health check & Active API Connections
@@ -60,8 +111,16 @@ export const AppProvider = ({ children }) => {
           fetch('http://localhost:5050/api/v1/states')
             .then((r) => r.json())
             .then((resData) => {
-              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                setStates(resData.data);
+              if (resData.success && Array.isArray(resData.data)) {
+                if (resData.data.length >= 50) {
+                  setStates(resData.data);
+                } else if (resData.data.length > 0) {
+                  // Merge with INITIAL_STATES so all 50 states are guaranteed to be present
+                  const map = new Map();
+                  INITIAL_STATES.forEach((s) => map.set(s.code.toUpperCase(), s));
+                  resData.data.forEach((s) => map.set(s.code.toUpperCase(), { ...map.get(s.code.toUpperCase()), ...s }));
+                  setStates(Array.from(map.values()));
+                }
               }
             })
             .catch((e) => console.warn('Failed fetching states API:', e));
@@ -81,7 +140,26 @@ export const AppProvider = ({ children }) => {
             .then((r) => r.json())
             .then((resData) => {
               if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                setEvents(resData.data);
+                const map = new Map();
+                INITIAL_EVENTS.forEach((e) => map.set(e.id, e));
+
+                const normalized = resData.data.map((evt) => {
+                  const fallback = map.get(evt.id) || {};
+                  return {
+                    ...fallback,
+                    ...evt,
+                    deadline: evt.deadline || fallback.deadline || 'Sep 18, 2026',
+                    address: evt.address || fallback.address || '1420 Hunting Ridge Rd, Knoxville, TN 37901',
+                    description: evt.description || fallback.description || 'Annual night coon hunt and treeing championship. UKC rules apply. Trophies for top 5 hounds.',
+                    startTime: evt.startTime || fallback.startTime || '7:00 PM',
+                    fee: Number(evt.fee !== undefined ? evt.fee : (fallback.fee || 30)),
+                    maxCapacity: Number(evt.maxCapacity !== undefined ? evt.maxCapacity : (fallback.maxCapacity || 50)),
+                    entries: evt.entriesCount !== undefined ? evt.entriesCount : (evt.entries || fallback.entries || 0),
+                    entriesCount: evt.entriesCount !== undefined ? evt.entriesCount : (evt.entries || fallback.entriesCount || 0)
+                  };
+                });
+                setEvents(normalized);
+                localStorage.setItem('nh_events', JSON.stringify(normalized));
               }
             })
             .catch((e) => console.warn('Failed fetching events API:', e));
@@ -223,13 +301,20 @@ export const AppProvider = ({ children }) => {
   const [members, setMembers] = useState(() => {
     const saved = localStorage.getItem('nh_members');
     if (saved) {
-      const parsed = JSON.parse(saved);
-      const cleaned = parsed.filter((m) => !dummyNames.includes(m.name) && !['mem-1', 'mem-2', 'mem-3', 'mem-4', 'mem-5'].includes(m.id));
-      const lalitExists = cleaned.some((m) => m.email && m.email.toLowerCase() === 'pancholelalit52@gmail.com');
-      if (!lalitExists) {
-        return [INITIAL_MEMBERS[0], ...cleaned];
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          const map = new Map();
+          INITIAL_MEMBERS.forEach((m) => map.set(m.id, m));
+          parsed.forEach((m) => {
+            const existing = map.get(m.id);
+            map.set(m.id, { ...existing, ...m });
+          });
+          return Array.from(map.values());
+        }
+      } catch (e) {
+        // ignore
       }
-      return cleaned.length > 0 ? cleaned : INITIAL_MEMBERS;
     }
     return INITIAL_MEMBERS;
   });
@@ -277,13 +362,15 @@ export const AppProvider = ({ children }) => {
         orderDate = twelveDaysAgo;
       }
 
+      const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
       return {
         ...o,
         date: orderDate,
         items: o.items || o.item || 'Official Product',
         item: o.item || o.items || 'Official Product',
-        total: typeof o.total === 'number' ? o.total : (typeof o.amount === 'number' ? o.amount : 0),
-        amount: typeof o.amount === 'number' ? o.amount : (typeof o.total === 'number' ? o.total : 0),
+        sellingPrice: orderAmount,
+        total: orderAmount,
+        amount: orderAmount,
         paymentStatus: o.paymentStatus || 'Paid',
         fulfillmentStatus: o.fulfillmentStatus || o.status || 'Delivered',
         status: o.status || o.fulfillmentStatus || 'Delivered'
@@ -355,6 +442,113 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('nh_votes');
     return saved ? JSON.parse(saved) : [];
   });
+
+  // CMS State Map for State Association and National portals
+  const [stateCmsMap, setStateCmsMap] = useState(() => {
+    const saved = localStorage.getItem('nh_stateCmsMap');
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.warn('Failed parsing nh_stateCmsMap from localStorage:', e);
+      }
+    }
+    return {
+      tn: {
+        heroTitle: 'Official Sanctioned Field Trials & Nite Hunts',
+        heroSubtitle: 'Connecting coonhound owners, state associations, and UKC chartered clubs nationwide across Tennessee.',
+        announcementBanner: '2026 Fall National Championship entries are now officially open!',
+        aboutContent: 'Welcome to the sanctioned Tennessee State Association portal. We preserve competitive hunting traditions with transparent scoring, digital event entries, and live leaderboard tracking.',
+        contactInfo: 'Email: contact@tnhunting.org | Phone: (865) 555-0192 | Headquarters: Nashville, TN',
+        enableBanner: true,
+        bannerBadge: 'NATIONAL ALERT',
+        bannerLink: '/events',
+        heroImage: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=1200&auto=format&fit=crop&q=80',
+        lastPublished: 'Oct 17, 2026, 3:45 PM'
+      },
+      tx: {
+        heroTitle: 'Official Sanctioned Field Trials & Nite Hunts',
+        heroSubtitle: 'Connecting coonhound owners, state associations, and UKC chartered clubs nationwide across Texas.',
+        announcementBanner: '2026 Lone Star State Championship pre-registration is open!',
+        aboutContent: 'Welcome to the sanctioned Texas Hound Association portal. We preserve competitive hunting traditions with transparent scoring, digital event entries, and live leaderboard tracking.',
+        contactInfo: 'Email: director@txhunting.org | Phone: (800) 555-0192 | Headquarters: Austin, TX',
+        enableBanner: true,
+        bannerBadge: 'STATE CHAMPIONSHIP',
+        bannerLink: '/events',
+        heroImage: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=1200&auto=format&fit=crop&q=80',
+        lastPublished: 'Oct 17, 2026, 2:15 PM'
+      },
+      national: {
+        heroTitle: 'Official Sanctioned Field Trials & Nite Hunts',
+        heroSubtitle: 'Connecting coonhound owners, state associations, and UKC chartered clubs nationwide.',
+        announcementBanner: '2026 Fall National Championship entries are now officially open!',
+        aboutContent: 'Welcome to the sanctioned state & national association portal. We preserve competitive hunting traditions with transparent scoring, digital event entries, and live leaderboard tracking.',
+        contactInfo: 'Email: support@nationalhunting.org | Phone: (865) 555-0192',
+        enableBanner: true,
+        bannerBadge: 'NATIONAL ALERT',
+        bannerLink: '/events',
+        heroImage: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=1200&auto=format&fit=crop&q=80',
+        lastPublished: 'Oct 17, 2026, 1:00 PM'
+      }
+    };
+  });
+
+  const getStateCms = (stateKey) => {
+    const rawKey = (stateKey || 'tn').toString().toLowerCase().trim();
+    if (stateCmsMap[rawKey]) return stateCmsMap[rawKey];
+    if ((rawKey.includes('tenn') || rawKey === 'tn') && stateCmsMap['tn']) return stateCmsMap['tn'];
+    if ((rawKey.includes('tex') || rawKey === 'tx') && stateCmsMap['tx']) return stateCmsMap['tx'];
+    if (stateCmsMap['national'] && rawKey.includes('nat')) return stateCmsMap['national'];
+
+    const twoLetter = rawKey.substring(0, 2);
+    if (stateCmsMap[twoLetter]) return stateCmsMap[twoLetter];
+
+    return {
+      heroTitle: 'Official Sanctioned Field Trials & Nite Hunts',
+      heroSubtitle: `Connecting coonhound owners, state associations, and UKC chartered clubs in ${stateKey || 'State'}.`,
+      announcementBanner: '2026 Fall Championship entries are now officially open!',
+      aboutContent: `Welcome to the official state association portal for ${stateKey || 'our State'}. We preserve competitive hunting traditions with transparent scoring, digital event entries, and live leaderboard tracking.`,
+      contactInfo: `Email: contact@${twoLetter}hunting.org | Phone: (800) 555-0192`,
+      enableBanner: true,
+      bannerBadge: 'STATE ALERT',
+      bannerLink: '/events',
+      heroImage: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=1200&auto=format&fit=crop&q=80',
+      lastPublished: 'Oct 17, 2026'
+    };
+  };
+
+  const updateStateCms = (stateKey, updatedData) => {
+    let key = (stateKey || 'tn').toString().toLowerCase().trim();
+    if (key.includes('tenn') || key === 'tn') key = 'tn';
+    else if (key.includes('tex') || key === 'tx') key = 'tx';
+    else if (key.includes('nat')) key = 'national';
+    else key = key.substring(0, 2);
+
+    const timestamp = new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }) + ', ' + new Date().toLocaleTimeString('en-US', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+
+    const newCmsObj = {
+      ...updatedData,
+      lastPublished: timestamp
+    };
+
+    setStateCmsMap((prev) => {
+      const updated = {
+        ...prev,
+        [key]: newCmsObj
+      };
+      localStorage.setItem('nh_stateCmsMap', JSON.stringify(updated));
+      return updated;
+    });
+
+    return newCmsObj;
+  };
 
   const castVote = async ({ electionId, positionId, candidateId, userEmail }) => {
     const existing = votes.find(
@@ -517,15 +711,26 @@ export const AppProvider = ({ children }) => {
     return searchTarget.includes(catLower);
   };
 
-  // Toast system
+  // Toast system with duplicate suppression
   const [toasts, setToasts] = useState([]);
 
   const showToast = (message, type = 'success') => {
-    const id = Date.now();
-    setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    if (!message) return;
+    setToasts((prev) => {
+      // Suppress duplicate toasts if identical notification already exists
+      if (prev.some((t) => t.message === message)) {
+        return prev;
+      }
+      const id = Date.now() + Math.random();
+      setTimeout(() => {
+        setToasts((current) => current.filter((t) => t.id !== id));
+      }, 3500);
+      return [...prev, { id, message, type }];
+    });
+  };
+
+  const removeToast = (id) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   };
 
   // Sync state to localstorage
@@ -1109,17 +1314,28 @@ export const AppProvider = ({ children }) => {
   // 3. Mobile Event Check-in Action (Connected to Backend API)
   const toggleCheckIn = async (entryId) => {
     let targetStatus = '';
-    setEntries((prev) =>
-      prev.map((item) => {
+    let targetParticipant = '';
+
+    setEntries((prev) => {
+      const next = prev.map((item) => {
         if (item.id === entryId) {
           const newStatus = item.checkInStatus === 'Checked In' ? 'Not Arrived' : 'Checked In';
           targetStatus = newStatus;
-          showToast(`Entry #${entryId} ${item.participant} status set to: ${newStatus}`, newStatus === 'Checked In' ? 'success' : 'info');
+          targetParticipant = item.participant || 'Participant';
           return { ...item, checkInStatus: newStatus };
         }
         return item;
-      })
-    );
+      });
+      localStorage.setItem('nh_entries', JSON.stringify(next));
+      return next;
+    });
+
+    if (targetStatus) {
+      showToast(
+        `Entry #${entryId} ${targetParticipant} status set to: ${targetStatus}`,
+        targetStatus === 'Checked In' ? 'success' : 'info'
+      );
+    }
 
     try {
       await fetch(`http://localhost:5050/api/v1/events/entries/${entryId}/check-in`, {
@@ -1133,32 +1349,140 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const updateEntry = async (entryId, updatedFields) => {
+    let updatedItem = null;
+    setEntries((prev) => {
+      const next = prev.map((item) => {
+        if (item.id === entryId) {
+          updatedItem = { ...item, ...updatedFields };
+          return updatedItem;
+        }
+        return item;
+      });
+      localStorage.setItem('nh_entries', JSON.stringify(next));
+      return next;
+    });
+
+    if (updatedFields.paymentStatus) {
+      showToast(`Entry #${entryId} payment marked as ${updatedFields.paymentStatus}`, 'success');
+    } else if (updatedFields.checkInStatus) {
+      showToast(`Entry #${entryId} check-in set to ${updatedFields.checkInStatus}`, 'info');
+    } else {
+      showToast(`Entry #${entryId} updated successfully`, 'success');
+    }
+
+    try {
+      await fetch(`http://localhost:5050/api/v1/events/entries/${entryId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFields)
+      });
+    } catch (err) {
+      console.warn('API Warning on updateEntry:', err.message);
+    }
+
+    return updatedItem;
+  };
+
+  const deleteEntry = async (entryId) => {
+    setEntries((prev) => {
+      const next = prev.filter((item) => item.id !== entryId);
+      localStorage.setItem('nh_entries', JSON.stringify(next));
+      return next;
+    });
+    showToast(`Entry #${entryId} deleted`, 'info');
+  };
+
+  const addManualEntry = async (entryData) => {
+    const newEntryId = entryData.id || `E${Math.floor(1000 + Math.random() * 9000)}`;
+    const newEntry = {
+      id: newEntryId,
+      eventId: entryData.eventId || 'evt-1',
+      eventName: entryData.eventName || 'Nite Hunt & Treeing Contest',
+      club: entryData.club || 'Oak Ridge Hunting Club',
+      participant: entryData.participant || 'New Participant',
+      participantEmail: entryData.participantEmail || 'member@hunting.org',
+      dog: entryData.dog || 'Hunter',
+      date: entryData.date || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      fee: Number(entryData.fee) || 35,
+      paymentStatus: entryData.paymentStatus || 'Paid',
+      entryStatus: entryData.entryStatus || 'Confirmed',
+      checkInStatus: entryData.checkInStatus || 'Not Arrived',
+      result: 'Pending'
+    };
+
+    setEntries((prev) => {
+      const next = [newEntry, ...prev];
+      localStorage.setItem('nh_entries', JSON.stringify(next));
+      return next;
+    });
+
+    showToast(`Added new entry #${newEntryId} for ${newEntry.participant}!`, 'success');
+    return newEntry;
+  };
+
+  // Club Profile & CMS Update Action
+  const updateClub = async (clubId, updatedFields) => {
+    let target = null;
+    setClubs((prev) => {
+      const next = prev.map((c) => {
+        if (c.id === clubId || c.name === clubId) {
+          target = { ...c, ...updatedFields };
+          return target;
+        }
+        return c;
+      });
+      localStorage.setItem('nh_clubs', JSON.stringify(next));
+      return next;
+    });
+
+    try {
+      await fetch(`http://localhost:5050/api/v1/clubs/${clubId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedFields)
+      });
+    } catch (err) {
+      console.warn('API Warning on updateClub:', err.message);
+    }
+
+    return target;
+  };
+
   // 4. Create Event Action
   const createEvent = async (newEventData) => {
     const created = {
-      id: `evt-${Date.now()}`,
+      id: newEventData.id || `evt-${Date.now()}`,
       name: newEventData.name,
+      federation: newEventData.federation || 'UKC (United Kennel Club)',
       sport: newEventData.sport || 'Coonhounds',
       type: newEventData.type || 'Nite Hunt',
       club: newEventData.club || 'Oak Ridge Hunting Club',
+      clubId: newEventData.clubId || 'club-1',
       state: newEventData.state || 'Tennessee',
+      stateCode: newEventData.stateCode || (newEventData.state === 'Tennessee' ? 'TN' : 'TN'),
       city: newEventData.city || 'Knoxville',
       date: newEventData.date || 'October 15, 2026',
       startTime: newEventData.startTime || '7:00 PM',
       deadline: newEventData.deadline || 'Oct 14, 2026',
       fee: Number(newEventData.fee) || 30,
-      entries: 0,
+      entries: Number(newEventData.entriesCount !== undefined ? newEventData.entriesCount : (newEventData.entries || 0)),
+      entriesCount: Number(newEventData.entriesCount !== undefined ? newEventData.entriesCount : (newEventData.entries || 0)),
       maxCapacity: Number(newEventData.maxCapacity) || 50,
       paidEntries: 0,
       pendingEntries: 0,
       checkedIn: 0,
-      status: 'Registration Open',
-      distance: '18 miles away',
+      status: newEventData.status || 'Registration Open',
+      distance: newEventData.distance || '18 miles away',
       address: newEventData.address || '1420 Hunting Ridge Rd, Knoxville, TN',
-      description: newEventData.description || 'New hunt event created by administrator.'
+      description: newEventData.description || 'Sanctioned hunt event.'
     };
 
-    setEvents((prev) => [created, ...prev]);
+    setEvents((prev) => {
+      const next = [created, ...prev];
+      localStorage.setItem('nh_events', JSON.stringify(next));
+      return next;
+    });
 
     try {
       await fetch('http://localhost:5050/api/v1/events', {
@@ -1172,10 +1496,15 @@ export const AppProvider = ({ children }) => {
     }
 
     showToast(`Event "${created.name}" published successfully!`, 'success');
+    return created;
   };
 
   const deleteEvent = async (eventId) => {
-    setEvents((prev) => prev.filter((e) => e.id !== eventId));
+    setEvents((prev) => {
+      const next = prev.filter((e) => e.id !== eventId);
+      localStorage.setItem('nh_events', JSON.stringify(next));
+      return next;
+    });
 
     try {
       await fetch(`http://localhost:5050/api/v1/events/${eventId}`, {
@@ -1192,7 +1521,24 @@ export const AppProvider = ({ children }) => {
 
   const updateEvent = async (eventId, updatedData) => {
     const targetId = eventId || updatedData.id || 'evt-1';
-    setEvents((prev) => prev.map((e) => (e.id === targetId || e.name === updatedData.name ? { ...e, ...updatedData } : e)));
+    setEvents((prev) => {
+      const next = prev.map((e) => {
+        if (e.id === targetId || e.name === updatedData.name) {
+          const merged = { ...e, ...updatedData };
+          if (updatedData.entriesCount !== undefined) {
+            merged.entries = Number(updatedData.entriesCount);
+            merged.entriesCount = Number(updatedData.entriesCount);
+          } else if (updatedData.entries !== undefined) {
+            merged.entries = Number(updatedData.entries);
+            merged.entriesCount = Number(updatedData.entries);
+          }
+          return merged;
+        }
+        return e;
+      });
+      localStorage.setItem('nh_events', JSON.stringify(next));
+      return next;
+    });
 
     try {
       await fetch(`http://localhost:5050/api/v1/events/${targetId}`, {
@@ -1205,7 +1551,7 @@ export const AppProvider = ({ children }) => {
       console.warn('API Warning:', err.message);
     }
 
-    showToast(`Updated configuration for event: "${updatedData.name}"`, 'success');
+    showToast(`Updated event: "${updatedData.name || targetId}"`, 'success');
   };
 
   // 5. Add / Edit Dog Action
@@ -1647,6 +1993,75 @@ export const AppProvider = ({ children }) => {
     showToast(`Member status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
   };
 
+  const updateMember = async (memberId, updatedData) => {
+    setMembers((prev) => {
+      const next = prev.map((m) => (m.id === memberId ? { ...m, ...updatedData } : m));
+      localStorage.setItem('nh_members', JSON.stringify(next));
+      return next;
+    });
+
+    try {
+      await fetch(`http://localhost:5050/api/v1/members/${memberId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updatedData)
+      });
+      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/members/${memberId}`);
+    } catch (err) {
+      console.warn('API Warning:', err.message);
+    }
+
+    showToast(`Updated member record for "${updatedData.name || memberId}"!`, 'success');
+  };
+
+  const deleteMember = async (memberId) => {
+    setMembers((prev) => {
+      const next = prev.filter((m) => m.id !== memberId);
+      localStorage.setItem('nh_members', JSON.stringify(next));
+      return next;
+    });
+
+    try {
+      await fetch(`http://localhost:5050/api/v1/members/${memberId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      console.log(`📡 API Call Success: DELETE http://localhost:5050/api/v1/members/${memberId}`);
+    } catch (err) {
+      console.warn('API Warning:', err.message);
+    }
+
+    showToast('Member removed from association registry', 'info');
+  };
+
+  const renewMember = async (memberId) => {
+    const nextYear = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', {
+      month: 'short',
+      day: '2-digit',
+      year: 'numeric'
+    });
+
+    let renewedName = '';
+    setMembers((prev) => {
+      const next = prev.map((m) => {
+        if (m.id === memberId) {
+          renewedName = m.name;
+          return {
+            ...m,
+            status: 'Active',
+            isRenewalDue: false,
+            expires: nextYear
+          };
+        }
+        return m;
+      });
+      localStorage.setItem('nh_members', JSON.stringify(next));
+      return next;
+    });
+
+    showToast(`Membership successfully renewed for ${renewedName || 'member'}! Active through ${nextYear}.`, 'success');
+  };
+
   const updateUserStatus = async (userId, newStatus) => {
     setUsers((prev) =>
       prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
@@ -2058,6 +2473,7 @@ export const AppProvider = ({ children }) => {
         permissions,
         toasts,
         showToast,
+        removeToast,
         switchRole,
         updateUserProfile,
         loginUser,
@@ -2067,6 +2483,9 @@ export const AppProvider = ({ children }) => {
         registerLocalClubMembership,
         enterEvent,
         toggleCheckIn,
+        updateEntry,
+        deleteEntry,
+        addManualEntry,
         createEvent,
         updateEvent,
         deleteEvent,
@@ -2080,11 +2499,18 @@ export const AppProvider = ({ children }) => {
         grantAllPermissionsForRole,
         updateUserRole,
         updateMemberStatus,
+        updateMember,
+        deleteMember,
+        renewMember,
         updateUserStatus,
         selectedCategory,
         setSelectedCategory,
         matchesCategory,
         backendConnected,
+        stateCmsMap,
+        getStateCms,
+        updateStateCms,
+        updateClub,
         backendApiUrl: 'http://localhost:5050/api/v1'
       }}
     >

@@ -5,6 +5,7 @@ const clubController = require('../controllers/clubController');
 router.get('/', clubController.getClubs);
 router.post('/claims', clubController.createClaimRequest);
 router.get('/:id', clubController.getClubById);
+router.put('/:id', clubController.updateClub);
 router.post('/:id/donations/pledge', clubController.pledgeClubDonation);
 
 module.exports = router;

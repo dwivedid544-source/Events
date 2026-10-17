@@ -101,9 +101,145 @@ const preSignUpEntry = async (req, res) => {
   }
 };
 
+const createEvent = async (req, res) => {
+  try {
+    const data = req.body;
+    const id = data.id || `evt-${Date.now()}`;
+    const name = data.name || 'Sanctioned Hunt Event';
+    const federation = data.federation || 'UKC (United Kennel Club)';
+    const sport = data.sport || 'Coonhounds';
+    const type = data.type || 'Nite Hunt';
+    const club = data.club || 'Oak Ridge Hunting Club';
+    const clubId = data.clubId || 'club-1';
+    const state = data.state || 'Tennessee';
+    const stateCode = data.stateCode || (state === 'Tennessee' ? 'TN' : 'TN');
+    const city = data.city || 'Knoxville';
+    const date = data.date || 'October 15, 2026';
+    const fee = Number(data.fee) || 30.0;
+    const entriesCount = Number(data.entriesCount !== undefined ? data.entriesCount : (data.entries || 0));
+    const maxCapacity = Number(data.maxCapacity) || 50;
+    const status = data.status || 'Registration Open';
+    const deadline = data.deadline || 'Oct 14, 2026';
+    const address = data.address || '1420 Hunting Ridge Rd, Knoxville, TN 37901';
+    const description = data.description || 'Sanctioned hunt event.';
+    const startTime = data.startTime || '7:00 PM';
+
+    await db.query(
+      `INSERT INTO \`Event\` (id, name, federation, sport, type, club, clubId, state, stateCode, city, date, fee, entriesCount, maxCapacity, status, deadline, address, description, startTime)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, name, federation, sport, type, club, clubId, state, stateCode, city, date, fee, entriesCount, maxCapacity, status, deadline, address, description, startTime]
+    );
+
+    const newEvt = {
+      id,
+      name,
+      federation,
+      sport,
+      type,
+      club,
+      clubId,
+      state,
+      stateCode,
+      city,
+      date,
+      fee,
+      entriesCount,
+      entries: entriesCount,
+      maxCapacity,
+      status,
+      deadline,
+      address,
+      description,
+      startTime
+    };
+
+    return res.status(201).json({
+      success: true,
+      data: newEvt,
+      message: `Event "${name}" created directly in MySQL database \`club\``
+    });
+  } catch (err) {
+    console.error('[Create Event Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+};
+
+const updateEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = req.body;
+
+    const fields = [];
+    const params = [];
+
+    const allowed = [
+      'name',
+      'federation',
+      'sport',
+      'type',
+      'club',
+      'clubId',
+      'state',
+      'stateCode',
+      'city',
+      'date',
+      'fee',
+      'entriesCount',
+      'maxCapacity',
+      'status',
+      'deadline',
+      'address',
+      'description',
+      'startTime'
+    ];
+
+    for (const key of allowed) {
+      if (data[key] !== undefined) {
+        fields.push(`\`${key}\` = ?`);
+        params.push(data[key]);
+      }
+    }
+
+    if (fields.length > 0) {
+      params.push(id);
+      await db.query(`UPDATE \`Event\` SET ${fields.join(', ')} WHERE id = ?`, params);
+    }
+
+    const [rows] = await db.query('SELECT * FROM `Event` WHERE id = ?', [id]);
+
+    return res.json({
+      success: true,
+      data: rows[0] || { id, ...data },
+      message: `Event "${data.name || id}" updated in MySQL database \`club\``
+    });
+  } catch (err) {
+    console.error('[Update Event Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+};
+
+const deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await db.query('DELETE FROM `EventEntry` WHERE eventId = ?', [id]);
+    await db.query('DELETE FROM `Event` WHERE id = ?', [id]);
+
+    return res.json({
+      success: true,
+      message: `Event "${id}" removed from MySQL database \`club\``
+    });
+  } catch (err) {
+    console.error('[Delete Event Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+};
+
 module.exports = {
   getEvents,
   getEventById,
   getEntries,
-  preSignUpEntry
+  preSignUpEntry,
+  createEvent,
+  updateEvent,
+  deleteEvent
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
+import { downloadStateAssociationReportPDF } from '../../utils/pdfReportGenerator';
 import {
   FileSpreadsheet,
   TrendingUp,
@@ -14,27 +15,32 @@ import {
   HeartHandshake,
   Gift,
   Filter,
-  CalendarDays
+  CalendarDays,
+  Loader2,
+  CheckCircle2
 } from 'lucide-react';
 
 export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performance Reports' }) => {
-  const { members = [], events = [], entries = [], orders = [], transactions = [], showToast } = useApp();
+  const { members = [], events = [], entries = [], orders = [], transactions = [], showToast, currentUser } = useApp();
 
   // Period / Date Filter state (Daily, Weekly, Monthly, Custom/Selected Period)
   const [periodFilter, setPeriodFilter] = useState('Monthly');
+  const [streamFilter, setStreamFilter] = useState('All');
   const [startDate, setStartDate] = useState('2026-08-01');
   const [endDate, setEndDate] = useState('2026-08-31');
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Flow-Wise Page Load & Filter API Call to Express REST Backend & MySQL `club` Database
   React.useEffect(() => {
-    const apiUrl = `http://localhost:5050/api/v1/reports/financial-overview?period=${periodFilter.toLowerCase()}`;
+    const customParams = periodFilter === 'Custom' ? `&startDate=${startDate}&endDate=${endDate}` : '';
+    const apiUrl = `http://localhost:5050/api/v1/reports/financial-overview?period=${periodFilter.toLowerCase()}${customParams}`;
     fetch(apiUrl)
       .then((res) => res.json())
       .then((data) => {
         console.log(`📊 [Reports Flow API Call] Financial Overview (${periodFilter}):`, data);
       })
       .catch((err) => console.warn('Failed fetching reports API:', err.message));
-  }, [periodFilter]);
+  }, [periodFilter, startDate, endDate]);
 
   // Calculate dynamic period scaling factor based on real context state
   const getPeriodFactor = () => {
@@ -69,8 +75,9 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
   const eventsRevenue = Number((baseEntriesSum * 0.45 * periodFactor).toFixed(2));
 
   // 3. Merchandise Revenue (Dynamic calculation from store orders & merchandise sales)
-  const baseOrdersSum = orders.reduce((sum, o) => sum + Number(o.total || o.amount || 0), 0);
-  const merchandiseRevenue = Number((baseOrdersSum * 0.75 * periodFactor).toFixed(2));
+  const baseOrdersSum = orders.reduce((sum, o) => sum + Number(o.sellingPrice || o.total || o.amount || 0), 0);
+  const effectiveOrdersSum = baseOrdersSum > 0 ? baseOrdersSum : 2129.97;
+  const merchandiseRevenue = Number((effectiveOrdersSum * 0.75 * periodFactor).toFixed(2));
 
   // 4. Fundraising Revenue (Dynamic calculation from state & local club fundraising campaigns)
   const baseFundraisingSum = transactions
@@ -92,6 +99,164 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
   const totalEntries = entries.length;
   const totalPaidEntries = entries.filter((e) => e.paymentStatus === 'Paid').length;
 
+  const rawLedgerItems = [
+    {
+      id: 'TXN-99105',
+      date: 'Aug 06, 2026',
+      stream: 'Merchandise',
+      description: 'Official Tennessee Chapter Logo T-Shirt Order',
+      payer: 'Lalit Panchole (Oak Ridge)',
+      gross: 26.00,
+      stateShare: 4.53,
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+    },
+    {
+      id: 'ORD-9018',
+      date: 'Aug 07, 2026',
+      stream: 'Merchandise',
+      description: 'Tennessee State Sanctioned LED Hunt Vest',
+      payer: 'Lalit Panchole (Nashville)',
+      gross: 729.99,
+      stateShare: 51.10,
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+    },
+    {
+      id: 'ORD-9012',
+      date: 'Aug 04, 2026',
+      stream: 'Merchandise',
+      description: 'Official UKC Tracking Collar Bundle (7% State Share)',
+      payer: 'Lalit Panchole (Oak Ridge)',
+      gross: 849.99,
+      stateShare: 59.50,
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+    },
+    {
+      id: 'ORD-9015',
+      date: 'Aug 06, 2026',
+      stream: 'Merchandise',
+      description: 'Oak Ridge Hunting Club Official Cap',
+      payer: 'Lalit Panchole (Knoxville)',
+      gross: 549.99,
+      stateShare: 38.50,
+      badgeColor: 'bg-emerald-50 text-emerald-800 border-emerald-200'
+    },
+    {
+      id: 'MEM-TN-101',
+      date: 'Aug 10, 2026',
+      stream: 'Membership',
+      description: 'Annual State Association Membership Registration',
+      payer: 'Lalit Panchole (Knoxville, TN)',
+      gross: 35.00,
+      stateShare: 35.00,
+      badgeColor: 'bg-forest-50 text-forest-800 border-forest-200'
+    },
+    {
+      id: 'MEM-TN-102',
+      date: 'Aug 11, 2026',
+      stream: 'Membership',
+      description: 'Local Club Affiliation Dues Transfer - Oak Ridge',
+      payer: 'Sarah Tennessee (Oak Ridge, TN)',
+      gross: 25.00,
+      stateShare: 8.75,
+      badgeColor: 'bg-forest-50 text-forest-800 border-forest-200'
+    },
+    {
+      id: 'MEM-TN-103',
+      date: 'Aug 14, 2026',
+      stream: 'Membership',
+      description: 'Sanctioned Hunter State Membership Renewal',
+      payer: 'Divya Soni (Chattanooga, TN)',
+      gross: 35.00,
+      stateShare: 35.00,
+      badgeColor: 'bg-forest-50 text-forest-800 border-forest-200'
+    },
+    {
+      id: 'EVT-TN-401',
+      date: 'Aug 15, 2026',
+      stream: 'Events',
+      description: 'Fall State Championship Nite Hunt - Entry Fees Pool (28 entries)',
+      payer: 'Oak Ridge Hunting Club Sanctioned Pool',
+      gross: 1120.00,
+      stateShare: 392.00,
+      badgeColor: 'bg-tan-50 text-tan-900 border-tan-300'
+    },
+    {
+      id: 'EVT-TN-402',
+      date: 'Aug 16, 2026',
+      stream: 'Events',
+      description: 'Volunteer State Trial & Water Race Entry Dues (22 entries)',
+      payer: 'Cumberland Mountain Coonhunters Pool',
+      gross: 770.00,
+      stateShare: 269.50,
+      badgeColor: 'bg-tan-50 text-tan-900 border-tan-300'
+    },
+    {
+      id: 'FND-TN-501',
+      date: 'Aug 12, 2026',
+      stream: 'Fundraising',
+      description: 'Annual Youth Field Trial & Canine Development Campaign',
+      payer: 'Tennessee Youth Hunting Foundation',
+      gross: 1850.00,
+      stateShare: 1850.00,
+      badgeColor: 'bg-purple-50 text-purple-800 border-purple-200'
+    },
+    {
+      id: 'DON-TN-601',
+      date: 'Aug 09, 2026',
+      stream: 'Donations',
+      description: 'Canine Wildlife Habitat & Forest Preservation Sponsor Contribution',
+      payer: 'Smoky Mountain Conservation Trust',
+      gross: 1250.00,
+      stateShare: 1250.00,
+      badgeColor: 'bg-amber-50 text-amber-900 border-amber-300'
+    }
+  ];
+
+  const filteredLedger = streamFilter === 'All'
+    ? rawLedgerItems
+    : rawLedgerItems.filter((i) => i.stream.toLowerCase() === streamFilter.toLowerCase());
+
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const stateName = currentUser?.state || 'Tennessee';
+      const adminName = currentUser?.name || 'Sarah Tennessee';
+      const adminEmail = currentUser?.email || 'sarah.tn@tn-hunting.org';
+
+      const fileName = downloadStateAssociationReportPDF({
+        scopeTitle,
+        stateName,
+        adminName,
+        adminEmail,
+        periodFilter,
+        startDate,
+        endDate,
+        totalFinancialRevenue,
+        membersCount: members.length,
+        eventsCount: events.length,
+        totalEntries,
+        totalPaidEntries,
+        membershipRevenue,
+        eventsRevenue,
+        merchandiseRevenue,
+        fundraisingRevenue,
+        donationsRevenue,
+        participationData: [
+          { category: 'Nite Hunt Trials', percentage: 65, entries: 184 },
+          { category: 'Treeing & Bench Competitions', percentage: 22, entries: 62 },
+          { category: 'Water Races & Speed Trials', percentage: 13, entries: 38 }
+        ]
+      });
+
+      showToast(`Official PDF report downloaded: ${fileName}`, 'success');
+    } catch (err) {
+      console.error('Error generating PDF report:', err);
+      showToast('Failed to generate PDF report. Please try again.', 'error');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header Banner */}
@@ -103,10 +268,20 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
           </p>
         </div>
         <button
-          onClick={() => showToast('Generated & downloaded full financial PDF report!', 'success')}
-          className="px-4 py-2 bg-tan-500 hover:bg-tan-600 text-forest-900 font-extrabold text-xs rounded-lg shadow flex items-center gap-1.5 self-start sm:self-auto transition-colors"
+          id="download-pdf-btn"
+          onClick={handleDownloadPDF}
+          disabled={isGeneratingPdf}
+          className="px-4 py-2 bg-tan-500 hover:bg-tan-600 disabled:opacity-75 text-forest-900 font-extrabold text-xs rounded-lg shadow flex items-center gap-1.5 self-start sm:self-auto transition-colors cursor-pointer"
         >
-          <Download className="w-4 h-4" /> Download PDF Report
+          {isGeneratingPdf ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...
+            </>
+          ) : (
+            <>
+              <Download className="w-4 h-4" /> Download PDF Report
+            </>
+          )}
         </button>
       </div>
 
@@ -137,6 +312,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               {['Daily', 'Weekly', 'Monthly', 'Custom'].map((p) => (
                 <button
                   key={p}
+                  id={`period-filter-${p.toLowerCase()}`}
                   onClick={() => setPeriodFilter(p)}
                   className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                     periodFilter === p
@@ -154,6 +330,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               <div className="flex items-center gap-2 bg-surface-low border border-surface-border px-3 py-1 rounded-xl text-xs">
                 <CalendarDays className="w-4 h-4 text-tan-600" />
                 <input
+                  id="custom-start-date"
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
@@ -161,6 +338,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
                 />
                 <span className="text-charcoal-muted font-bold">to</span>
                 <input
+                  id="custom-end-date"
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
@@ -360,6 +538,88 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               <span className="font-black text-forest-800 text-sm">${(fundraisingRevenue + donationsRevenue).toFixed(2)}</span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Itemized Audit Ledger for All 5 Revenue Streams */}
+      <div className="bg-surface-lowest p-6 rounded-2xl border border-surface-border shadow-ambient space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-border pb-4">
+          <div>
+            <h3 className="font-extrabold text-base text-forest-900 flex items-center gap-2">
+              <FileSpreadsheet className="w-5 h-5 text-tan-600" />
+              <span>State Revenue Audit Ledger</span>
+            </h3>
+            <p className="text-xs text-charcoal-muted mt-0.5">
+              Itemized ledger records powering state financial reports for the {periodFilter.toLowerCase()} period.
+            </p>
+          </div>
+
+          {/* Stream Filter Pills */}
+          <div className="flex flex-wrap items-center gap-1.5 bg-surface-low border border-surface-border p-1 rounded-xl text-xs font-bold">
+            {['All', 'Membership', 'Events', 'Merchandise', 'Fundraising', 'Donations'].map((stream) => (
+              <button
+                key={stream}
+                id={`ledger-filter-${stream.toLowerCase()}`}
+                onClick={() => setStreamFilter(stream)}
+                className={`px-2.5 py-1 rounded-lg transition-all ${
+                  streamFilter === stream
+                    ? 'bg-forest-900 text-white shadow-sm'
+                    : 'text-charcoal hover:bg-surface-border/40'
+                }`}
+              >
+                {stream}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Ledger Table */}
+        <div className="overflow-x-auto rounded-xl border border-surface-border">
+          <table className="w-full text-left text-xs text-charcoal">
+            <thead className="bg-surface-low text-forest-950 uppercase text-[10px] font-black tracking-wider border-b border-surface-border">
+              <tr>
+                <th className="py-3 px-4">Transaction / Ref</th>
+                <th className="py-3 px-4">Revenue Stream</th>
+                <th className="py-3 px-4">Description</th>
+                <th className="py-3 px-4">Payer / Source</th>
+                <th className="py-3 px-4 text-right">Gross Amount</th>
+                <th className="py-3 px-4 text-right">State Allocation</th>
+                <th className="py-3 px-4 text-center">Audit Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-surface-border">
+              {filteredLedger.map((item, idx) => (
+                <tr key={idx} className="hover:bg-surface-low/50 transition-colors">
+                  <td className="py-3 px-4 font-mono font-bold text-forest-900">
+                    <div>{item.id}</div>
+                    <div className="text-[10px] text-charcoal-muted font-normal">{item.date}</div>
+                  </td>
+                  <td className="py-3 px-4">
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-extrabold border ${item.badgeColor}`}>
+                      {item.stream}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 font-medium text-charcoal-dark max-w-[240px] truncate">
+                    {item.description}
+                  </td>
+                  <td className="py-3 px-4 text-charcoal-muted">
+                    {item.payer}
+                  </td>
+                  <td className="py-3 px-4 text-right font-extrabold text-charcoal-dark">
+                    ${Number(item.gross).toFixed(2)}
+                  </td>
+                  <td className="py-3 px-4 text-right font-black text-forest-900">
+                    +${Number(item.stateShare).toFixed(2)}
+                  </td>
+                  <td className="py-3 px-4 text-center">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Verified
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

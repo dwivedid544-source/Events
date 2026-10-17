@@ -7,9 +7,14 @@ export const PublicResultsPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStateFilter, setSelectedStateFilter] = useState('ALL');
 
+  const selectedStateObj = states.find(
+    (s) => s.code?.toUpperCase() === selectedStateFilter.toUpperCase() || s.name === selectedStateFilter || s.id === selectedStateFilter
+  );
+
   const filteredResults = results.filter((r) => {
     const q = searchTerm.toLowerCase();
     const matchesSearch =
+      !searchTerm ||
       (r.eventName && r.eventName.toLowerCase().includes(q)) ||
       (r.owner && r.owner.toLowerCase().includes(q)) ||
       (r.participant && r.participant.toLowerCase().includes(q)) ||
@@ -17,7 +22,19 @@ export const PublicResultsPage = () => {
       (r.dog && r.dog.toLowerCase().includes(q)) ||
       (r.club && r.club.toLowerCase().includes(q));
 
-    const matchesState = selectedStateFilter === 'ALL' || r.state === selectedStateFilter || r.stateCode === selectedStateFilter;
+    if (selectedStateFilter === 'ALL') return matchesSearch;
+
+    const rState = (r.state || '').toLowerCase();
+    const rCode = (r.stateCode || '').toUpperCase();
+    const filterCode = selectedStateFilter.toUpperCase();
+    const rawFilterName = (selectedStateObj?.name || selectedStateFilter).toLowerCase();
+    const filterNameClean = rawFilterName.replace('state association', '').replace('hound association', '').trim();
+
+    const matchesState =
+      rCode === filterCode ||
+      rState === rawFilterName ||
+      rState === filterCode.toLowerCase() ||
+      (filterNameClean.length > 2 && (rState.includes(filterNameClean) || filterNameClean.includes(rState)));
 
     return matchesSearch && matchesState;
   });
@@ -49,18 +66,21 @@ export const PublicResultsPage = () => {
             />
           </div>
 
-          <div className="w-full sm:w-56">
+          <div className="w-full sm:w-64">
             <select
               value={selectedStateFilter}
               onChange={(e) => setSelectedStateFilter(e.target.value)}
-              className="w-full px-3.5 py-3 text-xs bg-surface-lowest border border-surface-border rounded-xl font-bold text-charcoal focus:border-tan-500 cursor-pointer"
+              className="w-full px-3.5 py-3 text-xs bg-surface-lowest border border-surface-border rounded-xl font-bold text-charcoal focus:border-tan-500 cursor-pointer shadow-sm"
             >
-              <option value="ALL">All 50 States</option>
-              {states.map((s) => (
-                <option key={s.id} value={s.name}>
-                  {s.name} ({s.code})
-                </option>
-              ))}
+              <option value="ALL">All 50 States ({states.length} Active Charters)</option>
+              {states
+                .slice()
+                .sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+                .map((s) => (
+                  <option key={s.id || s.code} value={s.code}>
+                    {s.name.includes('Association') ? s.name : `${s.name} State Association`} ({s.code})
+                  </option>
+                ))}
             </select>
           </div>
         </div>
@@ -69,47 +89,75 @@ export const PublicResultsPage = () => {
       {/* Results Table */}
       <div className="bg-surface-lowest rounded-2xl border border-surface-border shadow-ambient overflow-hidden">
         <div className="p-4 border-b border-surface-border flex items-center justify-between text-xs font-bold text-charcoal-muted">
-          <span>Showing {filteredResults.length} Competition Records</span>
+          <span>
+            Showing {filteredResults.length} Competition Record{filteredResults.length !== 1 ? 's' : ''}
+            {selectedStateFilter !== 'ALL' && ` in ${selectedStateObj?.name || selectedStateFilter}`}
+          </span>
           <span>Official UHC Registry Verified</span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-surface-low text-charcoal-muted uppercase text-[10px] font-extrabold border-b border-surface-border">
-              <tr>
-                <th className="p-4">Placement</th>
-                <th className="p-4">Event Title</th>
-                <th className="p-4">Host Club & State</th>
-                <th className="p-4">Winner Dog</th>
-                <th className="p-4">Owner / Handler</th>
-                <th className="p-4">Score</th>
-                <th className="p-4">Date</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-surface-border">
-              {filteredResults.map((r, idx) => (
-                <tr key={r.id || idx} className="hover:bg-surface-low/80 transition-colors">
-                  <td className="p-4 font-black text-forest-800 flex items-center gap-1.5">
-                    <Trophy className="w-4 h-4 text-tan-500 shrink-0" />
-                    <span>{r.placement || r.place || '#1 Place'}</span>
-                  </td>
-                  <td className="p-4 font-black text-forest-950">{r.eventName}</td>
-                  <td className="p-4 text-charcoal font-medium">
-                    <div>{r.club}</div>
-                    <div className="text-[10px] text-charcoal-muted font-bold">{r.state}</div>
-                  </td>
-                  <td className="p-4 font-black text-tan-800">
-                    <div>{r.winnerDog || r.dog}</div>
-                    {r.winnerDogReg && <div className="text-[9px] text-charcoal-light font-semibold">{r.winnerDogReg}</div>}
-                  </td>
-                  <td className="p-4 font-bold text-charcoal">{r.owner || r.participant}</td>
-                  <td className="p-4 font-black text-forest-950">{r.score}</td>
-                  <td className="p-4 text-charcoal-muted font-medium">{r.date}</td>
+        {filteredResults.length === 0 ? (
+          <div className="p-12 text-center space-y-4">
+            <div className="w-12 h-12 rounded-2xl bg-forest-900/10 text-forest-900 flex items-center justify-center mx-auto">
+              <Trophy className="w-6 h-6 text-tan-600" />
+            </div>
+            <div className="space-y-1 max-w-sm mx-auto">
+              <h3 className="font-extrabold text-sm text-forest-950">No Competition Records Found</h3>
+              <p className="text-xs text-charcoal-muted">
+                No official trial standings currently recorded for the selected filter criteria.
+              </p>
+            </div>
+            {(selectedStateFilter !== 'ALL' || searchTerm) && (
+              <button
+                onClick={() => {
+                  setSelectedStateFilter('ALL');
+                  setSearchTerm('');
+                }}
+                className="px-4 py-2 bg-forest-900 text-white font-bold text-xs rounded-xl hover:bg-forest-950 transition-colors cursor-pointer"
+              >
+                Reset Filters to All 50 States
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-surface-low text-charcoal-muted uppercase text-[10px] font-extrabold border-b border-surface-border">
+                <tr>
+                  <th className="p-4">Placement</th>
+                  <th className="p-4">Event Title</th>
+                  <th className="p-4">Host Club & State</th>
+                  <th className="p-4">Winner Dog</th>
+                  <th className="p-4">Owner / Handler</th>
+                  <th className="p-4">Score</th>
+                  <th className="p-4">Date</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-surface-border">
+                {filteredResults.map((r, idx) => (
+                  <tr key={r.id || idx} className="hover:bg-surface-low/80 transition-colors">
+                    <td className="p-4 font-black text-forest-800 flex items-center gap-1.5">
+                      <Trophy className="w-4 h-4 text-tan-500 shrink-0" />
+                      <span>{r.placement || r.place || '#1 Place'}</span>
+                    </td>
+                    <td className="p-4 font-black text-forest-950">{r.eventName}</td>
+                    <td className="p-4 text-charcoal font-medium">
+                      <div>{r.club}</div>
+                      <div className="text-[10px] text-charcoal-muted font-bold">{r.state}</div>
+                    </td>
+                    <td className="p-4 font-black text-tan-800">
+                      <div>{r.winnerDog || r.dog}</div>
+                      {r.winnerDogReg && <div className="text-[9px] text-charcoal-light font-semibold">{r.winnerDogReg}</div>}
+                    </td>
+                    <td className="p-4 font-bold text-charcoal">{r.owner || r.participant}</td>
+                    <td className="p-4 font-black text-forest-950">{r.score}</td>
+                    <td className="p-4 text-charcoal-muted font-medium">{r.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

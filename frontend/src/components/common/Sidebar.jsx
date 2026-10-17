@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
   LayoutDashboard,
@@ -33,11 +33,37 @@ import {
   TrendingUp,
   Truck,
   BarChart3,
+  ChevronDown,
   X
 } from 'lucide-react';
 
 export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
-  const { currentUser } = useApp();
+  const { currentUser, switchRole } = useApp();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
+
+  // Route-aware portal detection: automatically aligns navigation menu with current URL
+  const getRoleFromPath = (pathname) => {
+    if (pathname.startsWith('/state-admin')) return 'STATE_ADMIN';
+    if (pathname.startsWith('/club-admin')) return 'CLUB_ADMIN';
+    if (pathname.startsWith('/event-admin')) return 'EVENT_ADMIN';
+    if (pathname.startsWith('/national-admin')) return 'NATIONAL_ADMIN';
+    if (pathname.startsWith('/super-admin')) return 'SUPER_ADMIN';
+    if (pathname.startsWith('/member')) return 'MEMBER';
+    return null;
+  };
+
+  const effectiveRole = getRoleFromPath(location.pathname) || currentUser?.role || 'MEMBER';
+
+  const PORTALS = [
+    { role: 'MEMBER', label: 'Member Portal', path: '/member', modules: 7 },
+    { role: 'CLUB_ADMIN', label: 'Club Admin', path: '/club-admin', modules: 13 },
+    { role: 'STATE_ADMIN', label: 'State Admin', path: '/state-admin', modules: 12 },
+    { role: 'EVENT_ADMIN', label: 'Event Admin', path: '/event-admin', modules: 8 },
+    { role: 'NATIONAL_ADMIN', label: 'National Admin', path: '/national-admin', modules: 15 },
+    { role: 'SUPER_ADMIN', label: 'Super Admin', path: '/super-admin', modules: 18 }
+  ];
 
   const getMenuForRole = (role) => {
     switch (role) {
@@ -141,7 +167,7 @@ export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
     }
   };
 
-  const menuItems = getMenuForRole(currentUser.role);
+  const menuItems = getMenuForRole(effectiveRole);
 
   return (
     <>
@@ -172,12 +198,48 @@ export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
           </button>
         </div>
 
-        {/* Role Badge Indicator */}
-        <div className="px-4 py-2.5 bg-forest-900/60 border-b border-forest-700/60 flex items-center justify-between text-xs text-tan-200">
-          <span className="font-semibold">{currentUser.role.replace('_', ' ')}</span>
-          <span className="text-[10px] bg-tan-500/20 text-tan-300 px-2 py-0.5 rounded border border-tan-500/30">
+        {/* Role Badge Indicator with Portal Quick Switcher */}
+        <div className="relative px-4 py-2.5 bg-forest-900/60 border-b border-forest-700/60 flex items-center justify-between text-xs text-tan-200">
+          <button
+            id="sidebar-portal-toggle-btn"
+            onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
+            className="flex items-center gap-1.5 font-bold hover:text-white transition-colors focus:outline-none group text-left"
+            title="Click to switch portal"
+          >
+            <span className="uppercase tracking-wide text-xs">{effectiveRole.replace('_', ' ')}</span>
+            <ChevronDown className="w-3.5 h-3.5 text-tan-400 group-hover:text-white transition-transform duration-200" />
+          </button>
+          <span className="text-[10px] bg-tan-500/20 text-tan-300 px-2 py-0.5 rounded border border-tan-500/30 font-bold">
             {menuItems.length} Modules
           </span>
+
+          {portalDropdownOpen && (
+            <div className="absolute left-3 right-3 top-full mt-1.5 bg-forest-900 border border-forest-700 rounded-lg shadow-xl py-1.5 z-50 animate-fade-in text-xs">
+              <div className="px-3 py-1 text-[9px] font-black uppercase text-tan-400 tracking-wider border-b border-forest-800">
+                Switch Portal View
+              </div>
+              {PORTALS.map((p) => {
+                const isCurrent = p.role === effectiveRole;
+                return (
+                  <button
+                    key={p.role}
+                    onClick={() => {
+                      setPortalDropdownOpen(false);
+                      if (switchRole) switchRole(p.role);
+                      navigate(p.path);
+                      if (closeMobileSidebar) closeMobileSidebar();
+                    }}
+                    className={`w-full text-left px-3 py-2 flex items-center justify-between transition-colors ${
+                      isCurrent ? 'bg-forest-800 text-tan-400 font-bold' : 'text-white/80 hover:bg-forest-800 hover:text-white'
+                    }`}
+                  >
+                    <span>{p.label}</span>
+                    <span className="text-[10px] text-white/50">{p.modules} mod</span>
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* Navigation Menu */}
@@ -209,13 +271,15 @@ export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
         <div className="p-4 border-t border-forest-700 bg-forest-900/80 text-xs">
           <div className="flex items-center gap-3">
             <img
-              src={currentUser.avatar}
-              alt={currentUser.name}
+              src={currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'}
+              alt={currentUser?.name || 'User'}
               className="w-9 h-9 rounded-full object-cover border border-tan-500"
             />
             <div className="flex flex-col truncate">
-              <span className="font-bold text-white truncate">{currentUser.name}</span>
-              <span className="text-[10px] text-tan-300 truncate">{currentUser.scope}</span>
+              <span className="font-bold text-white truncate">{currentUser?.name || 'User'}</span>
+              <span className="text-[10px] text-tan-300 truncate">
+                {currentUser?.scope || effectiveRole.replace('_', ' ')}
+              </span>
             </div>
           </div>
           <div className="mt-3 pt-2 border-t border-forest-800 text-[10px] text-white/50 text-center">

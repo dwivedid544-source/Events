@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   Search,
   Bell,
@@ -8,25 +8,49 @@ import {
   Menu,
   ChevronDown,
   LogOut,
-  Settings
+  Settings,
+  Shield
 } from 'lucide-react';
 
 export const Header = ({ toggleMobileSidebar }) => {
-  const { currentUser, showToast } = useApp();
+  const { currentUser, showToast, switchRole } = useApp();
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [notifDropdownOpen, setNotifDropdownOpen] = useState(false);
+  const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const roleLabels = {
-    MEMBER: { label: 'Member Portal', scope: 'Own Account' },
-    CLUB_ADMIN: { label: 'Local Club Admin', scope: 'Oak Ridge Hunting Club' },
-    STATE_ADMIN: { label: 'State Admin', scope: 'Tennessee Association' },
-    EVENT_ADMIN: { label: 'Event Admin', scope: 'Nite Hunt Sep 19' },
-    NATIONAL_ADMIN: { label: 'National Admin', scope: 'National Org' },
-    SUPER_ADMIN: { label: 'Super Admin', scope: 'Platform Master' }
+  const getRoleFromPath = (pathname) => {
+    if (pathname.startsWith('/state-admin')) return 'STATE_ADMIN';
+    if (pathname.startsWith('/club-admin')) return 'CLUB_ADMIN';
+    if (pathname.startsWith('/event-admin')) return 'EVENT_ADMIN';
+    if (pathname.startsWith('/national-admin')) return 'NATIONAL_ADMIN';
+    if (pathname.startsWith('/super-admin')) return 'SUPER_ADMIN';
+    if (pathname.startsWith('/member')) return 'MEMBER';
+    return null;
   };
 
-  const currentRoleInfo = roleLabels[currentUser.role] || roleLabels.MEMBER;
+  const effectiveRole = getRoleFromPath(location.pathname) || currentUser?.role || 'MEMBER';
+
+  const roleLabels = {
+    MEMBER: { label: 'Member Portal', scope: 'Own Account', path: '/member' },
+    CLUB_ADMIN: { label: 'Club Admin', scope: 'Oak Ridge Hunting Club', path: '/club-admin' },
+    STATE_ADMIN: { label: 'State Admin', scope: 'Tennessee Association', path: '/state-admin' },
+    EVENT_ADMIN: { label: 'Event Admin', scope: 'Nite Hunt Sep 19', path: '/event-admin' },
+    NATIONAL_ADMIN: { label: 'National Admin', scope: 'National Org', path: '/national-admin' },
+    SUPER_ADMIN: { label: 'Super Admin', scope: 'Platform Master', path: '/super-admin' }
+  };
+
+  const PORTAL_LIST = [
+    { role: 'MEMBER', label: 'Member Portal', scope: 'Personal Account', path: '/member' },
+    { role: 'CLUB_ADMIN', label: 'Local Club Admin', scope: 'Oak Ridge HC', path: '/club-admin' },
+    { role: 'STATE_ADMIN', label: 'State Admin', scope: 'Tennessee Assoc', path: '/state-admin' },
+    { role: 'EVENT_ADMIN', label: 'Event Admin', scope: 'Nite Hunt Sep 19', path: '/event-admin' },
+    { role: 'NATIONAL_ADMIN', label: 'National Admin', scope: 'National Org', path: '/national-admin' },
+    { role: 'SUPER_ADMIN', label: 'Super Admin', scope: 'Platform Master', path: '/super-admin' }
+  ];
+
+  const currentRoleInfo = roleLabels[effectiveRole] || roleLabels.MEMBER;
 
   const handleLogout = () => {
     setProfileDropdownOpen(false);
@@ -44,7 +68,7 @@ export const Header = ({ toggleMobileSidebar }) => {
       NATIONAL_ADMIN: '/national-admin/settings',
       SUPER_ADMIN: '/super-admin/settings'
     };
-    navigate(profileRouteMap[currentUser.role] || '/member/profile');
+    navigate(profileRouteMap[effectiveRole] || '/member/profile');
   };
 
   return (
@@ -69,8 +93,64 @@ export const Header = ({ toggleMobileSidebar }) => {
         </div>
       </div>
 
-      {/* Right section: Notifications & User Profile Dropdown */}
+      {/* Right section: Portal Switcher, Notifications & User Profile Dropdown */}
       <div className="flex items-center gap-3">
+        {/* Quick Portal Switcher Dropdown */}
+        <div className="relative">
+          <button
+            id="header-portal-switcher-btn"
+            onClick={() => {
+              setPortalDropdownOpen(!portalDropdownOpen);
+              setProfileDropdownOpen(false);
+              setNotifDropdownOpen(false);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-low hover:bg-forest-50 border border-surface-border hover:border-tan-500 text-xs font-bold text-forest-800 transition-all shadow-xs"
+            title="Switch portal view"
+          >
+            <Shield className="w-3.5 h-3.5 text-tan-600" />
+            <span className="hidden md:inline font-bold">{currentRoleInfo.label}</span>
+            <ChevronDown className="w-3 h-3 text-charcoal-light" />
+          </button>
+
+          {portalDropdownOpen && (
+            <div className="absolute right-0 mt-2 w-64 bg-surface-lowest border border-surface-border rounded-xl shadow-ambient-lg py-2 z-50 animate-fade-in divide-y divide-surface-border">
+              <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase text-forest-800 tracking-wider">
+                Switch Admin Portal
+              </div>
+              <div className="py-1">
+                {PORTAL_LIST.map((p) => {
+                  const isCurrent = p.role === effectiveRole;
+                  return (
+                    <button
+                      key={p.role}
+                      onClick={() => {
+                        setPortalDropdownOpen(false);
+                        if (switchRole) switchRole(p.role);
+                        navigate(p.path);
+                      }}
+                      className={`w-full text-left px-3 py-2 text-xs flex items-center justify-between transition-colors ${
+                        isCurrent
+                          ? 'bg-tan-50 text-forest-900 font-extrabold'
+                          : 'text-charcoal hover:bg-surface-low hover:text-forest-800'
+                      }`}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-bold">{p.label}</span>
+                        <span className="text-[10px] text-charcoal-light">{p.scope}</span>
+                      </div>
+                      {isCurrent && (
+                        <span className="text-[10px] bg-tan-200 text-tan-900 px-1.5 py-0.5 rounded font-black">
+                          Active
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </div>
+
         {/* Notifications Icon Dropdown */}
         <div className="relative">
           <button

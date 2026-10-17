@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
 import { DataTable } from '../../components/common/DataTable';
-import { BarChart3, TrendingUp, Calendar, Filter, DollarSign, Building2, MapPin, Truck, ShoppingBag, Award, Download, PieChart } from 'lucide-react';
+import { downloadNationalAnalyticsReportPDF } from '../../utils/pdfReportGenerator';
+import { BarChart3, TrendingUp, Calendar, Filter, DollarSign, Building2, MapPin, Truck, ShoppingBag, Award, Download, PieChart, Loader2 } from 'lucide-react';
 
 export const AnalyticsReportsPage = () => {
-  const { orders = [], userMemberships = [], vendors = [], clubs = [], states = [] } = useApp();
+  const { orders = [], userMemberships = [], vendors = [], clubs = [], states = [], showToast } = useApp();
 
   const [dateFilter, setDateFilter] = useState('This Year');
   const [activeReportTab, setActiveReportTab] = useState('By Club');
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
 
   // Filter orders by date range
   const filterOrdersByDate = (items) => {
@@ -83,9 +85,32 @@ export const AnalyticsReportsPage = () => {
     { header: 'Vendor Base Cost (70%)', accessor: 'vendorShare', render: (r) => <span className="font-extrabold text-amber-700">${r.vendorShare.toFixed(2)}</span> }
   ];
 
+  const handleDownloadPDF = async () => {
+    setIsGeneratingPdf(true);
+    try {
+      const fileName = downloadNationalAnalyticsReportPDF({
+        totalCombinedRev,
+        totalMerchRev,
+        totalMembershipRev,
+        totalOrdersCount: currentOrders.length,
+        activeSubscriptionsCount: userMemberships.length,
+        dateFilter,
+        clubSalesData,
+        stateSalesData,
+        vendorSalesData
+      });
+      showToast?.(`Official National PDF report downloaded: ${fileName}`, 'success');
+    } catch (err) {
+      console.error('Error generating national PDF report:', err);
+      showToast?.('Failed to generate PDF report. Please try again.', 'error');
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-10">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-extrabold text-forest-800 tracking-tight">National Platform Analytics & Financial Reports</h1>
@@ -98,21 +123,40 @@ export const AnalyticsReportsPage = () => {
           </p>
         </div>
 
-        {/* Date Filter Pills */}
-        <div className="flex items-center gap-1.5 bg-surface-low p-1.5 rounded-2xl border border-surface-border overflow-x-auto">
-          {['Today', 'This Week', 'This Month', 'This Year', 'Previous Year', 'Custom Range'].map((tf) => (
-            <button
-              key={tf}
-              onClick={() => setDateFilter(tf)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all cursor-pointer ${
-                dateFilter === tf
-                  ? 'bg-forest-950 text-white shadow-xs'
-                  : 'text-charcoal-muted hover:bg-surface-border'
-              }`}
-            >
-              {tf}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Date Filter Pills */}
+          <div className="flex items-center gap-1.5 bg-surface-low p-1.5 rounded-2xl border border-surface-border overflow-x-auto">
+            {['Today', 'This Week', 'This Month', 'This Year', 'Previous Year', 'Custom Range'].map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setDateFilter(tf)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all cursor-pointer ${
+                  dateFilter === tf
+                    ? 'bg-forest-950 text-white shadow-xs'
+                    : 'text-charcoal-muted hover:bg-surface-border'
+                }`}
+              >
+                {tf}
+              </button>
+            ))}
+          </div>
+
+          {/* Download PDF Button */}
+          <button
+            onClick={handleDownloadPDF}
+            disabled={isGeneratingPdf}
+            className="px-4 py-2 bg-tan-500 hover:bg-tan-600 disabled:opacity-75 text-forest-900 font-extrabold text-xs rounded-xl shadow flex items-center gap-1.5 transition-colors cursor-pointer shrink-0"
+          >
+            {isGeneratingPdf ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" /> Generating PDF...
+              </>
+            ) : (
+              <>
+                <Download className="w-4 h-4" /> Download PDF Report
+              </>
+            )}
+          </button>
         </div>
       </div>
 
