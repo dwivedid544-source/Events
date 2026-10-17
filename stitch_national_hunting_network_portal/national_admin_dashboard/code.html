@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>National Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "tertiary-container": "#1d2f22",
+                      "error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#eabf8d",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed": "#d3e8d5",
+                      "on-tertiary-fixed-variant": "#394b3d",
+                      "on-secondary-container": "#795930",
+                      "primary": "#061b0e",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "on-background": "#1b1c1c",
+                      "tertiary": "#091a0f",
+                      "secondary-container": "#fed39f",
+                      "surface-bright": "#fcf9f8",
+                      "surface-container-low": "#f6f3f2",
+                      "outline": "#737973",
+                      "secondary": "#78582f",
+                      "surface-container-highest": "#e4e2e1",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed": "#0b2013",
+                      "error": "#ba1a1a",
+                      "inverse-on-surface": "#f3f0f0",
+                      "inverse-surface": "#303030",
+                      "on-secondary-fixed-variant": "#5e411a",
+                      "surface": "#fcf9f8",
+                      "on-tertiary": "#ffffff",
+                      "on-primary-container": "#819986",
+                      "on-surface-variant": "#434843",
+                      "tertiary-fixed-dim": "#b7ccb9",
+                      "surface-container-high": "#eae7e7",
+                      "surface-dim": "#dcd9d9",
+                      "on-tertiary-container": "#839886",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-surface": "#1b1c1c",
+                      "surface-variant": "#e4e2e1",
+                      "outline-variant": "#c3c8c1",
+                      "on-primary-fixed-variant": "#364c3c",
+                      "primary-fixed-dim": "#b4cdb8",
+                      "surface-tint": "#4d6453",
+                      "surface-container": "#f0eded",
+                      "primary-container": "#1b3022",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#0e1f13",
+                      "secondary-fixed": "#ffddb7",
+                      "inverse-primary": "#b4cdb8",
+                      "primary-fixed": "#d0e9d4",
+                      "background": "#fcf9f8"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "base": "8px",
+                      "gutter": "24px",
+                      "margin-desktop": "64px",
+                      "md": "24px",
+                      "xs": "4px",
+                      "xl": "80px",
+                      "lg": "48px",
+                      "sm": "12px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-lg": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex h-screen overflow-hidden">
+<!-- SideNavBar -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant dark:border-outline bg-surface-container-low dark:bg-tertiary-container flex-col py-6 space-y-1 z-40">
+<div class="px-4 mb-8">
+<div class="flex items-center space-x-3 mb-4">
+<img alt="Organization Logo" class="h-10 w-10 rounded object-cover" data-alt="A clean, minimalist logo featuring a geometric tree or leaf motif in dark forest green, set against a pristine white background. The design is modern, professional, and evocative of nature conservation. Soft, diffuse lighting ensures no harsh shadows." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkrRcPcYjLPrY84icXYcvmVhdLdSblbgLVuAkSlErlHECYh5NF_0VYUjAVm6YVTzFuC91aQ-_ii8UUrh3pbaGEcMza97nAaEYSpDPJrLD9HcR1CREZjFI66A6y7vmywOsZm1u6lDZ-uL1GRubJRRGQXAFv_ikROnbQCOlMhlm8leybugNniiNpJlhOaKeXr_I0rcOI-BqLyiNll4KngiGJ93uWph6HMfgN9sgyOgytKMeowDmU5zmwhQ"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-on-tertiary-container">National Admin</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Conservation Portal</p>
+</div>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto space-y-1 px-2">
+<a class="bg-primary text-on-primary rounded-lg mx-2 my-1 flex items-center px-4 py-2 group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="calendar_today">calendar_today</span>
+<span class="font-label-md text-label-md">Events</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="font-label-md text-label-md">States</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="groups">groups</span>
+<span class="font-label-md text-label-md">Clubs</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md">Members</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="newspaper">newspaper</span>
+<span class="font-label-md text-label-md">News</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+<span class="font-label-md text-label-md">Results</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_basket">shopping_basket</span>
+<span class="font-label-md text-label-md">Store</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="handshake">handshake</span>
+<span class="font-label-md text-label-md">Sponsors</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-md text-label-md">Revenue</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="bar_chart">bar_chart</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="language">language</span>
+<span class="font-label-md text-label-md">Website</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-2 pt-4 border-t border-outline-variant">
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="contact_support">contact_support</span>
+<span class="font-label-md text-label-md">Support</span>
+</a>
+<a class="text-on-surface-variant flex items-center px-4 py-2 mx-2 my-1 hover:bg-surface-container-high dark:hover:bg-tertiary-fixed-dim transition-all group flex items-center space-x-3 cursor-pointer" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md">Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col md:ml-64 h-screen overflow-hidden">
+<!-- TopNavBar (Mobile only for Nav, but acts as header for Desktop) -->
+<header class="w-full sticky top-0 z-30 bg-surface dark:bg-surface-container-low border-b border-outline-variant dark:border-outline flex justify-between items-center h-16 px-4 md:px-margin-desktop shadow-sm">
+<div class="flex items-center">
+<!-- Mobile menu button -->
+<button class="md:hidden mr-4 text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<span class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed md:hidden">NCA</span>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="pl-10 pr-4 py-1.5 border border-outline-variant rounded-full text-body-sm focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-secondary-container bg-surface w-64 transition-all" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full cursor-pointer active:opacity-80 transition-opacity relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-1 right-1 h-2 w-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high transition-colors p-2 rounded-full cursor-pointer active:opacity-80 transition-opacity hidden md:block">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<button class="flex items-center focus:outline-none">
+<img alt="Profile" class="h-8 w-8 rounded-full border border-outline-variant object-cover" data-alt="A highly detailed close-up portrait of a professional administrative user. The user has a warm, confident expression. Soft, studio-quality lighting highlights their features against a subtle, neutral off-white background, ensuring high legibility and a premium corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgjYW1HUzn2JihPCpIUH64b7qkxlAl_s75Qs4STbN6C75lJ0VjS7LQ3Xk6x2Dn_iA_faNF6A9poYNAdTDjZ5qhXn8H75iRm3zrU-DanTzu54ZhUWiFz0ouBcnueawLm6KFXEVGemYa1OK06tIi4PAN5JwQi44S0eJrwoam8kon0ipeNqeh6_fJzzisligp-TsGnoMDtiZLTQAYiahSGQVLanUi9n3J8Qp7yBq2iwjdPdlNDTpEzIDvTQ"/>
+</button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<div class="flex-1 overflow-y-auto p-4 md:p-margin-desktop bg-background">
+<!-- Page Header -->
+<div class="mb-gutter">
+<h2 class="font-headline-lg text-headline-lg-mobile md:text-headline-lg font-bold text-primary">National Dashboard</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Overview of national activity across states, clubs, members and events.</p>
+</div>
+<!-- KPI Cards Grid -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-gutter mb-lg">
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient p-4 flex flex-col justify-center">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">States</span>
+<span class="material-symbols-outlined text-primary-container opacity-50" data-icon="map">map</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">50</span>
+</div>
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient p-4 flex flex-col justify-center">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Clubs</span>
+<span class="material-symbols-outlined text-primary-container opacity-50" data-icon="groups">groups</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">635</span>
+</div>
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient p-4 flex flex-col justify-center">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Members</span>
+<span class="material-symbols-outlined text-primary-container opacity-50" data-icon="person">person</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">24,860</span>
+</div>
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient p-4 flex flex-col justify-center">
+<div class="flex items-center justify-between mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Upcoming Events</span>
+<span class="material-symbols-outlined text-primary-container opacity-50" data-icon="calendar_today">calendar_today</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">312</span>
+</div>
+</div>
+<!-- Bento Grid Layout for Main Content -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter">
+<!-- USA Map Section (Spans 2 cols) -->
+<div class="lg:col-span-2 bg-surface rounded-lg border border-outline-variant shadow-ambient flex flex-col overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center">
+<h3 class="font-title-lg text-title-lg font-semibold text-primary">USA Activity Density</h3>
+<button class="text-primary-container font-label-md text-label-md hover:underline">View Details</button>
+</div>
+<div class="flex-1 relative min-h-[300px] bg-surface-container-lowest flex items-center justify-center p-4">
+<!-- Placeholder for styled map -->
+<img alt="USA Activity Map" class="w-full h-full object-contain opacity-90" data-alt="A highly stylized, minimalist vector map of the United States of America. The map uses varying shades of deep forest green and light Highland tan to indicate data density across different states. The background is pure white. The design is clean, professional, and suitable for a high-end administrative dashboard." data-location="USA" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCtuqsV8zQhTX0Bn6YbHiyDba47EPi77iAUKnfismYl9Y6O_tJ9OmQFuwmnyRwdzV4lzUIqRrLtjawxxPa6J5Hd8rvM8a9XW6SlCuD4JY6HeOQYTguCTlFn-OwVDLhvGo66nYxV7t3u66VfWyTPloefF_hhgCrLnvsPdnIgqGKVA3oVw41opckdwJ-m8xAPNLi9pTgc5flM95U8tYW1RuP9JnZX491u5VCvgA3xUczVqZ25fI79wXiCUQ"/>
+</div>
+</div>
+<!-- Revenue Summary -->
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient flex flex-col">
+<div class="px-6 py-4 border-b border-outline-variant">
+<h3 class="font-title-lg text-title-lg font-semibold text-primary">Revenue Summary</h3>
+</div>
+<div class="p-6 flex-1 flex flex-col space-y-6">
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="font-label-md text-label-md text-on-surface-variant">Membership Revenue</span>
+<span class="font-body-md text-body-md text-primary font-semibold">$1.2M</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2">
+<div class="bg-primary-container h-2 rounded-full" style="width: 65%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="font-label-md text-label-md text-on-surface-variant">Event Revenue</span>
+<span class="font-body-md text-body-md text-primary font-semibold">$850K</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2">
+<div class="bg-primary-fixed-dim h-2 rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="font-label-md text-label-md text-on-surface-variant">Store Revenue</span>
+<span class="font-body-md text-body-md text-primary font-semibold">$320K</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-2">
+<div class="bg-secondary-fixed-dim h-2 rounded-full" style="width: 25%"></div>
+</div>
+</div>
+<div class="pt-4 border-t border-outline-variant mt-auto">
+<div class="flex justify-between items-center">
+<span class="font-title-lg text-title-lg font-semibold text-primary">Total YTD</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">$2.37M</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Upcoming National Activity Table (Spans full width of grid) -->
+<div class="lg:col-span-3 bg-surface rounded-lg border border-outline-variant shadow-ambient overflow-hidden">
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-bright">
+<h3 class="font-title-lg text-title-lg font-semibold text-primary">Upcoming National Activity</h3>
+<button class="text-primary-container font-label-md text-label-md hover:underline flex items-center">
+                            See All <span class="material-symbols-outlined text-sm ml-1">arrow_forward</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-lowest">
+<th class="px-6 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Event Name</th>
+<th class="px-6 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Host Chapter / Club</th>
+<th class="px-6 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Location</th>
+<th class="px-6 py-3 font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-right">Date</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md text-on-background">
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-semibold text-primary">Fall Field Trial</td>
+<td class="px-6 py-4">Pine Ridge Chapter</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                                            Georgia
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant">Oct 03, 2024</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-lowest transition-colors bg-surface-bright">
+<td class="px-6 py-4 font-semibold text-primary">Regional Qualification</td>
+<td class="px-6 py-4">Oak Creek Hunters</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                                            Kentucky
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant">Nov 05, 2024</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="px-6 py-4 font-semibold text-primary">Winter Classic</td>
+<td class="px-6 py-4">Highland Conservation Club</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-fixed text-on-tertiary-fixed-variant">
+                                            Oregon
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right text-on-surface-variant">Dec 16, 2024</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

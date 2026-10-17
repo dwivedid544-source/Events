@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Heritage Field &amp; Forest - Find a Hunt</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#819986",
+                        "on-tertiary-container": "#839886",
+                        "tertiary-fixed": "#d3e8d5",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "outline-variant": "#c3c8c1",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-background": "#1b1c1c",
+                        "tertiary-container": "#1d2f22",
+                        "on-surface-variant": "#434843",
+                        "on-primary-fixed": "#0b2013",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container": "#f0eded",
+                        "secondary": "#78582f",
+                        "background": "#fcf9f8",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "inverse-on-surface": "#f3f0f0",
+                        "inverse-primary": "#b4cdb8",
+                        "tertiary": "#091a0f",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#fed39f",
+                        "outline": "#737973",
+                        "surface-variant": "#e4e2e1",
+                        "primary": "#061b0e",
+                        "secondary-fixed": "#ffddb7",
+                        "on-surface": "#1b1c1c",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary-fixed": "#d0e9d4",
+                        "surface-tint": "#4d6453",
+                        "on-secondary": "#ffffff",
+                        "surface-container-high": "#eae7e7",
+                        "primary-container": "#1b3022",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#dcd9d9",
+                        "surface-bright": "#fcf9f8",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed-variant": "#364c3c",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-surface": "#303030",
+                        "on-secondary-container": "#795930",
+                        "surface": "#fcf9f8",
+                        "on-error": "#ffffff",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "64px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "xs": "4px",
+                        "md": "24px",
+                        "sm": "12px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    },
+                    "boxShadow": {
+                        "ambient": "0px 4px 20px rgba(27, 48, 34, 0.08)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col antialiased">
+<!-- TopNavBar -->
+<header class="bg-background dark:bg-background text-primary dark:text-inverse-primary font-body-md text-body-md w-full top-0 sticky border-b border-outline-variant dark:border-outline flat no shadows z-50">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-margin-desktop py-md w-full">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-on-background">
+                Heritage Field &amp; Forest
+            </div>
+<nav class="hidden md:flex gap-gutter items-center">
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Home</a>
+<a class="text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary pb-1 Active: opacity-80 transition-opacity" href="#">Find a Hunt</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Events</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Find a Club</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">States</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Results</a>
+</nav>
+<div class="flex items-center gap-sm">
+<button class="font-label-md text-label-md px-4 py-2 border border-primary text-primary rounded hover:bg-surface-variant transition-colors">Login</button>
+<button class="font-label-md text-label-md px-4 py-2 bg-primary-container text-on-primary rounded hover:bg-primary transition-colors">Join</button>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-lg flex flex-col gap-lg">
+<!-- Page Header -->
+<section class="flex flex-col gap-base">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary-container">Find Hunts &amp; Events</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Discover events and hunts near you.</p>
+</section>
+<!-- Search & Filters Bar -->
+<section class="bg-surface-container-lowest p-md rounded-lg border border-outline-variant shadow-ambient flex flex-col gap-md">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-sm items-end">
+<div class="flex flex-col gap-xs lg:col-span-2">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">ZIP / City</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all" placeholder="Enter Location" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">State</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all appearance-none">
+<option>Any</option>
+<option>GA</option>
+<option>KY</option>
+<option>OR</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Date</label>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all" type="date"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Distance</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all appearance-none">
+<option>Any</option>
+<option>50 Miles</option>
+<option>100 Miles</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs lg:col-span-1">
+<button class="w-full font-label-md text-label-md bg-primary-container text-on-primary p-2 rounded hover:bg-primary transition-colors h-[42px] flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined text-[18px]">search</span> Search
+                    </button>
+</div>
+</div>
+<!-- Secondary Filters -->
+<div class="flex flex-wrap gap-sm pt-sm border-t border-outline-variant/30">
+<div class="flex flex-col gap-xs min-w-[200px] flex-grow">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Organization</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all appearance-none">
+<option>All Organizations</option>
+</select>
+</div>
+<div class="flex flex-col gap-xs min-w-[200px] flex-grow">
+<label class="font-label-md text-label-md text-on-surface-variant uppercase">Event Type</label>
+<select class="w-full bg-surface-container-lowest border border-outline-variant rounded p-2 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all appearance-none">
+<option>All Types</option>
+<option>Field Trial</option>
+<option>Regional Qualification</option>
+<option>Winter Classic</option>
+</select>
+</div>
+</div>
+</section>
+<!-- View & Sort Controls -->
+<section class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-sm">
+<div class="flex border border-outline-variant rounded bg-surface-container-lowest overflow-hidden">
+<button class="px-4 py-2 font-label-md text-label-md flex items-center gap-xs bg-surface-variant text-primary-container"><span class="material-symbols-outlined text-[18px]">format_list_bulleted</span> List</button>
+<button class="px-4 py-2 font-label-md text-label-md flex items-center gap-xs text-on-surface-variant hover:bg-surface-variant/50 transition-colors border-l border-outline-variant"><span class="material-symbols-outlined text-[18px]">calendar_today</span> Calendar</button>
+<button class="px-4 py-2 font-label-md text-label-md flex items-center gap-xs text-on-surface-variant hover:bg-surface-variant/50 transition-colors border-l border-outline-variant"><span class="material-symbols-outlined text-[18px]">map</span> Map</button>
+</div>
+<div class="flex items-center gap-sm">
+<label class="font-body-sm text-body-sm text-on-surface-variant">Sort by:</label>
+<select class="bg-surface-container-lowest border border-outline-variant rounded p-1 font-body-sm text-body-sm text-on-surface focus:border-primary-container focus:ring-2 focus:ring-[#C19A6B]/20 outline-none transition-all appearance-none pr-8">
+<option>Date</option>
+<option>Distance</option>
+<option>Event Name</option>
+</select>
+</div>
+</section>
+<!-- Event List -->
+<section class="flex flex-col gap-md">
+<!-- Event Card 1 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-ambient p-md flex flex-col md:flex-row gap-md justify-between items-start">
+<div class="flex flex-col gap-sm w-full md:w-3/4">
+<div class="flex flex-wrap items-center gap-sm">
+<span class="bg-[#C19A6B]/10 text-[#C19A6B] px-2 py-1 rounded font-label-md text-label-md uppercase">Registration Open</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">distance</span> 18 miles</span>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg text-primary-container">Fall Field Trial</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Pine Ridge Chapter • Atlanta, GA</p>
+</div>
+<div class="flex flex-wrap gap-md font-body-sm text-body-sm text-on-surface mt-xs">
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">calendar_month</span> Oct 03, 2024</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">category</span> Field Trial</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">payments</span> $450</div>
+</div>
+</div>
+<div class="flex md:flex-col gap-sm w-full md:w-auto mt-sm md:mt-0 pt-sm md:pt-0 border-t md:border-t-0 border-outline-variant/30">
+<button class="flex-grow md:flex-grow-0 font-label-md text-label-md px-4 py-2 border border-primary text-primary rounded hover:bg-surface-variant transition-colors text-center">View</button>
+<button class="flex-grow md:flex-grow-0 font-label-md text-label-md px-4 py-2 bg-primary-container text-on-primary rounded hover:bg-primary transition-colors text-center">Enter</button>
+</div>
+</article>
+<!-- Event Card 2 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-ambient p-md flex flex-col md:flex-row gap-md justify-between items-start">
+<div class="flex flex-col gap-sm w-full md:w-3/4">
+<div class="flex flex-wrap items-center gap-sm">
+<span class="bg-[#C19A6B]/10 text-[#C19A6B] px-2 py-1 rounded font-label-md text-label-md uppercase">Registration Open</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">distance</span> 42 miles</span>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg text-primary-container">Regional Qualification</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Oak Creek Hunters • Lexington, KY</p>
+</div>
+<div class="flex flex-wrap gap-md font-body-sm text-body-sm text-on-surface mt-xs">
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">calendar_month</span> Nov 05, 2024</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">category</span> Regional Qualification</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">payments</span> $200</div>
+</div>
+</div>
+<div class="flex md:flex-col gap-sm w-full md:w-auto mt-sm md:mt-0 pt-sm md:pt-0 border-t md:border-t-0 border-outline-variant/30">
+<button class="flex-grow md:flex-grow-0 font-label-md text-label-md px-4 py-2 border border-primary text-primary rounded hover:bg-surface-variant transition-colors text-center">View</button>
+<button class="flex-grow md:flex-grow-0 font-label-md text-label-md px-4 py-2 bg-primary-container text-on-primary rounded hover:bg-primary transition-colors text-center">Enter</button>
+</div>
+</article>
+<!-- Event Card 3 -->
+<article class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-ambient p-md flex flex-col md:flex-row gap-md justify-between items-start opacity-80">
+<div class="flex flex-col gap-sm w-full md:w-3/4">
+<div class="flex flex-wrap items-center gap-sm">
+<span class="bg-surface-variant text-on-surface-variant px-2 py-1 rounded font-label-md text-label-md uppercase">Registration Opens Soon</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs"><span class="material-symbols-outlined text-[16px]">distance</span> 76 miles</span>
+</div>
+<div>
+<h2 class="font-title-lg text-title-lg text-primary-container">Winter Classic</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Highland Conservation Club • Bend, OR</p>
+</div>
+<div class="flex flex-wrap gap-md font-body-sm text-body-sm text-on-surface mt-xs">
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">calendar_month</span> Dec 16, 2024</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">category</span> Winter Classic</div>
+<div class="flex items-center gap-xs"><span class="material-symbols-outlined text-outline">payments</span> $250</div>
+</div>
+</div>
+<div class="flex md:flex-col gap-sm w-full md:w-auto mt-sm md:mt-0 pt-sm md:pt-0 border-t md:border-t-0 border-outline-variant/30">
+<button class="flex-grow md:flex-grow-0 font-label-md text-label-md px-4 py-2 border border-primary text-primary rounded hover:bg-surface-variant transition-colors text-center">View</button>
+<button class="flex-grow md:flex-grow-0 font-label-md text-label-md px-4 py-2 bg-surface-variant text-on-surface-variant rounded cursor-not-allowed text-center" disabled="">Enter</button>
+</div>
+</article>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-container-low text-primary dark:text-on-primary-container font-body-sm text-body-sm w-full mt-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-gutter max-w-7xl mx-auto px-margin-desktop py-lg w-full">
+<div class="col-span-2 md:col-span-4 lg:col-span-5 mb-sm">
+<div class="font-title-lg text-title-lg font-bold text-primary">
+                    Heritage Field &amp; Forest
+                </div>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">About</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Contact</a>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Membership</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Events</a>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Clubs</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">News</a>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Store</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Sponsors</a>
+</div>
+<div class="flex flex-col gap-sm">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Privacy</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Terms</a>
+</div>
+<div class="col-span-2 md:col-span-4 lg:col-span-5 mt-md pt-sm border-t border-outline-variant/30 text-on-surface-variant">
+                © 2024 Heritage Field &amp; Forest. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>

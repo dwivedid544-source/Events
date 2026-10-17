@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Club Admin - Members</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#1d2f22",
+                    "on-primary-container": "#819986",
+                    "primary": "#061b0e",
+                    "tertiary-fixed": "#d3e8d5",
+                    "secondary-container": "#fed39f",
+                    "inverse-primary": "#b4cdb8",
+                    "inverse-surface": "#303030",
+                    "outline-variant": "#c3c8c1",
+                    "on-surface-variant": "#434843",
+                    "surface": "#fcf9f8",
+                    "primary-fixed": "#d0e9d4",
+                    "background": "#fcf9f8",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-tint": "#4d6453",
+                    "on-error": "#ffffff",
+                    "tertiary": "#091a0f",
+                    "on-secondary-fixed-variant": "#5e411a",
+                    "secondary-fixed": "#ffddb7",
+                    "secondary": "#78582f",
+                    "on-background": "#1b1c1c",
+                    "secondary-fixed-dim": "#eabf8d",
+                    "outline": "#737973",
+                    "surface-bright": "#fcf9f8",
+                    "on-tertiary-fixed": "#0e1f13",
+                    "on-tertiary": "#ffffff",
+                    "on-tertiary-fixed-variant": "#394b3d",
+                    "surface-variant": "#e4e2e1",
+                    "surface-container-high": "#eae7e7",
+                    "on-primary-fixed-variant": "#364c3c",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1b1c1c",
+                    "on-secondary-container": "#795930",
+                    "error": "#ba1a1a",
+                    "on-tertiary-container": "#839886",
+                    "surface-container": "#f0eded",
+                    "primary-fixed-dim": "#b4cdb8",
+                    "inverse-on-surface": "#f3f0f0",
+                    "primary-container": "#1b3022",
+                    "on-error-container": "#93000a",
+                    "tertiary-fixed-dim": "#b7ccb9",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#2a1700",
+                    "on-primary-fixed": "#0b2013",
+                    "surface-container-highest": "#e4e2e1",
+                    "surface-container-lowest": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "sm": "12px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "xs": "4px",
+                    "lg": "48px",
+                    "xl": "80px",
+                    "md": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "64px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "title-lg": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-md": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["28px", {"lineHeight": "36px", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "title-lg": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+          font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex font-body-md">
+<!-- SideNavBar -->
+<nav class="bg-surface border-r border-outline-variant h-screen w-64 fixed left-0 top-0 overflow-y-auto flex flex-col py-md z-40">
+<div class="px-4 mb-8">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A professional, high-resolution logo for 'Pine Ridge Chapter' featuring a stylized pine tree and mountain range in a solid dark forest green (#1B3022) circle against a white background, capturing a clean, modern, and established outdoor heritage aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBJtjm05ZSPRHaPHyTn60hRVSKqJIE_c_gMRDFUAaCSYhig3TKIj5hquC1RxNi4CgOeFBw39L2rXXOE2lgXglykG-pspImynV_CIy5Qb-fM4AZLxCdIjFH7n5MwykEpOpIM8c_Rhz2udbps3JjCdwfMciw6hSJIdv-oOeRP4ljNWl6GdBYLhD2xtuZ78xyU4Cwh7rME_eO0ESrCXe5NwgCB7pwZm7tIj4qZlpWEXXCfT1FAwZ0GUgKc-w"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary">Club Admin</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Pine Ridge Chapter</p>
+</div>
+</div>
+</div>
+<ul class="flex flex-col gap-1 flex-1 font-label-md text-label-md">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-primary font-semibold border-r-4 border-primary bg-surface-container-low transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">group</span>
+                    Members
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">event</span>
+                    Events
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">app_registration</span>
+                    Entries
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">military_tech</span>
+                    Results
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">newspaper</span>
+                    News
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+                    Store
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">payments</span>
+                    Finance
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">campaign</span>
+                    Announcements
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">home_pin</span>
+                    Club Page
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">shield_person</span>
+                    Officers
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined">handshake</span>
+                    Sponsors
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant hover:bg-surface-container transition-all active:scale-95 duration-150 ease-in-out mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface border-b border-outline-variant h-20 sticky top-0 z-30 w-full flex justify-between items-center px-margin-desktop shadow-sm">
+<div class="flex-1 flex justify-end items-center gap-6">
+<!-- Search -->
+<div class="relative w-64 focus-within:ring-2 focus-within:ring-secondary/20 rounded-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface border border-outline-variant rounded-md font-body-sm text-body-sm text-on-background focus:border-primary focus:ring-0 focus:outline-none transition-colors" placeholder="Search members..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors focus-within:ring-2 focus-within:ring-secondary/20 rounded-full">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors focus-within:ring-2 focus-within:ring-secondary/20 rounded-full">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-px h-8 bg-outline-variant mx-2"></div>
+<!-- Profile -->
+<button class="flex items-center gap-3 p-1 rounded-full hover:bg-surface-container transition-colors focus-within:ring-2 focus-within:ring-secondary/20">
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A professional headshot of a middle-aged male administrator with a welcoming smile, wearing a subtle earth-toned button-down shirt, set against a soft, blurred outdoor natural background. High quality, realistic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuACJ8dQcl1PmywhZvBH28LggZYtGfFQAfiS2h1kAsyR4WIywXWcYV6iz7TE5rbJD92sKU8r6ukykrUmwEG9NL_EHsHvuTO4oS80tujk105hox_8NK-I0r4wYuir8TvetwKM0J_IyPCEzQV7KfmQxh9TiJJnU8HWth1t_l9aS6WKb6Q6kLjJmBVO9wzwkYfQUQVXesxCSoW1C_GuAKCSFfm-Wb6Qrsmya1ct2uoK85EP8R-S9jEWZ_DrKg"/>
+<span class="font-label-md text-label-md text-primary hidden md:block pr-2">Admin Profile</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-margin-desktop bg-background overflow-y-auto">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-lg gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary font-bold">Members</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Manage Pine Ridge Chapter members and membership activity.</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-primary text-primary font-label-md text-label-md rounded hover:bg-surface-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                        Export
+                    </button>
+<button class="px-4 py-2 bg-primary-container text-white font-label-md text-label-md rounded hover:bg-tertiary-container transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Add Member
+                    </button>
+</div>
+</div>
+<!-- KPI Cards -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md mb-lg">
+<div class="bg-surface p-4 rounded-lg border border-outline-variant shadow-sm flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Total Members</span>
+<span class="font-display-lg text-display-lg text-primary mt-2">84</span>
+</div>
+<div class="bg-surface p-4 rounded-lg border border-outline-variant shadow-sm flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Active</span>
+<span class="font-display-lg text-display-lg text-primary mt-2">76</span>
+</div>
+<div class="bg-surface p-4 rounded-lg border border-outline-variant shadow-sm flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Expiring Soon</span>
+<span class="font-display-lg text-display-lg text-secondary mt-2">5</span>
+</div>
+<div class="bg-surface p-4 rounded-lg border border-outline-variant shadow-sm flex flex-col">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase">Pending Applications</span>
+<span class="font-display-lg text-display-lg text-primary mt-2">4</span>
+</div>
+</div>
+<!-- Main Data Area -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-md">
+<!-- Table Section (Takes up 2/3 on desktop) -->
+<div class="lg:col-span-2 bg-surface rounded-lg border border-outline-variant shadow-sm flex flex-col">
+<!-- Filters -->
+<div class="p-4 border-b border-outline-variant flex flex-wrap gap-4 items-center bg-surface-bright rounded-t-lg">
+<div class="relative flex-1 min-w-[200px]">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded font-body-sm text-body-sm focus:border-primary focus:ring-1 focus:ring-primary outline-none" placeholder="Search members" type="text"/>
+</div>
+<select class="py-2 pl-3 pr-8 border border-outline-variant rounded font-body-sm text-body-sm text-on-background focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-surface appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23434843%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_0.5rem_center] bg-[length:1.2em_1.2em]">
+<option>All Status</option>
+<option>Active</option>
+<option>Pending</option>
+<option>Expired</option>
+<option>Inactive</option>
+</select>
+<select class="py-2 pl-3 pr-8 border border-outline-variant rounded font-body-sm text-body-sm text-on-background focus:border-primary focus:ring-1 focus:ring-primary outline-none bg-surface appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23434843%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E')] bg-no-repeat bg-[position:right_0.5rem_center] bg-[length:1.2em_1.2em]">
+<option>All Types</option>
+<option>Annual</option>
+<option>Family</option>
+<option>Youth</option>
+</select>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-container-low font-label-md text-label-md text-on-surface-variant uppercase">
+<th class="p-4 font-semibold">Member</th>
+<th class="p-4 font-semibold hidden sm:table-cell">ID</th>
+<th class="p-4 font-semibold hidden md:table-cell">Type</th>
+<th class="p-4 font-semibold hidden lg:table-cell">Expiration</th>
+<th class="p-4 font-semibold">Status</th>
+<th class="p-4 font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-background divide-y divide-outline-variant/50">
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">JW</div>
+<div>
+<div class="font-semibold text-primary">Jordan Williams</div>
+<div class="text-on-surface-variant text-xs sm:hidden">HF-100284</div>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant hidden sm:table-cell">HF-100284</td>
+<td class="p-4 hidden md:table-cell">Annual</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Dec 31, 2024</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-tertiary-fixed text-on-tertiary-fixed-variant">Active</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-secondary font-label-md hover:underline">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-xs">MC</div>
+<div>
+<div class="font-semibold text-primary">Michael Carter</div>
+<div class="text-on-surface-variant text-xs sm:hidden">HF-100318</div>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant hidden sm:table-cell">HF-100318</td>
+<td class="p-4 hidden md:table-cell">Annual</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Feb 11, 2025</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-tertiary-fixed text-on-tertiary-fixed-variant">Active</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-secondary font-label-md hover:underline">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">SM</div>
+<div>
+<div class="font-semibold text-primary">Sarah Mitchell</div>
+<div class="text-on-surface-variant text-xs sm:hidden">HF-100351</div>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant hidden sm:table-cell">HF-100351</td>
+<td class="p-4 hidden md:table-cell">Family</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Mar 14, 2025</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-tertiary-fixed text-on-tertiary-fixed-variant">Active</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-secondary font-label-md hover:underline">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-xs">RH</div>
+<div>
+<div class="font-semibold text-primary">Robert Hayes</div>
+<div class="text-on-surface-variant text-xs sm:hidden">HF-100372</div>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant hidden sm:table-cell">HF-100372</td>
+<td class="p-4 hidden md:table-cell">Annual</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Mar 31, 2025</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-secondary-fixed text-on-secondary-fixed-variant">Expiring Soon</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-secondary font-label-md hover:underline">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container/30 transition-colors">
+<td class="p-4 flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-xs">EP</div>
+<div>
+<div class="font-semibold text-primary">Emily Parker</div>
+<div class="text-on-surface-variant text-xs sm:hidden">HF-100401</div>
+</div>
+</td>
+<td class="p-4 text-on-surface-variant hidden sm:table-cell">HF-100401</td>
+<td class="p-4 hidden md:table-cell">Youth</td>
+<td class="p-4 text-on-surface-variant hidden lg:table-cell">Sep 17, 2025</td>
+<td class="p-4">
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-surface-variant text-on-surface-variant border border-outline-variant">Pending</span>
+</td>
+<td class="p-4 text-right">
+<button class="text-primary-container font-label-md font-bold hover:underline">Review</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination -->
+<div class="p-4 border-t border-outline-variant flex items-center justify-between bg-surface-bright rounded-b-lg">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Showing 1 to 5 of 84 members</span>
+<div class="flex gap-1">
+<button class="px-3 py-1 text-sm border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container disabled:opacity-50">Previous</button>
+<button class="px-3 py-1 text-sm bg-primary-container text-white rounded">1</button>
+<button class="px-3 py-1 text-sm border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container">2</button>
+<button class="px-3 py-1 text-sm border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container">3</button>
+<span class="px-2 py-1 text-on-surface-variant">...</span>
+<button class="px-3 py-1 text-sm border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container">9</button>
+<button class="px-3 py-1 text-sm border border-outline-variant rounded text-on-surface-variant hover:bg-surface-container">Next</button>
+</div>
+</div>
+</div>
+<!-- Action Items / Supporting Sections -->
+<div class="lg:col-span-1 flex flex-col gap-md">
+<!-- Pending Apps Card -->
+<div class="bg-surface rounded-lg border border-outline-variant shadow-sm p-4">
+<div class="flex items-center justify-between mb-4 border-b border-outline-variant pb-2">
+<h3 class="font-title-lg text-title-lg text-primary">Pending Applications</h3>
+<span class="bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded-full text-xs font-semibold">4</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Item -->
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold text-sm shrink-0">EP</div>
+<div>
+<div class="font-semibold text-primary text-sm">Emily Parker</div>
+<div class="text-on-surface-variant text-xs">Youth Membership</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Applied Sep 18, 2024</div>
+</div>
+</div>
+<button class="px-3 py-1.5 border border-primary text-primary text-xs font-semibold rounded hover:bg-surface-container transition-colors">Review</button>
+</div>
+<div class="w-full text-center mt-2">
+<button class="text-secondary font-label-md text-label-md hover:underline">View all pending (4)</button>
+</div>
+</div>
+</div>
+<!-- Expiring Soon Card -->
+<div class="bg-surface rounded-lg border border-outline-variant shadow-sm p-4">
+<div class="flex items-center justify-between mb-4 border-b border-outline-variant pb-2">
+<h3 class="font-title-lg text-title-lg text-primary">Expiring Soon</h3>
+<span class="bg-secondary-fixed text-on-secondary-fixed-variant px-2 py-0.5 rounded-full text-xs font-semibold">5</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Item -->
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface flex items-center justify-center font-bold text-sm shrink-0">RH</div>
+<div>
+<div class="font-semibold text-primary text-sm">Robert Hayes</div>
+<div class="text-on-surface-variant text-xs">Annual Membership</div>
+<div class="text-error text-xs font-medium mt-0.5 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                            Expires Mar 31, 2025
+                                        </div>
+</div>
+</div>
+<button class="px-3 py-1.5 text-secondary text-xs font-semibold hover:bg-surface-container rounded transition-colors">View</button>
+</div>
+<div class="w-full text-center mt-2">
+<button class="text-secondary font-label-md text-label-md hover:underline">View all expiring (5)</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

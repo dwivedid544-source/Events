@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Heritage Field &amp; Forest - Home</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container": "#f0eded",
+                        "outline-variant": "#c3c8c1",
+                        "surface-container-low": "#f6f3f2",
+                        "on-secondary-container": "#795930",
+                        "secondary-fixed": "#ffddb7",
+                        "on-surface": "#1b1c1c",
+                        "tertiary-container": "#1d2f22",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "on-tertiary": "#ffffff",
+                        "background": "#fcf9f8",
+                        "primary": "#061b0e",
+                        "inverse-primary": "#b4cdb8",
+                        "surface-dim": "#dcd9d9",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "on-secondary-fixed": "#2a1700",
+                        "outline": "#737973",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "on-primary-fixed-variant": "#364c3c",
+                        "inverse-on-surface": "#f3f0f0",
+                        "on-primary-container": "#819986",
+                        "on-surface-variant": "#434843",
+                        "surface-bright": "#fcf9f8",
+                        "on-background": "#1b1c1c",
+                        "surface-container-high": "#eae7e7",
+                        "surface-container-highest": "#e4e2e1",
+                        "surface": "#fcf9f8",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-primary": "#ffffff",
+                        "secondary-container": "#fed39f",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "tertiary": "#091a0f",
+                        "inverse-surface": "#303030",
+                        "surface-tint": "#4d6453",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "on-tertiary-container": "#839886",
+                        "on-primary-fixed": "#0b2013",
+                        "surface-variant": "#e4e2e1",
+                        "primary-container": "#1b3022",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed": "#d3e8d5",
+                        "on-error": "#ffffff",
+                        "primary-fixed": "#d0e9d4",
+                        "secondary": "#78582f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xs": "4px",
+                        "lg": "48px",
+                        "xl": "80px",
+                        "md": "24px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "margin-desktop": "64px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-md": ["Inter"],
+                        "display-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    },
+                    boxShadow: {
+                        'ambient': '0px 4px 20px rgba(27, 48, 34, 0.08)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary">
+<!-- TopNavBar -->
+<header class="bg-background dark:bg-background text-primary dark:text-inverse-primary font-body-md text-body-md w-full top-0 sticky border-b border-outline-variant dark:border-outline z-50">
+<div class="flex justify-between items-center max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop py-md">
+<div class="flex items-center gap-sm">
+<img alt="Heritage Field &amp; Forest Logo" class="h-10 w-10 object-contain" src="https://lh3.googleusercontent.com/aida/AP1WRLttnm1HAa94-K-jtqFUWEIRK397OE_qlUBZEawiejW3oPyRVP9UJOWBECSFa1rUafMA7xJIlq67PPUM8xqQjg5mZqcVnlYdnNIximOk35XZBXspETmWQLXzLlBc-7BJ18G-v6C1h0sqZlgGzhxG1Fd0Z43ygwUqD9ux0IIdWH_XgJ8Ah3wKlpK67YHVMaSPBc48TvUzC9Ukd4mk75YVkLIMad82IW1BGd75q2OMakx7pMcL8t-z7Sn75WOV"/>
+<span class="font-headline-md text-headline-md font-bold text-primary dark:text-on-background hidden md:block">Heritage Field &amp; Forest</span>
+</div>
+<nav class="hidden md:flex items-center gap-gutter">
+<a class="text-primary dark:text-primary-fixed-dim font-bold border-b-2 border-primary pb-1" href="#">Home</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Find a Hunt</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Events</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Find a Club</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">States</a>
+<a class="text-on-surface-variant dark:text-surface-variant hover:text-primary dark:hover:text-primary-fixed-dim transition-colors" href="#">Results</a>
+</nav>
+<div class="flex items-center gap-sm">
+<button class="text-primary font-label-md hover:opacity-80 transition-opacity px-4 py-2">Login</button>
+<button class="bg-primary-container text-white rounded font-label-md px-6 py-2 hover:opacity-90 transition-opacity shadow-ambient">Join</button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative w-full h-[600px] flex items-center justify-center">
+<div class="absolute inset-0 z-0">
+<img alt="Misty rolling hills with a stone cabin and vintage 4x4 vehicles at sunrise, embodying outdoor heritage." class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida/AP1WRLtrNrT8kgWKhrAMeieeOhSTSZklPmuQ5aLnrwyhXbkiwDZ_dXx0O_ZbA9r5PC2GqdpSJ5BrrwfyeyuJpIH0eoG7uNBC-sH1_1exBVjVeQinBbV4ZxULiIXbvtJuJgb2kloMlpMfqEDRjsEwGtGJVjIdLzfd0Bfkt-AEWn3pFL6V7osvVmU5nF5oRsdT6T6dpz269SBFbEcUiE9bOaFcgvsdYSMGfKfqS7NQwmDra5eYrJ8zKGkoFFW4zlE"/>
+<div class="absolute inset-0 bg-primary/40 mix-blend-multiply"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
+</div>
+<div class="relative z-10 w-full max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop text-center text-white">
+<h1 class="font-display-lg text-display-lg mb-sm text-white drop-shadow-lg">Find Hunts, Clubs &amp; Events Near You</h1>
+<p class="font-body-lg text-body-lg max-w-2xl mx-auto mb-lg text-white/90 drop-shadow-md">Discover local clubs, upcoming events, results and membership opportunities across the network.</p>
+<div class="bg-surface rounded-lg p-sm shadow-ambient max-w-3xl mx-auto flex flex-col md:flex-row gap-sm items-center border border-outline-variant">
+<div class="w-full relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">location_on</span>
+<input class="w-full pl-10 pr-4 py-3 rounded border-outline-variant focus:border-primary focus:ring-2 focus:ring-secondary/20 bg-white text-on-surface font-body-md placeholder:text-outline" placeholder="ZIP / City" type="text"/>
+</div>
+<div class="w-full relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">event</span>
+<select class="w-full pl-10 pr-4 py-3 rounded border-outline-variant focus:border-primary focus:ring-2 focus:ring-secondary/20 bg-white text-on-surface font-body-md appearance-none">
+<option value="">Event Type</option>
+<option value="trial">Field Trial</option>
+<option value="hunt">Hunt</option>
+<option value="meeting">Meeting</option>
+</select>
+</div>
+<button class="w-full md:w-auto bg-primary-container text-white px-8 py-3 rounded font-label-md hover:opacity-90 transition-opacity whitespace-nowrap">Search</button>
+</div>
+</div>
+</section>
+<!-- Upcoming Events Section -->
+<section class="py-xl max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="flex justify-between items-end mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-primary">Upcoming Events</h2>
+<a class="text-secondary font-label-md hover:underline flex items-center gap-xs" href="#">View All <span class="material-symbols-outlined text-sm">arrow_forward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient flex flex-col overflow-hidden hover:-translate-y-1 transition-transform duration-300 group">
+<div class="h-48 bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="A focused hunting dog pointing in a golden autumn field, capturing the intensity of a field trial. Shallow depth of field, warm morning light, crisp details." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDlBhfCeADkrDLkUuNRP48OrPnF9ww-7j3Fj76A2tSPZau59XA9zw9NHUqEjOCKPl_LnOfHgYN4i3q5AYDmoWXOY3w81bQqhs3oFWQwCgsaIvlXR7Nxip_EuJNBI7ommLIh7i_XZI03RGPOnjyaF7MCWmwLwhk6fwLidvOZyH3l8hvvIcmUGEsDyrZpjyHEl_w_MTuwD1lqB9E9_wPzE_8da3MxAxeJJ9EObxsI9RKCuUhH_ABtNOhd2g"/>
+<div class="absolute top-sm right-sm bg-secondary/10 text-secondary px-2 py-1 rounded font-label-md backdrop-blur-sm bg-white/80">$450</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs font-label-md">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Oct 03, 2024</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-xs group-hover:text-secondary transition-colors">Fall Field Trial</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs mt-auto pt-sm border-t border-surface-variant">
+<span class="material-symbols-outlined text-[16px]">group</span>
+                            Pine Ridge Chapter • Atlanta, GA
+                        </p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient flex flex-col overflow-hidden hover:-translate-y-1 transition-transform duration-300 group">
+<div class="h-48 bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="A group of hunters gathering around a vintage truck at dawn, preparing gear. Cool, crisp morning atmosphere, documentary style, authentic outdoorsy feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC9lGpjrVsMs-OhzWwA2XWz9jmO2u4ZRDOqhi7qnVLj8gFmzdIyuQkU3B7B9lTnFMY2wbms515irj7mGSeFqiSj9KxEu7iJfCYVtqyOs_XTKcCRu09ekB-K3Lsj4Mf8b_YJn0CIaXHj82KNTQPFnr3V-IwsNIDpGGOXyia0jedhvUZN_1Ub8eoyZtxcJ3jl-CM0fMV7Mvhcs_ww1YDkj66dsHSsA9D-zObOAK3eVgzadIBw1rykZS7F8w"/>
+<div class="absolute top-sm right-sm bg-secondary/10 text-secondary px-2 py-1 rounded font-label-md backdrop-blur-sm bg-white/80">$200</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs font-label-md">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Nov 05, 2024</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-xs group-hover:text-secondary transition-colors">Regional Qualification</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs mt-auto pt-sm border-t border-surface-variant">
+<span class="material-symbols-outlined text-[16px]">group</span>
+                            Oak Creek Hunters • Lexington, KY
+                        </p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface rounded-lg border border-outline-variant shadow-ambient flex flex-col overflow-hidden hover:-translate-y-1 transition-transform duration-300 group">
+<div class="h-48 bg-surface-container-low relative">
+<img class="w-full h-full object-cover" data-alt="Snow lightly falling on a vast pine forest landscape. Subtle tracks visible in the foreground. Moody, cold, serene winter atmosphere, wide angle." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQFCcoHclvZ8rgB7jZduVUgNIuugRW27XOyJ30_HtPGLFcbpU5VoNB3NlpVQ0B8RFfYbv_yjOhKerSJhpO6o-SuT9P9PKS1rYS9NvvZnmqNiYWRj1u_BeZvIugr_uOXBsDV7Y4AO5JYQVPomiYIcbxl2mxd06AH3coM0leBklyVVUo2njcx2sqGvG7LBrZuSrA67Iy2T7CDv2z7EavJeaOFQB-i-X6ccYfQ07nGVDP7aEzll2RWh56-A"/>
+<div class="absolute top-sm right-sm bg-secondary/10 text-secondary px-2 py-1 rounded font-label-md backdrop-blur-sm bg-white/80">$250</div>
+</div>
+<div class="p-md flex flex-col flex-grow">
+<div class="flex items-center gap-xs text-on-surface-variant mb-xs font-label-md">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span>Dec 16, 2024</span>
+</div>
+<h3 class="font-title-lg text-title-lg text-primary mb-xs group-hover:text-secondary transition-colors">Winter Classic</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant flex items-center gap-xs mt-auto pt-sm border-t border-surface-variant">
+<span class="material-symbols-outlined text-[16px]">group</span>
+                            Highland Conservation Club • Bend, OR
+                        </p>
+</div>
+</div>
+</div>
+</section>
+<!-- Find a Club Section (Bento Style) -->
+<section class="bg-surface-container-low py-xl border-y border-outline-variant">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-lg items-center">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-sm">Find a Club Near You</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-lg max-w-md">Connect with local chapters, access private lands, and join a community dedicated to conservation and heritage.</p>
+<div class="flex flex-col sm:flex-row gap-sm">
+<button class="bg-primary-container text-white px-6 py-3 rounded font-label-md hover:opacity-90 transition-opacity flex items-center justify-center gap-xs">
+<span class="material-symbols-outlined">search</span> Find a Club
+                            </button>
+<button class="border border-primary text-primary px-6 py-3 rounded font-label-md hover:bg-primary-container/5 transition-colors flex items-center justify-center">
+                                Start a Chapter
+                            </button>
+</div>
+<div class="mt-lg grid grid-cols-2 gap-md">
+<div class="border-l-2 border-secondary pl-sm">
+<div class="font-headline-md text-headline-md text-primary">500+</div>
+<div class="font-label-md text-on-surface-variant uppercase">Active Clubs</div>
+</div>
+<div class="border-l-2 border-secondary pl-sm">
+<div class="font-headline-md text-headline-md text-primary">50</div>
+<div class="font-label-md text-on-surface-variant uppercase">States Covered</div>
+</div>
+</div>
+</div>
+<div class="relative h-[400px] rounded-lg overflow-hidden border border-outline-variant shadow-ambient bg-surface">
+<img class="w-full h-full object-cover opacity-80" data-alt="A stylized, clean, minimalist map of the United States rendered in deep forest greens and off-whites. Small subtle tan dots represent active club locations. Corporate, professional infographic style." data-location="USA Map" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7MOGFJTR-bmY-LJtc0bVo4jb7jSEGceeCANRyn6JqSezrImwBvk8dOuexnXMByt4v8QLxAcfSyQQSX05J1ogy7VXGjJh3zqR7yGBYvyUzEKN9Q4UaSxBl-N-i-vHYXqCJPwYd7BCvfo95mRkO5r0k6Ue4EbiZRM2ixPulHIpHN2DqotDYnLyQitePLv4nNmKhxhQT2rxQx_JlxeRxNJmBgLHjTmEqR0wL3Bs3WAZvozVG1YjMYXHvTA"/>
+</div>
+</div>
+</div>
+</section>
+<!-- News & Featured States -->
+<section class="py-xl max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Latest News -->
+<div class="lg:col-span-2">
+<div class="flex justify-between items-end mb-md border-b border-surface-variant pb-xs">
+<h2 class="font-headline-md text-headline-md text-primary">Latest News</h2>
+<a class="text-secondary font-label-md hover:underline" href="#">All News</a>
+</div>
+<div class="flex flex-col gap-md">
+<a class="group flex gap-sm items-start" href="#">
+<div class="w-24 h-24 rounded bg-surface-container-high flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close up of a clipboard with registration forms resting on an old wooden table. A classic pen sits atop the papers. Warm, natural lighting, focused administrative detail." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAhq-RA42i5HaMIb0P9wDuJO62pIVT5X56bpsrnn-zB-2gNhipmUjKEfjej9UMQRGeVkGAsM-6MsJjEfyk1EQTVqCmrpx_h2NDuwPIcwgWBIU3F_thBKPthZmfVm60S8sJOAJBoqXy2HqGjD7xK7OD_Srko4mNUOILo1prUDjwU20Y6ojdv61hFaUjzyKNTh0MktxRsQRwx9znE_q0J2xuwy52Fv-f38tVwLn2_IkdyvZfjdbzwhG5gnA"/>
+</div>
+<div>
+<span class="font-label-md text-secondary block mb-xs">ANNOUNCEMENT</span>
+<h3 class="font-title-lg text-title-lg text-primary group-hover:text-secondary transition-colors line-clamp-2">Fall Field Trial Registration Now Open</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs line-clamp-2">Secure your spot for the upcoming regional qualifiers before slots fill up.</p>
+</div>
+</a>
+<a class="group flex gap-sm items-start pt-md border-t border-surface-variant" href="#">
+<div class="w-24 h-24 rounded bg-surface-container-high flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A beautifully crafted membership card resting on a mossy log in the forest. Shallow depth of field, highlighting the card's texture and natural setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDyZQeWwGR9ua0l1ElrPzoMK9thZhKZNOI2mKGVdn3VH17IFjyQ970mOGPKQdG7PNdLCGpFjMiJoct01Eh8wgMyUOyfKQ_5g8hH-exViJErqBFoPtCYJvLhqrOFmGhSq7paAINAmCPGjZ9UBDii7J4_hCRSJeVb2wvuPGZLIhuu6TWu_cVZAFj3G2eTxd3ZG8BNNAkqv05oW7zMDUpSAcJzJosciHig7xDtR17Afz85b8iwXTFvuWg_bQ"/>
+</div>
+<div>
+<span class="font-label-md text-secondary block mb-xs">MEMBERSHIP</span>
+<h3 class="font-title-lg text-title-lg text-primary group-hover:text-secondary transition-colors line-clamp-2">Annual Membership Renewal</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs line-clamp-2">Renew your membership for the 2025 season to maintain access to premium club benefits.</p>
+</div>
+</a>
+<a class="group flex gap-sm items-start pt-md border-t border-surface-variant" href="#">
+<div class="w-24 h-24 rounded bg-surface-container-high flex-shrink-0 overflow-hidden">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="A silver championship cup sitting on a rustic wooden pedestal outdoors. Golden hour sunlight glinting off the metal. Victorious, prestigious mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0xh3mBAznHtO7iNwRiRnXS_Jy_DPiTpAT0BSuewHP8Pqtlm1-v9BDRT49JMpepG3nAtmtJOY6QpEB71iKPGAR0iU6Qm7JxvwNjeT7AqocQxCmHvo6BgZQ-gh_RdcvzACSrQfVn4TybRQ1Gl98oT8b-3ie3tIyYwquVPmEkiSgyurk_3hRRNdg0C0u2hb47VX1huSxOsL3OxGKlA4G3rI3z43sWuDm3AgBBxqECEJo7PhaA8SzaRK7Yw"/>
+</div>
+<div>
+<span class="font-label-md text-secondary block mb-xs">RESULTS</span>
+<h3 class="font-title-lg text-title-lg text-primary group-hover:text-secondary transition-colors line-clamp-2">Regional Championship Results</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-xs line-clamp-2">View the final standings and notable performances from last weekend's event.</p>
+</div>
+</a>
+</div>
+</div>
+<!-- Featured States -->
+<div>
+<div class="flex justify-between items-end mb-md border-b border-surface-variant pb-xs">
+<h2 class="font-headline-md text-headline-md text-primary">Featured States</h2>
+</div>
+<div class="grid grid-cols-2 gap-sm">
+<a class="bg-surface border border-outline-variant rounded p-sm flex items-center justify-between hover:border-primary transition-colors shadow-sm group" href="#">
+<span class="font-body-md text-primary font-semibold">Georgia</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+</a>
+<a class="bg-surface border border-outline-variant rounded p-sm flex items-center justify-between hover:border-primary transition-colors shadow-sm group" href="#">
+<span class="font-body-md text-primary font-semibold">Kentucky</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+</a>
+<a class="bg-surface border border-outline-variant rounded p-sm flex items-center justify-between hover:border-primary transition-colors shadow-sm group" href="#">
+<span class="font-body-md text-primary font-semibold">Oregon</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+</a>
+<a class="bg-surface border border-outline-variant rounded p-sm flex items-center justify-between hover:border-primary transition-colors shadow-sm group" href="#">
+<span class="font-body-md text-primary font-semibold">Texas</span>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">chevron_right</span>
+</a>
+</div>
+<div class="mt-lg bg-primary-container text-on-primary p-md rounded-lg relative overflow-hidden">
+<div class="relative z-10">
+<h3 class="font-title-lg text-title-lg mb-xs">Support Conservation</h3>
+<p class="font-body-sm text-on-primary-container mb-md">Your membership directly funds habitat restoration across the network.</p>
+<button class="bg-secondary text-white px-4 py-2 rounded font-label-md hover:bg-secondary/90 transition-colors">Donate Now</button>
+</div>
+<span class="material-symbols-outlined absolute -bottom-4 -right-4 text-9xl text-white/5 pointer-events-none">forest</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Merchandise -->
+<section class="bg-surface-container-highest py-xl border-t border-outline-variant">
+<div class="max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop">
+<div class="flex justify-between items-end mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-primary">Featured Merchandise</h2>
+<a class="text-secondary font-label-md hover:underline" href="#">Shop All</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-md">
+<!-- Product 1 -->
+<a class="bg-surface rounded border border-outline-variant p-sm flex flex-col group hover:shadow-ambient transition-shadow" href="#">
+<div class="aspect-square bg-surface-container-low rounded mb-sm flex items-center justify-center p-md">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" data-alt="A neatly folded premium cotton t-shirt in forest green color. Clean studio lighting against a pure white background. Product photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAI5dik58SIhXOh_NBegaG45VJ1Fnt2ZeMmnXOfiZwmp7W1tH1T7A6FSwEdVxHjCwmmGWYfOCR2NmX-y3bLD5UT--9d2tffxP1TokNR8zo42mjjEsPvp2-3vLAcLRQ7BXYaGVZXOzOGmbgVzEQTcAyPVYdCKDADeB-2xfWPsVYY2YiZZyvae8m3T732qk5fVqGgzC9y03jYShrSaeGmNy0miigcnW3MXfVwTgmJC6khjLnPm05QpWDbyg"/>
+</div>
+<h3 class="font-body-md text-primary font-semibold truncate">Club T-Shirt</h3>
+<p class="font-body-sm text-secondary mt-xs">$28.00</p>
+</a>
+<!-- Product 2 -->
+<a class="bg-surface rounded border border-outline-variant p-sm flex flex-col group hover:shadow-ambient transition-shadow" href="#">
+<div class="aspect-square bg-surface-container-low rounded mb-sm flex items-center justify-center p-md">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" data-alt="A high-quality, thick pullover hoodie in warm highland tan color. Clean studio lighting against a pure white background. Product photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAs3JWrnuJ54Ho3zKykoQ5gyKKhgVuUXsZbGphl_s-EDLUNSf9HliQlTeCIfTT4xS6ly2whENmsxZJjwwfL62YjQTUqkSl-ENgKjsiAI47yVGdZrtCVcI4Wl0l7uXCIpWWegUFILzTGn2NaQjcTQWwzRkEn1pXBh7bjNFsilx5sfXN_pDiSg0PlWKuVa4ufG1r2PH9V_L6-LVAjALqr-WvOKtJf6S0jpfh_LP_Gsecyl5dl0ooCIakejg"/>
+</div>
+<h3 class="font-body-md text-primary font-semibold truncate">Club Hoodie</h3>
+<p class="font-body-sm text-secondary mt-xs">$48.00</p>
+</a>
+<!-- Product 3 -->
+<a class="bg-surface rounded border border-outline-variant p-sm flex flex-col group hover:shadow-ambient transition-shadow" href="#">
+<div class="aspect-square bg-surface-container-low rounded mb-sm flex items-center justify-center p-md">
+<img class="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-300" data-alt="A classic structured baseball cap in forest green with a subtle embroidered logo. Clean studio lighting against a pure white background. Product photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-Qz_GVns_ErnOzzy5iJotjEaPw9Zbs5TJfCCkY12zmUQDRQUG-c5pfjG_75poL5Qki2Gwxv6zxBk1XaaeWIZB0_VK67X0pY9jcnpNXgFlLF7L3oB6WuszMrFYELjkwvacZ0m3juGG1DvnMmKkxyGasSAX-X8qfF-AAMF4lG-v5VvPCj-8xN-MGFguwiQ8IEZCdXvHS_IotykynEYgYov2LE0hw-dHjiT2vuRVv_nPqGAzVCrR1f_5EQ"/>
+</div>
+<h3 class="font-body-md text-primary font-semibold truncate">Logo Cap</h3>
+<p class="font-body-sm text-secondary mt-xs">$24.00</p>
+</a>
+<!-- Promo Tile -->
+<div class="bg-secondary/10 rounded border border-secondary/20 p-sm flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-xs">local_shipping</span>
+<h3 class="font-title-lg text-primary mb-xs">Free Shipping</h3>
+<p class="font-body-sm text-on-surface-variant">On orders over $75.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Sponsors -->
+<section class="py-xl max-w-7xl mx-auto px-margin-mobile md:px-margin-desktop text-center border-t border-surface-variant">
+<h2 class="font-label-md text-outline mb-md uppercase tracking-widest">Proudly Supported By</h2>
+<div class="flex flex-wrap justify-center items-center gap-xl opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<span class="font-headline-md font-bold text-primary">Outdoor Gear Co.</span>
+<span class="font-headline-md font-bold text-primary">Conservation Trust</span>
+<span class="font-headline-md font-bold text-primary">Trek &amp; Trail</span>
+<span class="font-headline-md font-bold text-primary">Field Supply</span>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-highest dark:bg-surface-container-low text-primary dark:text-on-primary-container font-body-sm text-body-sm w-full border-t border-outline-variant">
+<div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-gutter max-w-7xl mx-auto px-margin-desktop py-lg">
+<div class="col-span-2 lg:col-span-1 mb-md lg:mb-0">
+<span class="font-title-lg text-title-lg font-bold text-primary block mb-sm">Heritage Field &amp; Forest</span>
+<p class="text-on-surface-variant dark:text-on-surface-variant mb-md">Dedicated to preserving the outdoor heritage and administering field events with precision and integrity.</p>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-sm">Organization</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">About</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Membership</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Contact</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-sm">Network</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Events</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Clubs</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">News</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-sm">Resources</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Store</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Sponsors</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-primary uppercase mb-sm">Legal</h4>
+<ul class="space-y-2">
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Privacy</a></li>
+<li><a class="text-on-surface-variant dark:text-on-surface-variant hover:text-primary dark:hover:text-primary-fixed transition-colors" href="#">Terms</a></li>
+</ul>
+</div>
+</div>
+<div class="border-t border-outline-variant/30 py-sm text-center">
+<span class="text-on-surface-variant dark:text-on-surface-variant">© 2024 Heritage Field &amp; Forest. All rights reserved.</span>
+</div>
+</footer>
+</body></html>

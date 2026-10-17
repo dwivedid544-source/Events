@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Heritage Field &amp; Forest - Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dcd9d9",
+                        "primary-fixed": "#d0e9d4",
+                        "primary": "#061b0e",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "surface-variant": "#e4e2e1",
+                        "primary-container": "#1b3022",
+                        "on-background": "#1b1c1c",
+                        "on-primary-fixed-variant": "#364c3c",
+                        "on-surface-variant": "#434843",
+                        "surface-container-low": "#f6f3f2",
+                        "secondary": "#78582f",
+                        "on-primary-fixed": "#0b2013",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-surface": "#303030",
+                        "outline": "#737973",
+                        "error-container": "#ffdad6",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "surface-bright": "#fcf9f8",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "surface-container-highest": "#e4e2e1",
+                        "surface-container-high": "#eae7e7",
+                        "inverse-on-surface": "#f3f0f0",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "secondary-container": "#fed39f",
+                        "on-tertiary-container": "#839886",
+                        "surface-container": "#f0eded",
+                        "error": "#ba1a1a",
+                        "on-error-container": "#93000a",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "on-primary-container": "#819986",
+                        "secondary-fixed": "#ffddb7",
+                        "background": "#fcf9f8",
+                        "inverse-primary": "#b4cdb8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-secondary-container": "#795930",
+                        "tertiary": "#091a0f",
+                        "surface": "#fcf9f8",
+                        "tertiary-container": "#1d2f22",
+                        "surface-tint": "#4d6453",
+                        "tertiary-fixed": "#d3e8d5",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#c3c8c1"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "xl": "80px",
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "margin-mobile": "16px",
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin-desktop": "64px",
+                        "base": "8px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08); }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col md:flex-row">
+<!-- Left Side: Visual Section -->
+<div class="relative hidden md:flex w-1/2 flex-col justify-end p-margin-desktop bg-cover bg-center" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZGwthEUcZlu4P-Lyo8wVJKQCmEhMeSPR78UgvsKBavfs8xGFbNIBm0KeZF-JvBOWDd_MNz2MxIVbF6uPaN8oxfar-VxfqTrm80bcIJ1yfNiKDkJRC0QDW1FgaZtaRFPeOPhVLF8Y_z4ay6k9mgbLgp0Qiv-Tsc7bNBq7om7XsZPrmMVlbC2B0m-tsS7skpYmXgXfgzSmty5n1vZ_Oun0Mtm4Dh19t4n8nvUDd6rhX34DFm_coPX2bwQ');">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/50 to-transparent"></div>
+<div class="relative z-10 text-on-primary">
+<img alt="Logo" class="h-24 w-auto mb-lg rounded-sm bg-surface/10 p-2 backdrop-blur-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_adfXtk6yPpwwazITtTt8KhUVeamwJkAX5rF4NXwYwOyAxDSpASNmoCZNla5mDHMAp4Zw0PtIKrxe2bxoeSuOg8rH6tzAT9pohnANKvZeDUztYn3mfTeCwIgp0ruF4jaQxZCBJl8HZvuxLQ4jZCHYOsVGFKx3CasU-7pZ2xIfkTcV06DZDLEi8Kc5u0PIAv-MuACIgLjr2AsbrxUGfoaQxgrSTXXiuZQuJj5kmhDznIDdWN6tDURiDw"/>
+<h1 class="font-display-lg text-display-lg mb-sm">One Network.<br/>Every Club.<br/>Every Event.</h1>
+<p class="font-body-lg text-body-lg text-on-primary/90 max-w-md">Connect with clubs, events, memberships and the nationwide hunting community from one platform.</p>
+</div>
+</div>
+<!-- Mobile Header (Visible only on small screens) -->
+<div class="md:hidden relative h-64 bg-cover bg-center flex items-end p-margin-mobile" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBZGwthEUcZlu4P-Lyo8wVJKQCmEhMeSPR78UgvsKBavfs8xGFbNIBm0KeZF-JvBOWDd_MNz2MxIVbF6uPaN8oxfar-VxfqTrm80bcIJ1yfNiKDkJRC0QDW1FgaZtaRFPeOPhVLF8Y_z4ay6k9mgbLgp0Qiv-Tsc7bNBq7om7XsZPrmMVlbC2B0m-tsS7skpYmXgXfgzSmty5n1vZ_Oun0Mtm4Dh19t4n8nvUDd6rhX34DFm_coPX2bwQ');">
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
+<div class="relative z-10 text-on-primary w-full">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile leading-tight mb-2">One Network. Every Club. Every Event.</h1>
+</div>
+</div>
+<!-- Right Side: Login Section -->
+<div class="w-full md:w-1/2 flex flex-col items-center justify-center p-margin-mobile md:p-margin-desktop bg-surface-bright min-h-screen md:min-h-0 py-lg overflow-y-auto">
+<!-- Mobile Logo -->
+<div class="md:hidden mb-lg w-full max-w-[440px]">
+<img alt="Logo" class="h-16 w-auto mx-auto rounded-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC_adfXtk6yPpwwazITtTt8KhUVeamwJkAX5rF4NXwYwOyAxDSpASNmoCZNla5mDHMAp4Zw0PtIKrxe2bxoeSuOg8rH6tzAT9pohnANKvZeDUztYn3mfTeCwIgp0ruF4jaQxZCBJl8HZvuxLQ4jZCHYOsVGFKx3CasU-7pZ2xIfkTcV06DZDLEi8Kc5u0PIAv-MuACIgLjr2AsbrxUGfoaQxgrSTXXiuZQuJj5kmhDznIDdWN6tDURiDw"/>
+</div>
+<div class="w-full max-w-[440px]">
+<!-- Login Form Card -->
+<div class="bg-surface rounded-xl ambient-shadow border border-outline-variant/50 p-gutter mb-lg">
+<div class="mb-gutter">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-xs">Welcome Back</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Sign in to access your account.</p>
+</div>
+<form class="space-y-base">
+<div>
+<label class="block font-label-md text-label-md text-on-surface mb-xs uppercase" for="email">Email Address</label>
+<input class="w-full bg-surface border border-outline-variant rounded p-sm font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-secondary-container/20 transition-all" id="email" placeholder="name@example.com" type="email"/>
+</div>
+<div class="relative">
+<label class="block font-label-md text-label-md text-on-surface mb-xs uppercase" for="password">Password</label>
+<input class="w-full bg-surface border border-outline-variant rounded p-sm pr-10 font-body-md text-body-md text-on-surface focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-secondary-container/20 transition-all" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-sm top-[30px] text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined" style="font-size: 20px;">visibility_off</span>
+</button>
+</div>
+<div class="flex items-center justify-between py-xs">
+<label class="flex items-center cursor-pointer group">
+<input class="form-checkbox h-4 w-4 text-primary-container border-outline-variant rounded-sm focus:ring-secondary-container/20 cursor-pointer" type="checkbox"/>
+<span class="ml-2 font-body-sm text-body-sm text-on-surface-variant group-hover:text-primary transition-colors">Remember Me</span>
+</label>
+<a class="font-body-sm text-body-sm text-primary-container hover:text-secondary underline transition-colors" href="#">Forgot Password?</a>
+</div>
+<button class="w-full bg-primary-container text-on-primary py-sm px-md rounded font-title-lg text-title-lg hover:bg-primary transition-colors shadow-sm mt-sm" type="submit">Sign In</button>
+</form>
+<div class="mt-gutter text-center border-t border-outline-variant/30 pt-base">
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                        Don't have an account? <a class="text-primary-container font-semibold hover:underline" href="#">Join Now</a>
+</p>
+</div>
+</div>
+<!-- Demo Access Section -->
+<div class="bg-surface rounded-xl ambient-shadow border border-outline-variant/50 p-gutter">
+<div class="mb-sm border-b border-outline-variant/30 pb-xs">
+<h3 class="font-title-lg text-title-lg text-primary">Preview Portal</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Select a role to bypass login for demonstration purposes.</p>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-sm">
+<!-- Role Card 1 -->
+<button class="flex items-start text-left p-sm border border-outline-variant rounded hover:border-primary-container hover:bg-surface-container-low transition-all group">
+<div class="bg-primary-fixed/20 p-2 rounded text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors mr-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">person</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase mb-[2px]">Member</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Memberships, events, entries and orders.</p>
+</div>
+</button>
+<!-- Role Card 2 -->
+<button class="flex items-start text-left p-sm border border-outline-variant rounded hover:border-primary-container hover:bg-surface-container-low transition-all group">
+<div class="bg-primary-fixed/20 p-2 rounded text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors mr-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">business_center</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase mb-[2px]">Club Admin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Manage one assigned club.</p>
+</div>
+</button>
+<!-- Role Card 3 -->
+<button class="flex items-start text-left p-sm border border-outline-variant rounded hover:border-primary-container hover:bg-surface-container-low transition-all group">
+<div class="bg-primary-fixed/20 p-2 rounded text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors mr-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">map</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase mb-[2px]">State Admin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Manage clubs and activity within one state.</p>
+</div>
+</button>
+<!-- Role Card 4 -->
+<button class="flex items-start text-left p-sm border border-outline-variant rounded hover:border-primary-container hover:bg-surface-container-low transition-all group">
+<div class="bg-primary-fixed/20 p-2 rounded text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors mr-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">event</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase mb-[2px]">Event Admin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Manage an assigned event.</p>
+</div>
+</button>
+<!-- Role Card 5 -->
+<button class="flex items-start text-left p-sm border border-outline-variant rounded hover:border-primary-container hover:bg-surface-container-low transition-all group">
+<div class="bg-primary-fixed/20 p-2 rounded text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors mr-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">public</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase mb-[2px]">National Admin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Manage national operations.</p>
+</div>
+</button>
+<!-- Role Card 6 -->
+<button class="flex items-start text-left p-sm border border-outline-variant rounded hover:border-primary-container hover:bg-surface-container-low transition-all group">
+<div class="bg-primary-fixed/20 p-2 rounded text-primary-container group-hover:bg-primary-container group-hover:text-on-primary transition-colors mr-sm shrink-0">
+<span class="material-symbols-outlined text-[20px]">admin_panel_settings</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-primary uppercase mb-[2px]">Super Admin</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[11px] leading-tight">Full platform administration.</p>
+</div>
+</button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

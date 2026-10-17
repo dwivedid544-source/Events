@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Club Admin - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#434843",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "surface-container-high": "#eae7e7",
+                        "surface-container-low": "#f6f3f2",
+                        "on-background": "#1b1c1c",
+                        "primary-container": "#1b3022",
+                        "on-primary-fixed": "#0b2013",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-primary-container": "#819986",
+                        "primary-fixed": "#d0e9d4",
+                        "on-secondary-container": "#795930",
+                        "surface-variant": "#e4e2e1",
+                        "on-surface": "#1b1c1c",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dcd9d9",
+                        "tertiary-container": "#1d2f22",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "surface-container": "#f0eded",
+                        "tertiary-fixed": "#d3e8d5",
+                        "on-error": "#ffffff",
+                        "tertiary": "#091a0f",
+                        "surface-tint": "#4d6453",
+                        "on-error-container": "#93000a",
+                        "error": "#ba1a1a",
+                        "inverse-surface": "#303030",
+                        "inverse-on-surface": "#f3f0f0",
+                        "inverse-primary": "#b4cdb8",
+                        "outline-variant": "#c3c8c1",
+                        "secondary": "#78582f",
+                        "surface": "#fcf9f8",
+                        "surface-container-lowest": "#ffffff",
+                        "background": "#fcf9f8",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#737973",
+                        "on-secondary-fixed": "#2a1700",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "surface-container-highest": "#e4e2e1",
+                        "on-secondary": "#ffffff",
+                        "on-tertiary-container": "#839886",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "secondary-fixed": "#ffddb7",
+                        "surface-bright": "#fcf9f8",
+                        "secondary-container": "#fed39f",
+                        "primary": "#061b0e",
+                        "on-primary-fixed-variant": "#364c3c"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "xs": "4px",
+                        "margin-mobile": "16px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "md": "24px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Custom scrollbar for sidebar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e4e2e1; 
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c3c8c1; 
+        }
+        
+        .ambient-shadow {
+            box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen antialiased flex flex-col md:flex-row">
+<!-- SideNavBar -->
+<aside class="hidden md:flex bg-surface dark:bg-background h-screen w-64 fixed left-0 top-0 overflow-y-auto border-r border-outline-variant dark:border-on-surface-variant flex-col py-md z-40">
+<!-- Header -->
+<div class="px-margin-mobile mb-md flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container flex-shrink-0 border border-outline-variant">
+<img alt="Pine Ridge Chapter Logo" class="w-full h-full object-cover" data-alt="A small circular logo depicting a stylized pine tree and mountain ridge in solid dark forest green against a crisp white background. Professional, clean, and modern outdoor brand aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPwrZo63hFeQ59F0I8eeZvbAaAufLEWRN5HaU9gx8puLGqBQ40K2araIBJTkMsNZ3C50m4EIk79EvphKV-nRbNb1_fPnd5w09sbG0XWoYfH60PVFMQYMaktwvSXmZoRg_jh1JtSjjC6rDQk3o4107u8RMS6nJ9m5iq3gjLetYr_6uCgCUkfkg8iRDw405xjiJ3EhZa68TqrF9HqWmZqPK7acwizYjZ5AwF6peygyA7_wIdwHJvhU_KIQ"/>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed-dim tracking-tight leading-tight">Club Admin</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Pine Ridge Chapter</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 overflow-y-auto">
+<ul class="flex flex-col font-label-md text-label-md">
+<!-- Dashboard (Active) -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-primary dark:text-primary-fixed font-semibold border-r-4 border-primary dark:border-primary-fixed bg-surface-container-low dark:bg-primary-container active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" data-weight="fill">dashboard</span>
+                        Dashboard
+                    </a>
+</li>
+<!-- Inactive Items -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                        Members
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+                        Events
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="app_registration">app_registration</span>
+                        Entries
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="military_tech">military_tech</span>
+                        Results
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="newspaper">newspaper</span>
+                        News
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+                        Store
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+                        Finance
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+                        Announcements
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="home_pin">home_pin</span>
+                        Club Page
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="shield_person">shield_person</span>
+                        Officers
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="handshake">handshake</span>
+                        Sponsors
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container dark:hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+                        Settings
+                    </a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface dark:bg-background h-20 sticky top-0 z-30 w-full border-b border-outline-variant dark:border-on-surface-variant shadow-sm flex justify-between items-center px-margin-mobile md:px-margin-desktop focus-within:ring-2 focus-within:ring-secondary/20">
+<!-- Mobile Menu Button (Visible only on mobile) -->
+<button class="md:hidden text-on-surface-variant p-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<!-- Brand / Title -->
+<div class="hidden md:flex items-center">
+<h2 class="font-title-lg text-title-lg font-semibold text-primary dark:text-primary-fixed-dim">Pine Ridge Chapter | Club Admin</h2>
+</div>
+<!-- Right Actions -->
+<div class="flex items-center gap-4">
+<!-- Search -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 20px;">search</span>
+<input class="bg-surface-container-low border border-outline-variant rounded-lg pl-10 pr-4 py-2 font-body-sm text-body-sm focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-secondary/20 transition-all w-64 placeholder:text-on-surface-variant/70" placeholder="Search..." type="text"/>
+</div>
+<button class="sm:hidden text-on-surface-variant p-2 rounded-lg hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<!-- Actions -->
+<button class="text-on-surface-variant p-2 rounded-lg hover:bg-surface-container hover:text-primary dark:hover:text-primary-fixed transition-colors relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="text-on-surface-variant p-2 rounded-lg hover:bg-surface-container hover:text-primary dark:hover:text-primary-fixed transition-colors">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<!-- Profile -->
+<div class="flex items-center gap-2 pl-2 border-l border-outline-variant ml-2 cursor-pointer hover:bg-surface-container rounded-lg p-1 pr-3 transition-colors">
+<div class="w-8 h-8 rounded-full overflow-hidden bg-surface-container border border-outline-variant">
+<img alt="Admin User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a mature individual in outdoor gear, standing against a blurred forest background, soft natural lighting. Minimalist and corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-gtB27zgmM4tn11OFRvqn7dMy-JVImKmiCcF73tpIVcO9BH0CTV0zSqcXPGC8Vch7JFMP8pJRSMcW0J24-rorcZe1bUA5SDRlCHWc1skxTkqt9QfqghJxH5KCUTQPjKBoBIZsRAWpDo9rcuNosHDplE86rOJ5-qHWaHuRnYUj3h4oMkbllVMVdrYxymvLnaOpvJXghWSQ3BSaOo5oK8pNj1ZIFsnHcSuGe5of4Bcfvws9n4FnQafgww"/>
+</div>
+<span class="font-label-md text-label-md hidden md:block">Admin Profile</span>
+<span class="material-symbols-outlined text-on-surface-variant hidden md:block" style="font-size: 20px;">expand_more</span>
+</div>
+</div>
+</header>
+<!-- Canvas (Dashboard Content) -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop bg-background overflow-y-auto">
+<div class="max-w-7xl mx-auto space-y-lg">
+<!-- Page Header & Quick Actions -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary tracking-tight">Dashboard</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Welcome back. Here is what is happening today.</p>
+</div>
+<div class="flex flex-wrap gap-3">
+<button class="bg-primary-container text-on-primary px-4 py-2 rounded font-label-md text-label-md hover:bg-primary-container/90 transition-colors shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span> Add Event
+                        </button>
+<button class="bg-transparent border border-primary-container text-primary-container px-4 py-2 rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">person_add</span> Add Member
+                        </button>
+<button class="bg-transparent border border-outline-variant text-on-surface-variant px-4 py-2 rounded font-label-md text-label-md hover:bg-surface-container-low transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined" style="font-size: 18px;">post_add</span> Post News
+                        </button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- KPI Row (Spans full width, internal grid) -->
+<div class="col-span-1 md:col-span-12 grid grid-cols-2 md:grid-cols-5 gap-4">
+<!-- KPI 1 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 ambient-shadow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Active Members</span>
+<span class="material-symbols-outlined text-secondary/70" style="font-size: 20px;">groups</span>
+</div>
+<div class="flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg text-primary">84</span>
+<span class="font-body-sm text-body-sm text-on-primary-container flex items-center"><span class="material-symbols-outlined" style="font-size: 14px;">arrow_upward</span> 4%</span>
+</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 ambient-shadow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Upcoming Events</span>
+<span class="material-symbols-outlined text-secondary/70" style="font-size: 20px;">calendar_month</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">6</span>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 ambient-shadow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Event Entries</span>
+<span class="material-symbols-outlined text-secondary/70" style="font-size: 20px;">receipt_long</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">217</span>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-4 ambient-shadow flex flex-col justify-between">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Store Sales</span>
+<span class="material-symbols-outlined text-secondary/70" style="font-size: 20px;">storefront</span>
+</div>
+<span class="font-display-lg text-display-lg text-primary">$3.8k</span>
+</div>
+<!-- KPI 5 (Revenue) -->
+<div class="col-span-2 md:col-span-1 bg-primary-container text-on-primary rounded-xl p-4 ambient-shadow flex flex-col justify-between relative overflow-hidden">
+<!-- Subtle background pattern or shade -->
+<div class="absolute inset-0 bg-gradient-to-br from-primary-container to-primary opacity-80 z-0"></div>
+<div class="relative z-10 flex justify-between items-start mb-2">
+<span class="font-label-md text-label-md text-on-primary-container uppercase tracking-wider">Total Revenue</span>
+<span class="material-symbols-outlined text-primary-fixed-dim" style="font-size: 20px;">account_balance</span>
+</div>
+<div class="relative z-10 flex items-baseline gap-2">
+<span class="font-display-lg text-display-lg text-on-primary">$6.7k</span>
+</div>
+</div>
+</div>
+<!-- Left Column (Events & Tables) -->
+<div class="col-span-1 md:col-span-8 space-y-gutter">
+<!-- Upcoming Events Table Card -->
+<div class="bg-surface border border-outline-variant rounded-xl ambient-shadow overflow-hidden flex flex-col">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-low">
+<h3 class="font-title-lg text-title-lg text-primary">Upcoming Events</h3>
+<button class="font-label-md text-label-md text-secondary hover:text-on-secondary-fixed-variant transition-colors">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant bg-surface-bright">
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">Event Name</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">Date</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">Entries</th>
+<th class="py-3 px-4 font-label-md text-label-md text-on-surface-variant uppercase">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-background">
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-semibold">Fall Field Trial</td>
+<td class="py-3 px-4 text-on-surface-variant">Oct 03, 2024</td>
+<td class="py-3 px-4">43</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded bg-secondary/10 text-secondary font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-secondary mr-2"></span> Open
+                                                </span>
+</td>
+</tr>
+<tr class="border-b border-outline-variant hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-semibold">Regional Qualification</td>
+<td class="py-3 px-4 text-on-surface-variant">Nov 05, 2024</td>
+<td class="py-3 px-4">31</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded bg-secondary/10 text-secondary font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-secondary mr-2"></span> Open
+                                                </span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors">
+<td class="py-3 px-4 font-semibold">Winter Classic</td>
+<td class="py-3 px-4 text-on-surface-variant">Dec 16, 2024</td>
+<td class="py-3 px-4">18</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center px-2 py-1 rounded bg-surface-variant text-on-surface-variant font-label-md text-label-md">
+<span class="w-2 h-2 rounded-full bg-outline mr-2"></span> Opens Soon
+                                                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Revenue Breakdown (Visual) -->
+<div class="bg-surface border border-outline-variant rounded-xl ambient-shadow p-6">
+<h3 class="font-title-lg text-title-lg text-primary mb-4 border-b border-outline-variant pb-2">Revenue Overview</h3>
+<div class="space-y-4">
+<!-- Bar 1 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<span class="font-semibold">Event Entries</span>
+<span class="text-on-surface-variant">$4,850</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-primary-container h-2 rounded-full" style="width: 71%"></div>
+</div>
+</div>
+<!-- Bar 2 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<span class="font-semibold">Store Sales</span>
+<span class="text-on-surface-variant">$3,850</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-secondary h-2 rounded-full" style="width: 56%"></div>
+</div>
+</div>
+<!-- Bar 3 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<span class="font-semibold">Memberships</span>
+<span class="text-on-surface-variant">$1,400</span>
+</div>
+<div class="w-full bg-surface-container rounded-full h-2 overflow-hidden">
+<div class="bg-surface-tint h-2 rounded-full" style="width: 20%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column (Action Items & Activity) -->
+<div class="col-span-1 md:col-span-4 space-y-gutter">
+<!-- Pending Actions -->
+<div class="bg-surface border border-outline-variant rounded-xl ambient-shadow p-4">
+<h3 class="font-title-lg text-title-lg text-primary mb-4 pb-2 border-b border-outline-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-error" style="font-size: 20px;">error</span>
+                                Action Required
+                            </h3>
+<ul class="space-y-3">
+<li class="flex items-center justify-between p-2 hover:bg-surface-container-low rounded transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-error-container text-on-error-container flex items-center justify-center font-bold">4</div>
+<span class="font-body-sm text-body-sm font-semibold">Membership Apps</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</li>
+<li class="flex items-center justify-between p-2 hover:bg-surface-container-low rounded transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-secondary-container text-on-secondary-container flex items-center justify-center font-bold">4</div>
+<span class="font-body-sm text-body-sm font-semibold">Event Entries Pending</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</li>
+<li class="flex items-center justify-between p-2 hover:bg-surface-container-low rounded transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest text-on-surface flex items-center justify-center font-bold">2</div>
+<span class="font-body-sm text-body-sm font-semibold">News Drafts</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</li>
+<li class="flex items-center justify-between p-2 hover:bg-surface-container-low rounded transition-colors group cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-surface-container-highest text-on-surface flex items-center justify-center font-bold">1</div>
+<span class="font-body-sm text-body-sm font-semibold">Result Submission</span>
+</div>
+<span class="material-symbols-outlined text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
+</li>
+</ul>
+</div>
+<!-- Membership Activity Summary -->
+<div class="bg-surface border border-outline-variant rounded-xl ambient-shadow p-4">
+<h3 class="font-title-lg text-title-lg text-primary mb-3">Membership Status</h3>
+<div class="grid grid-cols-2 gap-2">
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant mb-1">Active</div>
+<div class="font-headline-md text-headline-md text-primary">84</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant mb-1">New</div>
+<div class="font-headline-md text-headline-md text-secondary">7</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant">
+<div class="font-label-md text-label-md text-on-surface-variant mb-1">Pending</div>
+<div class="font-headline-md text-headline-md text-on-background">4</div>
+</div>
+<div class="bg-surface-container-low p-3 rounded-lg border border-outline-variant">
+<div class="font-label-md text-label-md text-error mb-1">Expiring</div>
+<div class="font-headline-md text-headline-md text-error">5</div>
+</div>
+</div>
+</div>
+<!-- Recent Activity Timeline -->
+<div class="bg-surface border border-outline-variant rounded-xl ambient-shadow p-4">
+<h3 class="font-title-lg text-title-lg text-primary mb-4 border-b border-outline-variant pb-2">Recent Activity</h3>
+<div class="space-y-4 relative before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-outline-variant before:to-transparent">
+<!-- Item 1 -->
+<div class="relative flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-primary-container text-on-primary flex items-center justify-center shrink-0 mt-0.5 z-10 border-2 border-surface">
+<span class="material-symbols-outlined" style="font-size: 14px;">person_add</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-semibold">Jordan Williams joined</p>
+<p class="font-label-md text-label-md text-on-surface-variant">Membership</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">2h ago</span>
+</div>
+<!-- Item 2 -->
+<div class="relative flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-secondary text-on-secondary flex items-center justify-center shrink-0 mt-0.5 z-10 border-2 border-surface">
+<span class="material-symbols-outlined" style="font-size: 14px;">app_registration</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-semibold">Michael Carter entered Fall Field Trial</p>
+<p class="font-label-md text-label-md text-on-surface-variant">Event Entry</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">4h ago</span>
+</div>
+<!-- Item 3 -->
+<div class="relative flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5 z-10 border-2 border-surface">
+<span class="material-symbols-outlined" style="font-size: 14px;">event</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-semibold">New event published</p>
+<p class="font-label-md text-label-md text-on-surface-variant">System</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">Yesterday</span>
+</div>
+<!-- Item 4 -->
+<div class="relative flex items-start justify-between">
+<div class="flex items-start gap-3">
+<div class="w-6 h-6 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center shrink-0 mt-0.5 z-10 border-2 border-surface">
+<span class="material-symbols-outlined" style="font-size: 14px;">military_tech</span>
+</div>
+<div>
+<p class="font-body-sm text-body-sm font-semibold">Results posted</p>
+<p class="font-label-md text-label-md text-on-surface-variant">System</p>
+</div>
+</div>
+<span class="font-label-md text-label-md text-on-surface-variant shrink-0">Yesterday</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer class="mt-xl pt-md border-t border-outline-variant text-center pb-md">
+<p class="font-body-sm text-body-sm text-on-surface-variant">© 2024 Pine Ridge Chapter. Admin Portal.</p>
+</footer>
+</main>
+</div>
+</body></html>

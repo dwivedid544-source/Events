@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Heritage Field &amp; Forest - My Entries</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "secondary-container": "#fed39f",
+                    "surface-dim": "#dcd9d9",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#fcf9f8",
+                    "surface-variant": "#e4e2e1",
+                    "outline": "#737973",
+                    "inverse-primary": "#b4cdb8",
+                    "primary-fixed-dim": "#b4cdb8",
+                    "inverse-surface": "#303030",
+                    "surface-container": "#f0eded",
+                    "on-background": "#1b1c1c",
+                    "on-error": "#ffffff",
+                    "on-primary-fixed-variant": "#364c3c",
+                    "error-container": "#ffdad6",
+                    "on-secondary-container": "#795930",
+                    "secondary-fixed-dim": "#eabf8d",
+                    "on-tertiary-fixed-variant": "#394b3d",
+                    "on-tertiary": "#ffffff",
+                    "secondary": "#78582f",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#1d2f22",
+                    "surface": "#fcf9f8",
+                    "secondary-fixed": "#ffddb7",
+                    "tertiary": "#091a0f",
+                    "tertiary-fixed": "#d3e8d5",
+                    "on-primary-container": "#819986",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-container-highest": "#e4e2e1",
+                    "primary-container": "#1b3022",
+                    "primary": "#061b0e",
+                    "primary-fixed": "#d0e9d4",
+                    "on-secondary-fixed-variant": "#5e411a",
+                    "on-primary": "#ffffff",
+                    "on-tertiary-fixed": "#0e1f13",
+                    "background": "#fcf9f8",
+                    "inverse-on-surface": "#f3f0f0",
+                    "on-surface": "#1b1c1c",
+                    "outline-variant": "#c3c8c1",
+                    "on-tertiary-container": "#839886",
+                    "on-primary-fixed": "#0b2013",
+                    "surface-tint": "#4d6453",
+                    "surface-container-lowest": "#ffffff",
+                    "on-surface-variant": "#434843",
+                    "tertiary-fixed-dim": "#b7ccb9",
+                    "surface-container-high": "#eae7e7",
+                    "on-secondary": "#ffffff",
+                    "on-secondary-fixed": "#2a1700"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "xl": "80px",
+                    "xs": "4px",
+                    "margin-mobile": "16px",
+                    "base": "8px",
+                    "md": "24px",
+                    "sm": "12px"
+            },
+            "fontFamily": {
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "title-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Inter"
+                    ],
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "display-lg": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "title-lg": [
+                            "20px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "28px",
+                            {
+                                    "lineHeight": "36px",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "label-md": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Ambient Shadow Custom Class */
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);
+        }
+        
+        /* Custom Scrollbar for sleekness */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #e4e2e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #c3c8c1;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased min-h-screen flex">
+<!-- Sidebar Navigation (Desktop) -->
+<aside class="w-64 h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col p-md shadow-ambient hidden md:flex z-40">
+<!-- Brand Header -->
+<div class="mb-lg">
+<h1 class="font-headline-md text-headline-md font-bold text-primary tracking-tight">Heritage Field &amp; Forest</h1>
+<p class="font-label-md text-label-md text-on-surface-variant uppercase mt-xs tracking-wider">Member Portal</p>
+</div>
+<!-- Navigation Links -->
+<nav class="flex-1 space-y-sm">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="card_membership">card_membership</span>
+<span>Memberships</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span>Events</span>
+</a>
+<!-- Active State -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-secondary-container text-on-secondary-container font-bold transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="how_to_reg" data-weight="fill">how_to_reg</span>
+<span>My Entries</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span>Orders</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="pets">pets</span>
+<span>My Dogs</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-md text-body-md" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Profile</span>
+</a>
+</nav>
+<!-- Sidebar Footer Action (Optional contextual action, keeping subtle for member view) -->
+<div class="mt-auto pt-md border-t border-outline-variant">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined" data-icon="logout">logout</span>
+<span>Sign Out</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen">
+<!-- Top App Bar -->
+<header class="bg-background border-b border-outline-variant sticky top-0 z-30 px-md md:px-margin-desktop py-sm flex justify-between items-center h-[72px]">
+<div class="flex items-center gap-4">
+<!-- Mobile Menu Toggle (Hidden on Desktop) -->
+<button class="md:hidden text-on-surface p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary tracking-tight hidden sm:block">My Entries</h2>
+</div>
+<div class="flex items-center gap-4">
+<!-- Global Search -->
+<div class="relative hidden lg:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary-container transition-all w-64 placeholder:text-on-surface-variant" placeholder="Search entries, events..." type="text"/>
+</div>
+<!-- Actions -->
+<button class="p-2 text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 bg-error rounded-full border border-background"></span>
+</button>
+<!-- Avatar -->
+<button class="w-10 h-10 rounded-full border border-outline-variant overflow-hidden shadow-sm hover:ring-2 hover:ring-primary-container transition-all ml-2">
+<img alt="User Avatar" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged outdoorsman wearing a green canvas jacket. The lighting is soft, natural daylight typical of a high-end editorial portrait. The background is a slightly blurred, warm-toned neutral studio backdrop. The aesthetic is clean, trustworthy, and rugged yet refined, matching a premium outdoor heritage brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjRF1gqqqH3NbLnGrb5c1i-_vNgUy16CA7eSenf_rrOw3pxsGSwy3FtHRww9jP92_SnLzivoyQhVKZdP3se3jrfTAh3WGiuBhM2wtKMfW57P3r-UF72xo2vhIkFBCXou4mCEQon8y_lO0XvhhsYPNHMPujgkkUnpB-zYwE4e_PwS_s97ZaId3lRRx-dWfCl1aHU8OKWB3_UsRIcGhtS4p2Tt54cgYAjtcrx9UfjT7G0eleST4hj6P2Yg"/>
+</button>
+</div>
+</header>
+<!-- Content Canvas -->
+<div class="flex-1 p-md md:p-margin-desktop space-y-lg max-w-[1400px] w-full mx-auto">
+<!-- KPI Summary Cards (Bento-style Grid) -->
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- KPI 1 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col justify-between hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Upcoming Entries</span>
+<div class="p-2 bg-surface-container-high rounded-lg text-primary">
+<span class="material-symbols-outlined text-[20px]">event_upcoming</span>
+</div>
+</div>
+<div class="font-display-lg text-display-lg font-bold text-primary">3</div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col justify-between hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Confirmed</span>
+<div class="p-2 bg-tertiary-fixed rounded-lg text-tertiary">
+<span class="material-symbols-outlined text-[20px]">check_circle</span>
+</div>
+</div>
+<div class="font-display-lg text-display-lg font-bold text-primary">2</div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col justify-between hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Pending</span>
+<div class="p-2 bg-secondary-fixed rounded-lg text-secondary">
+<span class="material-symbols-outlined text-[20px]">pending_actions</span>
+</div>
+</div>
+<div class="font-display-lg text-display-lg font-bold text-primary">1</div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col justify-between hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Completed</span>
+<div class="p-2 bg-surface-container-high rounded-lg text-on-surface-variant">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</div>
+</div>
+<div class="font-display-lg text-display-lg font-bold text-primary">5</div>
+</div>
+</section>
+<!-- Filters & Search Toolbar -->
+<section class="bg-surface-container-lowest border border-outline-variant rounded-lg p-3 shadow-ambient flex flex-col md:flex-row md:items-center justify-between gap-4">
+<!-- Pill Filters -->
+<div class="flex flex-wrap items-center gap-2">
+<button class="px-4 py-1.5 bg-primary-container text-on-primary rounded-full font-label-md text-label-md uppercase shadow-sm transition-opacity hover:opacity-90">All Entries</button>
+<button class="px-4 py-1.5 bg-transparent border border-outline-variant text-on-surface-variant rounded-full font-label-md text-label-md uppercase hover:bg-surface-container-high hover:text-primary transition-colors">Upcoming</button>
+<button class="px-4 py-1.5 bg-transparent border border-outline-variant text-on-surface-variant rounded-full font-label-md text-label-md uppercase hover:bg-surface-container-high hover:text-primary transition-colors">Completed</button>
+<button class="px-4 py-1.5 bg-transparent border border-outline-variant text-on-surface-variant rounded-full font-label-md text-label-md uppercase hover:bg-surface-container-high hover:text-primary transition-colors">Pending</button>
+<div class="w-px h-6 bg-outline-variant mx-2 hidden sm:block"></div>
+<!-- Dropdown Filters -->
+<button class="flex items-center gap-1 px-3 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:text-primary transition-colors">
+                        Event Type <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+</button>
+<button class="flex items-center gap-1 px-3 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:text-primary transition-colors">
+                        Date <span class="material-symbols-outlined text-[18px]">arrow_drop_down</span>
+</button>
+</div>
+<!-- Section Search -->
+<div class="relative w-full md:w-auto">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full md:w-64 pl-9 pr-4 py-1.5 bg-background border border-outline-variant rounded-lg text-body-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary-container transition-all" placeholder="Search my entries..." type="text"/>
+</div>
+</section>
+<!-- Upcoming Entries Section (Data Table / Card Layout) -->
+<section class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h3 class="font-title-lg text-title-lg font-semibold text-primary">Upcoming Entries</h3>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-ambient overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low border-b border-outline-variant font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">
+<th class="px-6 py-4 font-semibold">Event</th>
+<th class="px-6 py-4 font-semibold">Date &amp; Location</th>
+<th class="px-6 py-4 font-semibold">Entry Details</th>
+<th class="px-6 py-4 font-semibold">Status</th>
+<th class="px-6 py-4 font-semibold text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Entry 1 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-body-md font-semibold text-primary">Fall Field Trial</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Pine Ridge Chapter</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span> Oct 03, 2024</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Atlanta, GA</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface">Individual</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">$450</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-md text-label-md uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                            Confirmed
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-4 py-2 text-primary font-label-md text-label-md uppercase border border-outline-variant rounded hover:bg-surface-container-high transition-colors">View Entry</button>
+</td>
+</tr>
+<!-- Entry 2 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-body-md font-semibold text-primary">Regional Qualification</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Oak Creek Hunters</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span> Nov 05, 2024</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Lexington, KY</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface">Individual</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">$200</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed-variant font-label-md text-label-md uppercase tracking-wider">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+                                            Confirmed
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-4 py-2 text-primary font-label-md text-label-md uppercase border border-outline-variant rounded hover:bg-surface-container-high transition-colors">View Entry</button>
+</td>
+</tr>
+<!-- Entry 3 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-body-md font-semibold text-primary">Winter Classic</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Highland Conservation Club</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span> Dec 16, 2024</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[16px]">location_on</span> Bend, OR</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface">Individual</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">$250</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-secondary-fixed-dim bg-opacity-20 text-on-secondary-fixed-variant font-label-md text-label-md uppercase tracking-wider border border-secondary-fixed-dim">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                            Pending
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="px-4 py-2 text-primary font-label-md text-label-md uppercase border border-outline-variant rounded hover:bg-surface-container-high transition-colors">View Entry</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Recent/Completed Entries Section -->
+<section class="space-y-4">
+<div class="flex items-center justify-between border-b border-outline-variant pb-2">
+<h3 class="font-title-lg text-title-lg font-semibold text-primary">Recent Entries</h3>
+<a class="font-label-md text-label-md text-primary uppercase hover:underline" href="#">View All History</a>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded-lg shadow-ambient overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="sr-only">
+<tr>
+<th>Event &amp; Club</th>
+<th>Date</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Recent Example 1 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-body-md font-semibold text-primary">Spring Invitational</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">Bourbon County Club</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface">May 10, 2024</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                                            Completed
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-secondary font-label-md text-label-md uppercase hover:underline flex items-center justify-end gap-1 ml-auto">View Entry <span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</td>
+</tr>
+<!-- Recent Example 2 -->
+<tr class="hover:bg-surface-container-lowest/50 transition-colors group">
+<td class="px-6 py-4">
+<p class="font-body-md text-body-md font-semibold text-primary">Summer Championship</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">River Valley Club</p>
+</td>
+<td class="px-6 py-4">
+<p class="font-body-sm text-body-sm text-on-surface">Jun 22, 2024</p>
+</td>
+<td class="px-6 py-4">
+<span class="inline-flex items-center gap-1 text-on-surface-variant font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                                            Completed
+                                        </span>
+</td>
+<td class="px-6 py-4 text-right">
+<button class="text-secondary font-label-md text-label-md uppercase hover:underline flex items-center justify-end gap-1 ml-auto">View Entry <span class="material-symbols-outlined text-[16px]">arrow_forward</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<!-- Reusable Empty State (Hidden by default, shown here for demonstration if no data existed, but positioned below as a reference component) -->
+<section class="hidden mt-12 bg-surface-container-lowest border border-outline-variant border-dashed rounded-lg p-xl flex flex-col items-center justify-center text-center">
+<div class="w-16 h-16 bg-surface-container-high rounded-full flex items-center justify-center mb-6 text-on-surface-variant">
+<span class="material-symbols-outlined text-[32px]">event_busy</span>
+</div>
+<h3 class="font-headline-md text-headline-md font-bold text-primary mb-2">No entries found</h3>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-6">You haven't entered any events yet. Browse upcoming events in your area to get started.</p>
+<button class="px-6 py-3 bg-primary-container text-on-primary font-label-md text-label-md uppercase rounded hover:bg-opacity-90 transition-opacity shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">search</span>
+                    Find Events
+                </button>
+</section>
+</div>
+</main>
+</body></html>

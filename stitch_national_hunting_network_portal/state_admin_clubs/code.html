@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>HuntState Admin - Clubs</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-surface-variant": "#434843",
+                        "background": "#fcf9f8",
+                        "tertiary-container": "#1d2f22",
+                        "primary-fixed": "#d0e9d4",
+                        "error": "#ba1a1a",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "tertiary": "#091a0f",
+                        "inverse-primary": "#b4cdb8",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "surface-bright": "#fcf9f8",
+                        "secondary-fixed": "#ffddb7",
+                        "on-primary-container": "#819986",
+                        "primary": "#061b0e",
+                        "on-tertiary-container": "#839886",
+                        "tertiary-fixed": "#d3e8d5",
+                        "on-primary-fixed-variant": "#364c3c",
+                        "inverse-on-surface": "#f3f0f0",
+                        "outline": "#737973",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "surface": "#fcf9f8",
+                        "on-secondary-container": "#795930",
+                        "surface-dim": "#dcd9d9",
+                        "on-surface": "#1b1c1c",
+                        "on-secondary": "#ffffff",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary-container": "#1b3022",
+                        "surface-container-low": "#f6f3f2",
+                        "inverse-surface": "#303030",
+                        "on-primary-fixed": "#0b2013",
+                        "surface-tint": "#4d6453",
+                        "secondary": "#78582f",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "outline-variant": "#c3c8c1",
+                        "surface-variant": "#e4e2e1",
+                        "on-secondary-fixed": "#2a1700",
+                        "surface-container": "#f0eded",
+                        "secondary-container": "#fed39f",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "surface-container-high": "#eae7e7",
+                        "on-background": "#1b1c1c",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "lg": "48px",
+                        "xl": "80px",
+                        "xs": "4px",
+                        "base": "8px",
+                        "margin-desktop": "64px",
+                        "sm": "12px",
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .ambient-shadow { box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08); }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 flex flex-col border-r border-outline-variant dark:border-outline shadow-sm fixed left-0 top-0 overflow-y-auto bg-surface-container-low dark:bg-tertiary-container z-50">
+<div class="p-md flex items-center gap-sm">
+<img class="w-10 h-10 rounded-full object-cover" data-alt="A small circular logo depicting an oak leaf and crosshairs, styled as a refined state association emblem in forest green and tan tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA6Wdqby1h6xtxz7O7coOjdQQmocyyt8kebu4j2GPurvqKTx5XjFSCg00bHqYcVGPZeT-rYU7H6Tap2GilhiIOvOM7GbnuAMj1k5NkunW9APFzhkaKdP9hbq2ngXAHOTqvfpb0Ae6EDLSDhykxcntJV9iijSQAwJtp1kYycHca3NhvnC0b_4GUNMqqSq7n-UK9VeexeZFCpoydweCCHPwy5Camdgs8wZACU96-0rqgQfpxKNJKBhGBAPw"/>
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">State Admin</h1>
+<p class="font-label-md text-label-md text-on-surface-variant">Georgia State Association</p>
+</div>
+</div>
+<div class="px-md mb-sm">
+<button class="w-full bg-primary-container text-on-primary py-sm px-md rounded flex items-center justify-center gap-xs font-label-md text-label-md hover:bg-opacity-90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                New Entry
+            </button>
+</div>
+<ul class="flex-1 px-sm py-xs space-y-1">
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">group</span>
+                    Membership
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm bg-primary-container dark:bg-primary text-on-primary-container dark:text-on-primary-fixed rounded-r-full font-bold font-label-md text-label-md transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">account_balance</span>
+                    Clubs
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">calendar_today</span>
+                    Events
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">assignment</span>
+                    Entries
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+                    Results
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">newspaper</span>
+                    News
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">shopping_bag</span>
+                    Store
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">payments</span>
+                    Revenue
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">assessment</span>
+                    Reports
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">map</span>
+                    State Page
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">settings</span>
+                    Settings
+                </a>
+</li>
+</ul>
+<div class="p-sm border-t border-outline-variant dark:border-outline">
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">contact_support</span>
+                Support
+            </a>
+<a class="flex items-center gap-sm px-md py-sm rounded-r-full font-label-md text-label-md text-on-surface-variant dark:text-on-tertiary-container hover:bg-surface-container-highest dark:hover:bg-surface-container transition-all scale-95 active:scale-100" href="#">
+<span class="material-symbols-outlined">logout</span>
+                Log Out
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 ml-64 flex flex-col h-screen overflow-hidden bg-background">
+<!-- TopNavBar -->
+<header class="w-full h-16 border-b border-outline-variant dark:border-outline bg-surface dark:bg-surface-container flex justify-between items-center px-md sticky top-0 z-40 transition-colors">
+<div class="flex items-center gap-md flex-1">
+<div class="font-title-lg text-title-lg font-bold text-primary dark:text-primary-fixed">HuntState Admin</div>
+<div class="relative w-64 hidden md:block">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-xl pr-sm py-xs border border-outline-variant rounded bg-surface focus:border-primary focus:ring-2 focus:ring-secondary/20 font-body-sm text-body-sm outline-none transition-all" placeholder="Search" type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full transition-colors cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="p-xs text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded-full transition-colors cursor-pointer transition-all duration-200">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-px h-6 bg-outline-variant mx-xs"></div>
+<button class="flex items-center gap-xs text-on-surface-variant hover:bg-surface-container-low dark:hover:bg-surface-container-high rounded px-sm py-xs transition-colors cursor-pointer transition-all duration-200">
+<span class="font-label-md text-label-md">Profile</span>
+<img class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A headshot of an administrator wearing a green polo shirt, plain white background, professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASwTtwT1_AUzvSHvwx6080ItAqnajcrAoUodhFN2Rp16-voc76wE2qeikgF31Cpf-6BvWKZ1d2DZn-PfC87uHicjqqHCTQ0wO5idb3GEMet6bemz1EXnpw7ZMNd_UUUwbaH5oqCtQ9xeuBE5V2RpdLIFabxesl6BacgWFI0zk_jT2Jreqtgl-nJOh0tUPUC2hLbISI6IHTIHNLK0vCsYBaOIUk1XCbL6gmV0_MLZiRb_vbPuotIo7c7A"/>
+</button>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-desktop space-y-lg">
+<!-- Page Header -->
+<div class="flex justify-between items-start">
+<div>
+<h2 class="font-display-lg text-display-lg text-on-surface">Clubs</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-xs">Manage clubs participating in the Georgia State Association.</p>
+</div>
+<button class="bg-primary-container text-on-primary px-md py-sm rounded font-label-md text-label-md flex items-center gap-xs hover:bg-opacity-90 transition-colors">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    Add Club
+                </button>
+</div>
+<!-- KPI Cards (Bento style) -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-md">
+<div class="bg-surface border border-outline-variant rounded-lg p-md ambient-shadow flex flex-col justify-between">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Total Clubs</p>
+<p class="font-headline-lg text-headline-lg text-primary mt-sm">42</p>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-md ambient-shadow flex flex-col justify-between">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Active Clubs</p>
+<p class="font-headline-lg text-headline-lg text-primary mt-sm">39</p>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-md ambient-shadow flex flex-col justify-between">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Pending Approval</p>
+<p class="font-headline-lg text-headline-lg text-secondary mt-sm">2</p>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-md ambient-shadow flex flex-col justify-between">
+<p class="font-label-md text-label-md text-on-surface-variant uppercase">Inactive</p>
+<p class="font-headline-lg text-headline-lg text-on-surface-variant mt-sm">1</p>
+</div>
+</div>
+<!-- Directory Section -->
+<div class="bg-surface border border-outline-variant rounded-lg ambient-shadow flex flex-col overflow-hidden">
+<!-- Toolbar -->
+<div class="p-md border-b border-outline-variant flex flex-col md:flex-row justify-between items-center gap-md bg-surface-container-lowest">
+<div class="relative w-full md:w-80">
+<span class="material-symbols-outlined absolute left-sm top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full pl-xl pr-sm py-sm border border-outline-variant rounded bg-surface focus:border-primary focus:ring-2 focus:ring-secondary/20 font-body-sm text-body-sm outline-none transition-all" placeholder="Search clubs" type="text"/>
+</div>
+<div class="flex gap-sm w-full md:w-auto">
+<select class="border border-outline-variant rounded bg-surface px-sm py-sm font-body-sm text-body-sm text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-secondary/20">
+<option>Club Status: All</option>
+<option>Active</option>
+<option>Pending</option>
+<option>Inactive</option>
+</select>
+<select class="border border-outline-variant rounded bg-surface px-sm py-sm font-body-sm text-body-sm text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-secondary/20">
+<option>City: All Cities</option>
+</select>
+<select class="border border-outline-variant rounded bg-surface px-sm py-sm font-body-sm text-body-sm text-on-surface-variant outline-none focus:border-primary focus:ring-2 focus:ring-secondary/20">
+<option>Sort by: Club Name</option>
+<option>Member Count</option>
+<option>Event Count</option>
+</select>
+</div>
+</div>
+<!-- Table -->
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead class="bg-surface-container-low border-b border-outline-variant">
+<tr>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Club</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Location</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Members</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Upcoming Events</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Status</th>
+<th class="py-sm px-md font-label-md text-label-md text-on-surface-variant uppercase">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant font-body-sm text-body-sm text-on-surface">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm px-md font-semibold">Pine Ridge Chapter</td>
+<td class="py-sm px-md text-on-surface-variant">Atlanta, GA</td>
+<td class="py-sm px-md">84</td>
+<td class="py-sm px-md">6</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-primary-fixed text-on-primary-fixed-variant font-label-md text-label-md">Active</span>
+</td>
+<td class="py-sm px-md">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm px-md font-semibold">Oak Creek Hunters</td>
+<td class="py-sm px-md text-on-surface-variant">Lexington, KY</td>
+<td class="py-sm px-md">67</td>
+<td class="py-sm px-md">4</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-primary-fixed text-on-primary-fixed-variant font-label-md text-label-md">Active</span>
+</td>
+<td class="py-sm px-md">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors bg-surface-container-lowest/50">
+<td class="py-sm px-md font-semibold">Highland Conservation Club</td>
+<td class="py-sm px-md text-on-surface-variant">Bend, OR</td>
+<td class="py-sm px-md">52</td>
+<td class="py-sm px-md">3</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-primary-fixed text-on-primary-fixed-variant font-label-md text-label-md">Active</span>
+</td>
+<td class="py-sm px-md">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md">View</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="py-sm px-md font-semibold">River Valley Club</td>
+<td class="py-sm px-md text-on-surface-variant">Savannah, GA</td>
+<td class="py-sm px-md">41</td>
+<td class="py-sm px-md">2</td>
+<td class="py-sm px-md">
+<span class="inline-flex items-center px-2 py-1 rounded bg-secondary-container text-on-secondary-container font-label-md text-label-md">Pending</span>
+</td>
+<td class="py-sm px-md">
+<button class="text-primary hover:text-primary-container font-label-md text-label-md">Review</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Pagination (Conceptual) -->
+<div class="p-sm border-t border-outline-variant flex justify-between items-center bg-surface-container-lowest font-body-sm text-body-sm text-on-surface-variant">
+<span>Showing 1 to 4 of 42 entries</span>
+<div class="flex gap-xs">
+<button class="p-xs rounded border border-outline-variant hover:bg-surface-container-low" disabled=""><span class="material-symbols-outlined text-[18px]">chevron_left</span></button>
+<button class="p-xs rounded border border-outline-variant hover:bg-surface-container-low"><span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

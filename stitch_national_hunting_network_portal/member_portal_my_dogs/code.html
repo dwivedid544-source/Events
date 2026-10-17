@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Member Portal - My Dogs | Heritage Field &amp; Forest</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-low": "#f6f3f2",
+                        "outline-variant": "#c3c8c1",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "inverse-on-surface": "#f3f0f0",
+                        "outline": "#737973",
+                        "primary": "#061b0e",
+                        "on-surface-variant": "#434843",
+                        "primary-container": "#1b3022",
+                        "tertiary-container": "#1d2f22",
+                        "inverse-primary": "#b4cdb8",
+                        "on-primary": "#ffffff",
+                        "surface-variant": "#e4e2e1",
+                        "error-container": "#ffdad6",
+                        "on-background": "#1b1c1c",
+                        "on-error": "#ffffff",
+                        "secondary-fixed": "#ffddb7",
+                        "secondary": "#78582f",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-secondary": "#ffffff",
+                        "surface-tint": "#4d6453",
+                        "tertiary-fixed": "#d3e8d5",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-fixed": "#0b2013",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "surface": "#fcf9f8",
+                        "on-surface": "#1b1c1c",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "on-primary-container": "#819986",
+                        "surface-container": "#f0eded",
+                        "on-error-container": "#93000a",
+                        "surface-container-high": "#eae7e7",
+                        "surface-container-highest": "#e4e2e1",
+                        "background": "#fcf9f8",
+                        "secondary-container": "#fed39f",
+                        "on-tertiary-container": "#839886",
+                        "error": "#ba1a1a",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#303030",
+                        "surface-bright": "#fcf9f8",
+                        "on-secondary-container": "#795930",
+                        "surface-dim": "#dcd9d9",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "on-primary-fixed-variant": "#364c3c",
+                        "primary-fixed": "#d0e9d4",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "tertiary": "#091a0f"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "xl": "80px",
+                        "lg": "48px",
+                        "margin-desktop": "64px",
+                        "margin-mobile": "16px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "md": "24px",
+                        "sm": "12px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface-container-low dark:bg-surface-container-highest shadow-sm flex flex-col p-md space-y-base z-20 hidden md:flex">
+<div class="mb-lg">
+<h1 class="font-title-lg text-title-lg text-primary">Member Portal</h1>
+</div>
+<div class="flex-1 space-y-2">
+<a class="flex items-center space-x-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md uppercase">Dashboard</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="card_membership">card_membership</span>
+<span class="font-label-md text-label-md uppercase">Memberships</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-label-md text-label-md uppercase">Events</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="list_alt">list_alt</span>
+<span class="font-label-md text-label-md uppercase">My Entries</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="receipt">receipt</span>
+<span class="font-label-md text-label-md uppercase">Orders</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm bg-secondary-container text-on-secondary-container font-bold rounded-lg transition-all active:scale-95 duration-150" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="pets">pets</span>
+<span class="font-label-md text-label-md uppercase">My Dogs</span>
+</a>
+<a class="flex items-center space-x-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" href="#">
+<span aria-hidden="true" class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md uppercase">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Mobile & Standard Header Elements) -->
+<header class="bg-background border-b border-outline-variant w-full px-md md:px-margin-desktop py-sm flex justify-between items-center sticky top-0 z-10">
+<div class="md:hidden font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">
+                Heritage Field &amp; Forest
+            </div>
+<div class="hidden md:block font-headline-md text-headline-md font-bold text-primary">
+                My Dogs
+            </div>
+<div class="flex items-center space-x-md">
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 border border-outline-variant rounded bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary-fixed/20 transition-all font-body-sm text-body-sm w-64" placeholder="Search..." type="text"/>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors cursor-pointer active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container-high border border-outline-variant overflow-hidden cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="A small circular avatar placeholder image showing a generic user silhouette in subtle warm neutral tones against a light background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0YMBI_F-nwckgjoAPGaIoGhjAS4ndDPGfWN9oO0xoOzLpjRd91t_3qttQac0ndHw_j4z3z5PXQ1J794ZiuPQJjdCK-UQGDzQPbc0sbt9lLftgoEKMm0XQIDrU0iyTUNge7FveaRIVMAMQusUBrLfuOS7sfFa2eouN9UPwnpohoPefCf82LlI6ho9BIFHnwONXVGGP9Pjt5gSEavM4jLoTBThllldOi6n1cwLWJr8V2J-TqjVMs5Py1g"/>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="p-md md:p-margin-desktop max-w-7xl mx-auto w-full space-y-lg flex-1">
+<!-- Page Intro & Action -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary md:hidden mb-2">My Dogs</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Manage your registered dogs and keep their information up to date.</p>
+</div>
+<button class="bg-primary-container text-on-primary px-6 py-3 rounded hover:bg-primary transition-colors font-label-md text-label-md uppercase shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                    Add Dog
+                </button>
+</div>
+<!-- Summary Cards (KPIs) -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-md">
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Registered Dogs</div>
+<div class="font-display-lg text-display-lg text-primary">4</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Active</div>
+<div class="font-display-lg text-display-lg text-primary">3</div>
+</div>
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient">
+<div class="font-label-md text-label-md text-on-surface-variant uppercase mb-2">Inactive</div>
+<div class="font-display-lg text-display-lg text-on-surface-variant">1</div>
+</div>
+</div>
+<!-- Filters -->
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-md flex flex-wrap gap-4 items-end">
+<div class="flex-1 min-w-[200px]">
+<label class="block font-label-md text-label-md uppercase text-on-surface-variant mb-2">Search Dogs</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" data-icon="search">search</span>
+<input class="w-full pl-10 pr-4 py-2 border border-outline-variant rounded bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary-fixed/20 transition-all font-body-sm text-body-sm" placeholder="Name or Reg #" type="text"/>
+</div>
+</div>
+<div class="w-full sm:w-auto">
+<label class="block font-label-md text-label-md uppercase text-on-surface-variant mb-2">Status</label>
+<select class="w-full sm:w-48 py-2 px-3 border border-outline-variant rounded bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary-fixed/20 font-body-sm text-body-sm appearance-none">
+<option>All Dogs</option>
+<option>Active</option>
+<option>Inactive</option>
+</select>
+</div>
+<div class="w-full sm:w-auto">
+<label class="block font-label-md text-label-md uppercase text-on-surface-variant mb-2">Breed</label>
+<select class="w-full sm:w-48 py-2 px-3 border border-outline-variant rounded bg-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary-fixed/20 font-body-sm text-body-sm appearance-none">
+<option>All Breeds</option>
+<option>Treeing Walker Coonhound</option>
+<option>English Coonhound</option>
+<option>Bluetick Coonhound</option>
+</select>
+</div>
+</div>
+<!-- Main Section: Dog Grid -->
+<div>
+<h3 class="font-title-lg text-title-lg text-primary mb-md border-b border-outline-variant pb-2">Registered Dogs</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-md">
+<!-- Card 1 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col sm:flex-row gap-md">
+<div class="w-full sm:w-32 h-32 bg-surface-container-high rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional, clear portrait of a Treeing Walker Coonhound dog in a well-lit, outdoor natural setting. The image is high quality, warm, and natural, fitting a premium hunting dog registry." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8g3dLjT-xIUQoj02Ps1CxWbJY-NfCmetLts7w-lLLFDs-soQm9aN8ttDunl60oinRBfAXmRj5amEJBD2Ad9O882C75g_dSIinqKaR3DNRl0fbH3jwz_w3z9U-wpzT4N08iKOEaKSM7440NHo1XMsBWTzf1uj_bG9gM95QwejQ3yMrzBsoAyMH--rhoMbvNVIQt2iXBtrquQ876T3y-s86maZRt9e_kaszlPSpIEmIybllHrEpwJMShg"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-headline-md text-primary">Ranger</h4>
+<span class="bg-secondary-fixed/20 text-secondary font-label-md text-label-md px-2 py-1 rounded uppercase">Active</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant space-y-1">
+<p><span class="font-semibold text-primary">Breed:</span> Treeing Walker Coonhound</p>
+<p><span class="font-semibold text-primary">Sex:</span> Male <span class="mx-2">|</span> <span class="font-semibold text-primary">DOB:</span> Mar 12, 2020</p>
+<p><span class="font-semibold text-primary">Reg:</span> HF-20481</p>
+</div>
+</div>
+<div class="flex gap-4 mt-4 pt-4 border-t border-outline-variant/50">
+<button class="text-primary font-label-md text-label-md uppercase hover:underline">View Dog</button>
+<button class="text-secondary font-label-md text-label-md uppercase hover:underline">Edit Dog</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col sm:flex-row gap-md">
+<div class="w-full sm:w-32 h-32 bg-surface-container-high rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional portrait of a female English Coonhound dog outdoors in dappled sunlight. The tone is natural, professional, and clear, suitable for an official canine registry." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAH5GzbKm-ueJesPoAhRQEBoRIp3aUXd7rkRhZCSACWG6iddi8JWuceSx6v-DWXaWydTdFZVMCS7Teexc5M54cD0n9u7ZfYS3gs2PtlolaLEi4xZHkJ3_IHQdHbKUJjToUNrQqYt6iheZ1Oxr-4alId_x9eRImhBtSpv5qXT2fG5qSZTaBS9GQBXXu-sRILMA3Qj_irN57tYXz8AeR1mtr39cYLk1tiNxJstyGnZsIaa4zTbJ6I32cYvQ"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-headline-md text-primary">Scout</h4>
+<span class="bg-secondary-fixed/20 text-secondary font-label-md text-label-md px-2 py-1 rounded uppercase">Active</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant space-y-1">
+<p><span class="font-semibold text-primary">Breed:</span> English Coonhound</p>
+<p><span class="font-semibold text-primary">Sex:</span> Female <span class="mx-2">|</span> <span class="font-semibold text-primary">DOB:</span> Aug 24, 2021</p>
+<p><span class="font-semibold text-primary">Reg:</span> HF-21872</p>
+</div>
+</div>
+<div class="flex gap-4 mt-4 pt-4 border-t border-outline-variant/50">
+<button class="text-primary font-label-md text-label-md uppercase hover:underline">View Dog</button>
+<button class="text-secondary font-label-md text-label-md uppercase hover:underline">Edit Dog</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col sm:flex-row gap-md">
+<div class="w-full sm:w-32 h-32 bg-surface-container-high rounded overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A clear, professional photograph of a Bluetick Coonhound in a natural setting. The dog looks alert. The lighting is bright and natural, fitting a premium outdoor heritage brand." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPQW6ZrZoJBg1T-JEOcyg7ZKaL0Ww5VEOJpeVdDoPQRy90tZWhPyHHqAros4wMY-L-tk3wqKlpaPL35FPK_vd70eRDl2jOfFUVtiXo1-aNA329ljY4w0NQCKvyNDr44XukMaKw6Fbym1QIw1s37d33u4roz4XJuy5bGVkEj6k_Wmnur8N2V4rJ5z_9U-TJ8foWaFhToBpIgO0y5IrZy1zwd9uJMQUhGhTbEX9fm4F2ghN1W8WqPEgXiQ"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-headline-md text-primary">Daisy</h4>
+<span class="bg-secondary-fixed/20 text-secondary font-label-md text-label-md px-2 py-1 rounded uppercase">Active</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant space-y-1">
+<p><span class="font-semibold text-primary">Breed:</span> Bluetick Coonhound</p>
+<p><span class="font-semibold text-primary">Sex:</span> Female <span class="mx-2">|</span> <span class="font-semibold text-primary">DOB:</span> May 06, 2019</p>
+<p><span class="font-semibold text-primary">Reg:</span> HF-19342</p>
+</div>
+</div>
+<div class="flex gap-4 mt-4 pt-4 border-t border-outline-variant/50">
+<button class="text-primary font-label-md text-label-md uppercase hover:underline">View Dog</button>
+<button class="text-secondary font-label-md text-label-md uppercase hover:underline">Edit Dog</button>
+</div>
+</div>
+</div>
+<!-- Card 4 (Inactive) -->
+<div class="bg-surface border border-outline-variant rounded-lg p-md shadow-ambient flex flex-col sm:flex-row gap-md opacity-80">
+<div class="w-full sm:w-32 h-32 bg-surface-container-high rounded overflow-hidden flex-shrink-0 filter grayscale-[30%]">
+<img class="w-full h-full object-cover" data-alt="A portrait of an older Treeing Walker Coonhound dog. The image is slightly muted, representing an inactive status in a professional, respectful manner. Natural outdoor setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDF2g69jLax48W53n7KwvcidBZCV_SDNuI_NPwaY52QbFoqQrx_K98EYUOJ8r4PEV38pPTedukhLruYtfQKeYdQ1pIEpi_cdmt617SZBB7Ee69JR7f4x_88ovYJYerJuX9vpp0T_7YKU0_PNeLx8rlNrSgbbpaayxU-VgyY_T51AC2jAeb6_d8V3Sg4_zq3eGdS0Rgi8052yK7Z94-zeun8CJgY0BwyAkDDAmqTyjv4PgXFzPYITb33aA"/>
+</div>
+<div class="flex-1 flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-2">
+<h4 class="font-headline-md text-headline-md text-on-surface-variant">Boone</h4>
+<span class="bg-surface-container-high text-on-surface-variant font-label-md text-label-md px-2 py-1 rounded uppercase border border-outline-variant">Inactive</span>
+</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant space-y-1">
+<p><span class="font-semibold text-on-surface-variant">Breed:</span> Treeing Walker Coonhound</p>
+<p><span class="font-semibold text-on-surface-variant">Sex:</span> Male <span class="mx-2">|</span> <span class="font-semibold text-on-surface-variant">DOB:</span> Nov 18, 2017</p>
+<p><span class="font-semibold text-on-surface-variant">Reg:</span> HF-16729</p>
+</div>
+</div>
+<div class="flex gap-4 mt-4 pt-4 border-t border-outline-variant/50">
+<button class="text-on-surface-variant font-label-md text-label-md uppercase hover:underline">View Dog</button>
+<button class="text-on-surface-variant font-label-md text-label-md uppercase hover:underline">Edit Dog</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Conceptual Empty State (Hidden by default for this view, included per requirements) -->
+<div class="hidden mt-lg bg-surface-container-low border border-dashed border-outline-variant rounded-lg p-lg flex flex-col items-center justify-center text-center">
+<span class="material-symbols-outlined text-4xl text-outline mb-4" data-icon="pets">pets</span>
+<h4 class="font-title-lg text-title-lg text-primary mb-2">No dogs registered yet</h4>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md mb-6">You haven't added any dogs to your profile. Register a dog to participate in events and track their performance.</p>
+<button class="bg-primary-container text-on-primary px-6 py-2 rounded hover:bg-primary transition-colors font-label-md text-label-md uppercase">
+                        + Add Your First Dog
+                    </button>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<footer class="w-full py-lg max-w-7xl mx-auto px-margin-desktop flex flex-col md:flex-row justify-between items-center border-t border-outline-variant mt-auto">
+<div class="font-label-md text-label-md text-primary mb-4 md:mb-0">
+                © 2024 Heritage Field &amp; Forest. All rights reserved.
+            </div>
+<div class="flex space-x-md">
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Compliance Standards</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact Bureau</a>
+</div>
+</footer>
+</main>
+</body></html>

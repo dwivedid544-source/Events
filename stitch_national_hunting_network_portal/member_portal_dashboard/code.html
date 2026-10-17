@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Heritage Field &amp; Forest - Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-container": "#fed39f",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-container": "#839886",
+                      "inverse-on-surface": "#f3f0f0",
+                      "surface-dim": "#dcd9d9",
+                      "on-tertiary-fixed-variant": "#394b3d",
+                      "on-primary-fixed-variant": "#364c3c",
+                      "primary-fixed": "#d0e9d4",
+                      "primary-fixed-dim": "#b4cdb8",
+                      "surface-container-highest": "#e4e2e1",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-container": "#1b3022",
+                      "inverse-primary": "#b4cdb8",
+                      "tertiary": "#091a0f",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#819986",
+                      "surface-tint": "#4d6453",
+                      "primary": "#061b0e",
+                      "secondary-fixed-dim": "#eabf8d",
+                      "surface-container-low": "#f6f3f2",
+                      "on-error": "#ffffff",
+                      "on-surface-variant": "#434843",
+                      "background": "#fcf9f8",
+                      "on-error-container": "#93000a",
+                      "tertiary-container": "#1d2f22",
+                      "on-tertiary": "#ffffff",
+                      "surface": "#fcf9f8",
+                      "on-secondary-fixed-variant": "#5e411a",
+                      "surface-container": "#f0eded",
+                      "outline": "#737973",
+                      "error": "#ba1a1a",
+                      "on-primary": "#ffffff",
+                      "on-background": "#1b1c1c",
+                      "on-secondary-fixed": "#2a1700",
+                      "on-surface": "#1b1c1c",
+                      "surface-container-high": "#eae7e7",
+                      "surface-bright": "#fcf9f8",
+                      "on-secondary-container": "#795930",
+                      "secondary": "#78582f",
+                      "secondary-fixed": "#ffddb7",
+                      "on-primary-fixed": "#0b2013",
+                      "inverse-surface": "#303030",
+                      "tertiary-fixed-dim": "#b7ccb9",
+                      "on-tertiary-fixed": "#0e1f13",
+                      "tertiary-fixed": "#d3e8d5",
+                      "outline-variant": "#c3c8c1",
+                      "surface-variant": "#e4e2e1"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "md": "24px",
+                      "base": "8px",
+                      "xl": "80px",
+                      "margin-mobile": "16px",
+                      "sm": "12px",
+                      "lg": "48px",
+                      "gutter": "24px",
+                      "xs": "4px",
+                      "margin-desktop": "64px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "title-lg": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-md": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-lg": [
+                              "20px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .shadow-ambient {
+            box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);
+        }
+        .bg-surface-tint {
+            background-color: #fcf9f8;
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased flex h-screen overflow-hidden">
+<!-- Sidebar Navigation -->
+<aside class="w-64 bg-surface-container-low border-r border-outline-variant hidden md:flex flex-col h-full fixed left-0 top-0 shadow-sm z-20">
+<div class="p-md flex items-center gap-sm">
+<img alt="Heritage Field &amp; Forest Logo" class="w-10 h-10 object-contain rounded-DEFAULT" src="https://lh3.googleusercontent.com/aida/AP1WRLttnm1HAa94-K-jtqFUWEIRK397OE_qlUBZEawiejW3oPyRVP9UJOWBECSFa1rUafMA7xJIlq67PPUM8xqQjg5mZqcVnlYdnNIximOk35XZBXspETmWQLXzLlBc-7BJ18G-v6C1h0sqZlgGzhxG1Fd0Z43ygwUqD9ux0IIdWH_XgJ8Ah3wKlpK67YHVMaSPBc48TvUzC9Ukd4mk75YVkLIMad82IW1BGd75q2OMakx7pMcL8t-z7Sn75WOV"/>
+<div>
+<h1 class="font-title-lg text-title-lg text-primary">Member Portal</h1>
+</div>
+</div>
+<nav class="flex-1 px-md py-sm space-y-base overflow-y-auto">
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg bg-secondary-container text-on-secondary-container font-bold transition-all hover:bg-secondary-container/90 active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-label-md uppercase">Dashboard</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="card_membership">card_membership</span>
+<span class="font-label-md text-label-md uppercase">Memberships</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event">event</span>
+<span class="font-label-md text-label-md uppercase">Events</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assignment">assignment</span>
+<span class="font-label-md text-label-md uppercase">My Entries</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="receipt_long">receipt_long</span>
+<span class="font-label-md text-label-md uppercase">Orders</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="pets">pets</span>
+<span class="font-label-md text-label-md uppercase">My Dogs</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-label-md text-label-md uppercase">Profile</span>
+</a>
+</nav>
+<div class="p-md space-y-sm mt-auto border-t border-outline-variant">
+<nav class="space-y-base pt-sm">
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="help">help</span>
+<span class="font-label-md text-label-md uppercase">Support</span>
+</a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high rounded-lg transition-all" href="#">
+<span class="material-symbols-outlined text-lg" data-icon="logout">logout</span>
+<span class="font-label-md text-label-md uppercase">Sign Out</span>
+</a>
+</nav>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 flex flex-col h-full bg-background overflow-hidden relative">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center w-full px-md md:px-margin-desktop py-sm bg-background border-b border-outline-variant z-10 sticky top-0">
+<h2 class="font-headline-md text-headline-md font-bold text-primary hidden md:block tracking-tight">Dashboard</h2>
+<!-- Mobile Menu Button -->
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<div class="flex items-center gap-md">
+<!-- Search -->
+<div class="relative hidden sm:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 border border-outline-variant rounded-DEFAULT bg-surface text-body-sm focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-secondary-container/20 transition-all w-64" placeholder="Search registry..." type="text"/>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-sm text-on-surface-variant">
+<button class="p-xs hover:text-primary transition-colors hover:bg-surface-container rounded-full relative">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="p-xs hover:text-primary transition-colors hover:bg-surface-container rounded-full hidden sm:block">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<!-- Profile -->
+<div class="flex items-center gap-sm pl-sm border-l border-outline-variant cursor-pointer group">
+<div class="w-8 h-8 rounded-full bg-surface-container-highest overflow-hidden border border-outline-variant group-hover:border-primary-container transition-colors">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged outdoorsman in a crisp, muted olive green technical shirt against a studio backdrop. The lighting is soft and flattering, emphasizing a trustworthy and experienced demeanor consistent with a premium hunting and conservation organization. The image should be sharp, high-resolution, and perfectly suited for a corporate profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAjw1Xi5aoHJDg2O4QFH_5S80tkhMMqZpmwPlaXbd6tioK77suchFGS3yYPkp1qJu4OnklGoscl_IlvLY3P0wSk1ZyzZwkJNxmvyhSsPa98H6RQLiSoisSqvpfde83i9MCpAmjFmZh9au9woZzSu7pUWKW_a0JXbOycZKAJ4urSWdB5Jd7c4Cgzlr_0II5xJS3WwYVwotE8A8VC2gYXSga8Q4Jy-fy1TZ46UOLLNs-XfVSKrBPJOoGxCg"/>
+</div>
+<span class="font-label-md text-label-md font-semibold text-primary hidden sm:block">Profile</span>
+<span class="material-symbols-outlined text-outline hidden sm:block">arrow_drop_down</span>
+</div>
+</div>
+</header>
+<!-- Scrollable Content Canvas -->
+<div class="flex-1 overflow-y-auto p-md md:p-margin-desktop">
+<div class="max-w-7xl mx-auto space-y-lg pb-xl">
+<!-- Welcome Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-sm border-b border-outline-variant pb-md">
+<div>
+<p class="text-label-md font-label-md text-on-surface-variant uppercase mb-1">Overview</p>
+<h1 class="text-display-lg font-display-lg text-primary tracking-tight">Welcome back, John</h1>
+</div>
+<p class="text-body-sm text-on-surface-variant text-right hidden md:block max-w-xs">
+                        Manage your memberships, events, entries and account from one place.
+                    </p>
+</div>
+<!-- KPI Bento Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- KPI 1 -->
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-md shadow-ambient flex flex-col justify-between relative overflow-hidden group hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-lg relative z-10">
+<span class="material-symbols-outlined text-on-surface-variant">card_membership</span>
+<span class="bg-secondary-container/20 text-on-secondary-container text-xs font-label-md px-2 py-1 rounded-DEFAULT">Active</span>
+</div>
+<div class="relative z-10">
+<p class="text-label-md font-label-md text-on-surface-variant uppercase mb-1">Active Memberships</p>
+<p class="text-headline-lg font-headline-lg text-primary">2</p>
+</div>
+<div class="absolute -bottom-4 -right-4 w-24 h-24 bg-surface-container-highest rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+</div>
+<!-- KPI 2 -->
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-md shadow-ambient flex flex-col justify-between relative overflow-hidden group hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-lg relative z-10">
+<span class="material-symbols-outlined text-on-surface-variant">event</span>
+</div>
+<div class="relative z-10">
+<p class="text-label-md font-label-md text-on-surface-variant uppercase mb-1">Upcoming Events</p>
+<p class="text-headline-lg font-headline-lg text-primary">3</p>
+</div>
+<div class="absolute -bottom-4 -right-4 w-24 h-24 bg-surface-container-highest rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+</div>
+<!-- KPI 3 -->
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-md shadow-ambient flex flex-col justify-between relative overflow-hidden group hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-lg relative z-10">
+<span class="material-symbols-outlined text-on-surface-variant">assignment</span>
+</div>
+<div class="relative z-10">
+<p class="text-label-md font-label-md text-on-surface-variant uppercase mb-1">My Entries</p>
+<p class="text-headline-lg font-headline-lg text-primary">1</p>
+</div>
+<div class="absolute -bottom-4 -right-4 w-24 h-24 bg-surface-container-highest rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+</div>
+<!-- KPI 4 -->
+<div class="bg-surface border border-outline-variant rounded-DEFAULT p-md shadow-ambient flex flex-col justify-between relative overflow-hidden group hover:border-primary-container transition-colors">
+<div class="flex justify-between items-start mb-lg relative z-10">
+<span class="material-symbols-outlined text-on-surface-variant">receipt_long</span>
+</div>
+<div class="relative z-10">
+<p class="text-label-md font-label-md text-on-surface-variant uppercase mb-1">Recent Orders</p>
+<p class="text-headline-lg font-headline-lg text-primary">4</p>
+</div>
+<div class="absolute -bottom-4 -right-4 w-24 h-24 bg-surface-container-highest rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+</div>
+</div>
+<!-- Main Data Grid Layout -->
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-lg">
+<!-- Left Column (Wider) -->
+<div class="xl:col-span-2 space-y-lg">
+<!-- Upcoming Events Section -->
+<section class="bg-surface border border-outline-variant rounded-DEFAULT shadow-ambient overflow-hidden">
+<div class="p-md border-b border-outline-variant flex justify-between items-center bg-surface-tint">
+<h3 class="font-title-lg text-title-lg text-primary">Upcoming Events</h3>
+<button class="text-secondary font-label-md text-label-md hover:underline uppercase">View Full Calendar</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest border-b border-outline-variant">
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase whitespace-nowrap pl-md">Date</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase">Event</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase">Club</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase hidden sm:table-cell">Location</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase text-right">Fee</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase pr-md text-right">Action</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-sm pl-md text-body-sm font-body-sm whitespace-nowrap">Oct 03, 2024</td>
+<td class="p-sm text-body-sm font-body-sm font-semibold text-primary">Fall Field Trial</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant">Pine Ridge Club</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant hidden sm:table-cell">Atlanta, GA</td>
+<td class="p-sm text-body-sm font-body-sm text-right">$450</td>
+<td class="p-sm pr-md text-right space-x-2">
+<button class="text-primary font-label-md text-label-md hover:underline uppercase opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity">View</button>
+<button class="bg-primary-container text-on-primary text-label-md font-label-md uppercase px-3 py-1 rounded-DEFAULT hover:bg-primary-container/90 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">Enter</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-sm pl-md text-body-sm font-body-sm whitespace-nowrap">Nov 05, 2024</td>
+<td class="p-sm text-body-sm font-body-sm font-semibold text-primary">Regional Qualification</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant">Oak Creek Hunters</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant hidden sm:table-cell">Lexington, KY</td>
+<td class="p-sm text-body-sm font-body-sm text-right">$200</td>
+<td class="p-sm pr-md text-right space-x-2">
+<button class="text-primary font-label-md text-label-md hover:underline uppercase opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity">View</button>
+<button class="bg-primary-container text-on-primary text-label-md font-label-md uppercase px-3 py-1 rounded-DEFAULT hover:bg-primary-container/90 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">Enter</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest transition-colors group">
+<td class="p-sm pl-md text-body-sm font-body-sm whitespace-nowrap">Dec 16, 2024</td>
+<td class="p-sm text-body-sm font-body-sm font-semibold text-primary">Winter Classic</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant">Highland Conservation</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant hidden sm:table-cell">Bend, OR</td>
+<td class="p-sm text-body-sm font-body-sm text-right">$250</td>
+<td class="p-sm pr-md text-right space-x-2">
+<button class="text-primary font-label-md text-label-md hover:underline uppercase opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity">View</button>
+<button class="bg-primary-container text-on-primary text-label-md font-label-md uppercase px-3 py-1 rounded-DEFAULT hover:bg-primary-container/90 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100">Enter</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Active Memberships Section -->
+<section class="bg-surface border border-outline-variant rounded-DEFAULT shadow-ambient overflow-hidden">
+<div class="p-md border-b border-outline-variant bg-surface-tint">
+<h3 class="font-title-lg text-title-lg text-primary">Active Memberships</h3>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest border-b border-outline-variant">
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase pl-md">Club</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase">State</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase">Membership Type</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase">Expiry</th>
+<th class="p-sm font-label-md text-label-md text-on-surface-variant uppercase pr-md text-right">Status</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<tr class="hover:bg-surface-container-lowest transition-colors">
+<td class="p-sm pl-md text-body-sm font-body-sm font-medium">Pine Ridge Chapter</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant">GA</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant">Annual Membership</td>
+<td class="p-sm text-body-sm font-body-sm text-on-surface-variant">Dec 31, 2024</td>
+<td class="p-sm pr-md text-right">
+<span class="inline-flex items-center gap-1 bg-primary-fixed text-on-primary-fixed-variant text-xs font-label-md px-2 py-0.5 rounded-DEFAULT">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+                                                    Active
+                                                </span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+</div>
+<!-- Right Column (Narrower) -->
+<div class="space-y-lg">
+<!-- Recent Entries -->
+<section class="bg-surface border border-outline-variant rounded-DEFAULT shadow-ambient overflow-hidden">
+<div class="p-md border-b border-outline-variant bg-surface-tint">
+<h3 class="font-title-lg text-title-lg text-primary">Recent Entries</h3>
+</div>
+<div class="p-sm">
+<ul class="divide-y divide-outline-variant">
+<li class="py-sm px-sm hover:bg-surface-container-lowest rounded-DEFAULT transition-colors">
+<div class="flex justify-between items-start mb-1">
+<p class="font-body-sm text-body-sm font-semibold text-primary truncate pr-2">Spring Invitational</p>
+<span class="text-xs font-label-md text-on-secondary-container bg-secondary-container/30 px-1.5 py-0.5 rounded-DEFAULT">Confirmed</span>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-xs font-body-sm text-on-surface-variant">Bourbon County Club</p>
+<p class="text-xs font-body-sm text-on-surface-variant">May 10, 2024</p>
+</div>
+</li>
+</ul>
+</div>
+</section>
+<!-- Recent Orders -->
+<section class="bg-surface border border-outline-variant rounded-DEFAULT shadow-ambient overflow-hidden">
+<div class="p-md border-b border-outline-variant bg-surface-tint">
+<h3 class="font-title-lg text-title-lg text-primary">Recent Orders</h3>
+</div>
+<div class="p-sm">
+<ul class="divide-y divide-outline-variant">
+<li class="py-sm px-sm hover:bg-surface-container-lowest rounded-DEFAULT transition-colors">
+<div class="flex justify-between items-start mb-1">
+<p class="font-body-sm text-body-sm font-semibold text-primary">#ORD-5821</p>
+<p class="font-body-sm text-body-sm font-medium">$150.00</p>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-xs font-body-sm text-on-surface-variant">Sep 28, 2024</p>
+<span class="text-xs font-label-md text-on-secondary-container">Delivered</span>
+</div>
+</li>
+<li class="py-sm px-sm hover:bg-surface-container-lowest rounded-DEFAULT transition-colors">
+<div class="flex justify-between items-start mb-1">
+<p class="font-body-sm text-body-sm font-semibold text-primary">#ORD-5820</p>
+<p class="font-body-sm text-body-sm font-medium">$45.00</p>
+</div>
+<div class="flex justify-between items-center">
+<p class="text-xs font-body-sm text-on-surface-variant">Aug 17, 2024</p>
+<span class="text-xs font-label-md text-on-secondary-container">Shipped</span>
+</div>
+</li>
+</ul>
+<div class="mt-sm pt-sm border-t border-outline-variant text-center">
+<button class="text-secondary font-label-md text-label-md hover:underline uppercase">View All Orders</button>
+</div>
+</div>
+</section>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

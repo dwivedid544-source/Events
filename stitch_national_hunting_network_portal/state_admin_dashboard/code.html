@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+
+<html class="h-full bg-background dark:bg-background" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>State Admin Dashboard - Georgia State Association</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#f0eded",
+                        "surface-container-low": "#f6f3f2",
+                        "tertiary-fixed-dim": "#b7ccb9",
+                        "on-error": "#ffffff",
+                        "error": "#ba1a1a",
+                        "secondary": "#78582f",
+                        "surface-container-highest": "#e4e2e1",
+                        "primary-fixed-dim": "#b4cdb8",
+                        "on-background": "#1b1c1c",
+                        "tertiary-container": "#1d2f22",
+                        "on-tertiary-container": "#839886",
+                        "on-tertiary-fixed-variant": "#394b3d",
+                        "surface-tint": "#4d6453",
+                        "surface-dim": "#dcd9d9",
+                        "secondary-container": "#fed39f",
+                        "primary-container": "#1b3022",
+                        "on-primary-fixed-variant": "#364c3c",
+                        "surface-variant": "#e4e2e1",
+                        "secondary-fixed-dim": "#eabf8d",
+                        "primary-fixed": "#d0e9d4",
+                        "surface": "#fcf9f8",
+                        "surface-bright": "#fcf9f8",
+                        "secondary-fixed": "#ffddb7",
+                        "on-secondary-fixed": "#2a1700",
+                        "on-secondary-fixed-variant": "#5e411a",
+                        "tertiary": "#091a0f",
+                        "on-primary-fixed": "#0b2013",
+                        "on-primary": "#ffffff",
+                        "primary": "#061b0e",
+                        "outline": "#737973",
+                        "surface-container-high": "#eae7e7",
+                        "on-primary-container": "#819986",
+                        "outline-variant": "#c3c8c1",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1c1c",
+                        "on-secondary-container": "#795930",
+                        "inverse-on-surface": "#f3f0f0",
+                        "surface-container-lowest": "#ffffff",
+                        "on-surface-variant": "#434843",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#0e1f13",
+                        "inverse-primary": "#b4cdb8",
+                        "tertiary-fixed": "#d3e8d5",
+                        "inverse-surface": "#303030",
+                        "background": "#fcf9f8"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "sm": "12px",
+                        "margin-mobile": "16px",
+                        "md": "24px",
+                        "gutter": "24px",
+                        "lg": "48px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "base": "8px",
+                        "margin-desktop": "64px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "label-md": ["Inter"],
+                        "title-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "36px", "fontWeight": "700" }],
+                        "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "title-lg": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="h-full flex text-on-surface antialiased selection:bg-primary selection:text-on-primary">
+<!-- Mobile Top App Bar (Hidden on Desktop) -->
+<header class="md:hidden flex justify-between items-center w-full px-margin-mobile py-sm bg-background border-b border-outline-variant fixed top-0 z-50">
+<div class="flex items-center gap-xs">
+<span class="material-symbols-outlined text-primary text-xl" style="font-variation-settings: 'FILL' 1;">forest</span>
+<span class="font-headline-md text-headline-md font-bold text-primary">Georgia State</span>
+</div>
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant"><span class="material-symbols-outlined">search</span></button>
+<button class="text-on-surface-variant"><span class="material-symbols-outlined">menu</span></button>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<aside class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface-container-low p-md space-y-base shadow-sm z-40 border-r border-outline-variant">
+<!-- Header -->
+<div class="flex flex-col mb-lg">
+<div class="flex items-center gap-xs mb-xs">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">nature</span>
+<span class="font-title-lg text-title-lg text-primary tracking-tight">Georgia State Association</span>
+</div>
+<span class="font-label-md text-label-md uppercase text-on-surface-variant">State Admin</span>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 overflow-y-auto space-y-xs hide-scrollbar">
+<!-- Active Tab -->
+<a class="flex items-center gap-sm px-sm py-xs bg-secondary-container text-on-secondary-container font-label-md text-label-md uppercase rounded-lg font-bold" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">groups</span>
+                Membership
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">home_work</span>
+                Clubs
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">event</span>
+                Events
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">how_to_reg</span>
+                Entries
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">emoji_events</span>
+                Results
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">article</span>
+                News
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">storefront</span>
+                Store
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">payments</span>
+                Revenue
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">bar_chart</span>
+                Reports
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">public</span>
+                State Page
+            </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<!-- Footer / CTA -->
+<div class="mt-auto space-y-sm pt-md border-t border-outline-variant">
+<button class="w-full bg-primary-container text-on-primary font-label-md text-label-md uppercase py-xs rounded-DEFAULT shadow-sm active:opacity-80 transition-opacity">
+                Create Event
+            </button>
+<div class="flex flex-col gap-xs">
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">help</span>
+                    Support
+                </a>
+<a class="flex items-center gap-sm px-sm py-xs text-on-surface-variant hover:bg-surface-container-high font-label-md text-label-md uppercase transition-all rounded-lg" href="#">
+<span class="material-symbols-outlined">logout</span>
+                    Sign Out
+                </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 pt-20 md:pt-0 min-h-screen flex flex-col">
+<!-- Desktop Header / Search Bar -->
+<header class="hidden md:flex justify-between items-center w-full px-margin-desktop py-sm bg-background border-b border-outline-variant sticky top-0 z-30">
+<div class="flex-1 max-w-xl">
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
+<input class="w-full bg-surface border border-outline-variant rounded-DEFAULT py-xs pl-10 pr-4 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant focus:outline-none focus:border-primary focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search clubs, members, or events..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-md ml-lg">
+<button class="text-on-surface-variant hover:text-primary transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-0 right-0 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<div class="flex items-center gap-sm cursor-pointer hover:opacity-80 transition-opacity">
+<img alt="Profile" class="w-8 h-8 rounded-full object-cover border border-outline-variant" data-alt="A small, professional headshot photo of an administrator, clean lighting, neutral background, modern corporate style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB9CtddQ57YJ9s4i5FqlSJfdAoYetQxWaZa8Hn7CCpcSgfXqorZbB2n3MWQwZ_tj87jl9_x1rH6_bzBcxUY7oFqr2pwdrs5i8DApJ5F9TjOU_J9Qo_i2CD3g02j7VrjvshunptG0YUXDdZCR6xY8gb6GSmEBd4HNpGDGLosD_b6Hu-TuvkW-8GgC1vgGfG3tbZTgmdJU0Cq3x1S0rU2cIvm06t1N1GHzVtbKq6rNyt7hmNx8nOCIFsk_g"/>
+<span class="font-label-md text-label-md text-on-surface font-semibold hidden lg:inline">Admin User</span>
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<div class="flex-1 p-margin-mobile md:p-margin-desktop bg-surface-container-lowest overflow-y-auto">
+<!-- Page Header -->
+<div class="mb-lg">
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary mb-xs">State Dashboard</h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl">Manage membership, clubs, events and activity across Georgia.</p>
+</div>
+<!-- KPI Summary Cards (Bento style grid) -->
+<section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-gutter mb-lg">
+<!-- Card 1 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col justify-between" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Active Members</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1 rounded-full text-sm">groups</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-primary">1,284</span>
+</div>
+<div class="mt-2 flex items-center gap-1 text-sm text-[#4d6453]">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+<span class="font-body-sm text-body-sm">+5.2% from last month</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col justify-between" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Participating Clubs</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1 rounded-full text-sm">home_work</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-primary">42</span>
+</div>
+<div class="mt-2 flex items-center gap-1 text-sm text-on-surface-variant">
+<span class="font-body-sm text-body-sm">Across 12 regions</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface border border-outline-variant rounded-xl p-md flex flex-col justify-between relative overflow-hidden" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);">
+<!-- subtle decorative background element -->
+<div class="absolute -right-4 -bottom-4 w-24 h-24 bg-secondary/5 rounded-full blur-xl"></div>
+<div class="flex justify-between items-start mb-sm relative z-10">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Upcoming Events</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1 rounded-full text-sm">event</span>
+</div>
+<div class="flex items-baseline gap-xs relative z-10">
+<span class="font-display-lg text-display-lg text-primary">18</span>
+</div>
+<div class="mt-2 flex items-center gap-1 text-sm text-secondary">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-body-sm text-body-sm">Next event in 4 days</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-primary-container text-on-primary rounded-xl p-md flex flex-col justify-between" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.15);">
+<div class="flex justify-between items-start mb-sm">
+<span class="font-label-md text-label-md text-on-primary/80 uppercase tracking-wider">State Revenue</span>
+<span class="material-symbols-outlined text-on-primary bg-on-primary/20 p-1 rounded-full text-sm">payments</span>
+</div>
+<div class="flex items-baseline gap-xs">
+<span class="font-display-lg text-display-lg text-on-primary">$48,620</span>
+</div>
+<div class="mt-2 flex items-center gap-1 text-sm text-on-primary/80">
+<span class="font-body-sm text-body-sm">YTD Total</span>
+</div>
+</div>
+</section>
+<!-- Main Content Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-gutter mb-lg">
+<!-- Left Column (Wider) -->
+<div class="lg:col-span-2 space-y-gutter">
+<!-- Upcoming Events Table -->
+<section class="bg-surface border border-outline-variant rounded-xl overflow-hidden" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);">
+<div class="p-md border-b border-outline-variant flex justify-between items-center">
+<h2 class="font-title-lg text-title-lg text-primary">Upcoming Events</h2>
+<button class="text-secondary font-label-md text-label-md uppercase hover:underline">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-lowest border-b border-outline-variant font-label-md text-label-md uppercase text-on-surface-variant">
+<th class="p-sm font-semibold">Event Name &amp; Club</th>
+<th class="p-sm font-semibold">Location</th>
+<th class="p-sm font-semibold">Date</th>
+<th class="p-sm font-semibold text-right">Status</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm text-on-surface divide-y divide-outline-variant/50">
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-sm">
+<div class="font-medium text-primary">Fall Field Trial</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Pine Ridge Chapter</div>
+</td>
+<td class="p-sm text-on-surface-variant">Atlanta, GA</td>
+<td class="p-sm">Oct 03, 2024</td>
+<td class="p-sm text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/10 text-secondary font-label-md text-[10px] uppercase">Open</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-sm">
+<div class="font-medium text-primary">Regional Qualification</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Oak Creek Hunters</div>
+</td>
+<td class="p-sm text-on-surface-variant">Lexington, KY</td>
+<td class="p-sm">Nov 05, 2024</td>
+<td class="p-sm text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-secondary/10 text-secondary font-label-md text-[10px] uppercase">Open</span>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-lowest/50 transition-colors">
+<td class="p-sm">
+<div class="font-medium text-primary">Winter Classic</div>
+<div class="text-on-surface-variant text-xs mt-0.5">Highland Conservation Club</div>
+</td>
+<td class="p-sm text-on-surface-variant">Bend, OR</td>
+<td class="p-sm">Dec 16, 2024</td>
+<td class="p-sm text-right">
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-variant text-on-surface-variant font-label-md text-[10px] uppercase">Registration Opens Soon</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<!-- Quick Actions Bento -->
+<section>
+<h2 class="font-title-lg text-title-lg text-primary mb-sm">Quick Actions</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-sm">
+<button class="bg-surface border border-outline-variant rounded-lg p-sm flex flex-col items-center justify-center gap-xs hover:border-primary hover:bg-surface-container-lowest transition-all group" style="box-shadow: 0px 2px 10px rgba(27, 48, 34, 0.04);">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">home_work</span>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Review Clubs</span>
+</button>
+<button class="bg-surface border border-outline-variant rounded-lg p-sm flex flex-col items-center justify-center gap-xs hover:border-primary hover:bg-surface-container-lowest transition-all group" style="box-shadow: 0px 2px 10px rgba(27, 48, 34, 0.04);">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">groups</span>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">Review Membership</span>
+</button>
+<button class="bg-surface border border-outline-variant rounded-lg p-sm flex flex-col items-center justify-center gap-xs hover:border-primary hover:bg-surface-container-lowest transition-all group" style="box-shadow: 0px 2px 10px rgba(27, 48, 34, 0.04);">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">event</span>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">View Events</span>
+</button>
+<button class="bg-surface border border-outline-variant rounded-lg p-sm flex flex-col items-center justify-center gap-xs hover:border-primary hover:bg-surface-container-lowest transition-all group" style="box-shadow: 0px 2px 10px rgba(27, 48, 34, 0.04);">
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-primary transition-colors">bar_chart</span>
+<span class="font-label-md text-label-md text-on-surface group-hover:text-primary transition-colors">View Reports</span>
+</button>
+</div>
+</section>
+</div>
+<!-- Right Column (Narrower) -->
+<div class="space-y-gutter">
+<!-- Membership Activity -->
+<section class="bg-surface border border-outline-variant rounded-xl p-md" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);">
+<h2 class="font-title-lg text-title-lg text-primary mb-md border-b border-outline-variant pb-xs">Membership Activity</h2>
+<div class="space-y-md">
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="font-body-sm text-body-sm text-on-surface">New Members (30 days)</span>
+<span class="font-label-md text-label-md text-primary">142</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 75%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="font-body-sm text-body-sm text-on-surface">Renewals</span>
+<span class="font-label-md text-label-md text-secondary">89</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 45%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between items-end mb-1">
+<span class="font-body-sm text-body-sm text-on-surface">Expiring Soon</span>
+<span class="font-label-md text-label-md text-error">24</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-error h-full rounded-full" style="width: 15%"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Club Activity -->
+<section class="bg-surface border border-outline-variant rounded-xl p-md" style="box-shadow: 0px 4px 20px rgba(27, 48, 34, 0.08);">
+<div class="flex justify-between items-center mb-md border-b border-outline-variant pb-xs">
+<h2 class="font-title-lg text-title-lg text-primary">Club Activity</h2>
+<span class="material-symbols-outlined text-on-surface-variant text-sm cursor-pointer hover:text-primary">more_horiz</span>
+</div>
+<ul class="space-y-sm">
+<li class="flex items-center justify-between p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Pine Ridge Chapter</span>
+</div>
+<span class="font-label-md text-[10px] uppercase text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">Active</span>
+</li>
+<li class="flex items-center justify-between p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Oak Creek Hunters</span>
+</div>
+<span class="font-label-md text-[10px] uppercase text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">Active</span>
+</li>
+<li class="flex items-center justify-between p-sm border border-outline-variant rounded-lg bg-surface-container-lowest">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-secondary"></div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface">Highland Conservation</span>
+</div>
+<span class="font-label-md text-[10px] uppercase text-secondary bg-secondary/10 px-2 py-0.5 rounded-full">Active</span>
+</li>
+<li class="flex items-center justify-between p-sm border border-outline-variant rounded-lg bg-surface-container-lowest opacity-70">
+<div class="flex items-center gap-sm">
+<div class="w-2 h-2 rounded-full bg-outline-variant"></div>
+<span class="font-body-sm text-body-sm font-medium text-on-surface-variant">River Valley Club</span>
+</div>
+<span class="font-label-md text-[10px] uppercase text-on-surface-variant bg-surface-variant px-2 py-0.5 rounded-full">Pending</span>
+</li>
+</ul>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 w-full bg-background border-t border-outline-variant flex justify-around items-center py-xs z-50 px-sm pb-safe">
+<a class="flex flex-col items-center p-2 text-primary" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-[10px] mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant hover:text-primary" href="#">
+<span class="material-symbols-outlined">groups</span>
+<span class="font-label-md text-[10px] mt-1">Members</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant hover:text-primary" href="#">
+<span class="material-symbols-outlined">event</span>
+<span class="font-label-md text-[10px] mt-1">Events</span>
+</a>
+<a class="flex flex-col items-center p-2 text-on-surface-variant hover:text-primary" href="#">
+<span class="material-symbols-outlined">menu</span>
+<span class="font-label-md text-[10px] mt-1">More</span>
+</a>
+</nav>
+<!-- Optional subtle background texture pattern overlay (purely CSS) -->
+<div class="fixed inset-0 pointer-events-none opacity-[0.02] z-0" style="background-image: url('data:image/svg+xml,%3Csvg width=\'20\' height=\'20\' viewBox=\'0 0 20 20\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'%231b3022\' fill-opacity=\'1\' fill-rule=\'evenodd\'%3E%3Ccircle cx=\'3\' cy=\'3\' r=\'1\'/%3E%3Ccircle cx=\'13\' cy=\'13\' r=\'1\'/%3E%3C/g%3E%3C/svg%3E');"></div>
+</body></html>
