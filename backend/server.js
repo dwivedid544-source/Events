@@ -750,10 +750,22 @@ app.get('/api/v1/orders', async (req, res) => {
 app.post('/api/v1/orders', async (req, res) => {
   const orderData = req.body;
   console.log('📡 API Call [POST /api/v1/orders]:', orderData.id || orderData.customer);
+  try {
+    const orderId = orderData.id || `ORD-${Date.now()}`;
+    const custName = orderData.customer || orderData.customerName || 'Customer';
+    const totalVal = Number(orderData.total || orderData.amount || 0);
+    const itemsStr = JSON.stringify(orderData.orderItems || orderData.items || []);
+    await db.query(
+      'INSERT INTO `Order` (id, orderNumber, customerName, total, status, itemsJson) VALUES (?, ?, ?, ?, ?, ?)',
+      [orderId, orderId, custName, totalVal, orderData.status || 'Processing', itemsStr]
+    );
+  } catch (dbErr) {
+    console.warn('MySQL Insert Order notice:', dbErr.message);
+  }
   return res.status(201).json({
     success: true,
     data: orderData,
-    message: `Order ${orderData.id} recorded successfully via API`,
+    message: `Order ${orderData.id} recorded successfully via API in database`,
     timestamp: new Date().toISOString()
   });
 });

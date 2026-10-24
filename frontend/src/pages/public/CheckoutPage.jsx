@@ -17,20 +17,20 @@ export const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    zip: '',
+    firstName: currentUser?.name ? currentUser.name.split(' ')[0] : 'James',
+    lastName: currentUser?.name ? currentUser.name.split(' ').slice(1).join(' ') || 'Wadley' : 'Wadley',
+    email: currentUser?.email || 'Houstonroofing@yahoo.com',
+    phone: currentUser?.phone || '(713) 555-0192',
+    address1: '1420 Championship Way',
+    address2: 'Suite 200',
+    city: 'Knoxville',
+    state: 'TN',
+    zip: '37901',
     country: 'United States',
     paymentMethod: 'credit_card',
-    cardNumber: '',
-    cardExp: '',
-    cardCvc: ''
+    cardNumber: '4532 8192 3910 8891',
+    cardExp: '12/28',
+    cardCvc: '884'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);

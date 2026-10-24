@@ -198,7 +198,26 @@ export const AppProvider = ({ children }) => {
             })
             .catch((e) => console.warn('Failed fetching claims API:', e));
 
-          // 8. API Call: Fetch Financial Overview Report from MySQL database `club`
+          // 8. API Call: Fetch Products from MySQL database `club`
+          fetch(`${API_BASE_URL}/products`)
+            .then((r) => r.json())
+            .then((resData) => {
+              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                console.log(`📦 Loaded ${resData.data.length} live products from MySQL database:`, resData.data);
+                const normalizedProds = resData.data.map((p) => ({
+                  ...p,
+                  price: Number(p.price) || 0,
+                  wholesaleCost: Number(p.wholesaleCost) || Number(p.wholesale_price) || 0,
+                  inStock: p.inStock !== undefined ? Number(p.inStock) : (p.stock !== undefined ? Number(p.stock) : 50),
+                  stock: p.stock !== undefined ? Number(p.stock) : (p.inStock !== undefined ? Number(p.inStock) : 50)
+                }));
+                setProducts(normalizedProds);
+                localStorage.setItem('nh_products_v2', JSON.stringify(normalizedProds));
+              }
+            })
+            .catch((e) => console.warn('Failed fetching products API:', e));
+
+          // 9. API Call: Fetch Financial Overview Report from MySQL database `club`
           fetch(`${API_BASE_URL}/reports/financial-overview?period=monthly`)
             .then((r) => r.json())
             .then((resData) => {
@@ -2189,7 +2208,7 @@ export const AppProvider = ({ children }) => {
 
   const addToCart = (product, quantityToAdd = 1, originDetails = null) => {
     if (!product) return;
-    const currentStock = product.inStock || 0;
+    const currentStock = product.inStock !== undefined ? Number(product.inStock) : (product.stock !== undefined ? Number(product.stock) : 50);
     if (currentStock <= 0) {
       showToast(`Sorry, ${product.name} is currently out of stock.`, 'error');
       return;
@@ -2199,10 +2218,10 @@ export const AppProvider = ({ children }) => {
       const existingIndex = prevCart.findIndex((item) => item.id === product.id);
 
       const itemOrigin = originDetails || {
-        originType: 'CLUB',
-        orderSource: 'Oak Ridge Hunting Club',
-        clubName: 'Oak Ridge Hunting Club',
-        stateName: 'Tennessee'
+        originType: product.organizationType || product.scopeChannel || 'NATIONAL',
+        orderSource: product.scopeEntity || (product.organizationType === 'CLUB' ? 'Oak Ridge Hunting Club' : 'UHC National Organization'),
+        clubName: product.organizationType === 'CLUB' ? (product.scopeEntity || 'Oak Ridge Hunting Club') : '',
+        stateName: product.organizationType === 'STATE' ? (product.scopeEntity || 'Tennessee') : 'National'
       };
 
       if (existingIndex > -1) {
