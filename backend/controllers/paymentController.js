@@ -1,5 +1,6 @@
 const db = require('../db');
 const https = require('https');
+require('dotenv').config();
 
 // Get active Clover Payment Gateway configuration
 const getPaymentConfig = (req, res) => {
@@ -58,7 +59,7 @@ const processCharge = async (req, res) => {
           new Date().toISOString().slice(0, 7), // YYYY-MM
           stateId || 'TN',
           clubId || 'club-1',
-          description || `Clover Payment for ${customerName || 'Customer'} (MID: ${merchantId})`
+          description || `Clover Payment for ${customerName || 'Customer'} (MID: ${merchantId}) | Auth: ${authCode} | Status: PAID | Ref: ${txnId}`
         ]
       );
     } catch (dbErr) {

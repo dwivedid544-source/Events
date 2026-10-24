@@ -199,7 +199,7 @@ db.serialize(() => {
   const hash = bcrypt.hashSync('Password123!', 10);
   db.run(`
     INSERT OR REPLACE INTO User (id, email, passwordHash, name, role, phone, stateCode, clubId)
-    VALUES ('usr-lalit', 'pancholelalit52@gmail.com', '${hash}', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1')
+    VALUES ('usr-lalit', 'demo@example.com', '${hash}', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1')
   `);
 
   // Seed State Associations

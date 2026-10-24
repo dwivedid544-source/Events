@@ -41,7 +41,7 @@
 ```json
 {
   "name": "Lalit Panchole",
-  "email": "pancholelalit52@gmail.com",
+  "email": "demo@example.com",
   "password": "SecurePassword123!",
   "role": "MEMBER",
   "phone": "(800) 555-0192",
@@ -57,7 +57,7 @@
     "user": {
       "id": "usr-101",
       "name": "Lalit Panchole",
-      "email": "pancholelalit52@gmail.com",
+      "email": "demo@example.com",
       "role": "MEMBER"
     },
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -73,7 +73,7 @@
 - **Request Payload:**
 ```json
 {
-  "email": "pancholelalit52@gmail.com",
+  "email": "demo@example.com",
   "password": "SecurePassword123!"
 }
 ```
@@ -85,7 +85,7 @@
     "user": {
       "id": "usr-101",
       "name": "Lalit Panchole",
-      "email": "pancholelalit52@gmail.com",
+      "email": "demo@example.com",
       "role": "MEMBER"
     },
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
@@ -105,7 +105,7 @@
   "data": {
     "id": "usr-101",
     "name": "Lalit Panchole",
-    "email": "pancholelalit52@gmail.com",
+    "email": "demo@example.com",
     "role": "MEMBER",
     "stateId": "tx",
     "clubId": "club-1"
@@ -178,7 +178,7 @@
   "tier": "Patron Tier",
   "cause": "Youth Trial & Mentorship Fund",
   "donorName": "Lalit Panchole",
-  "donorEmail": "pancholelalit52@gmail.com"
+  "donorEmail": "demo@example.com"
 }
 ```
 - **Response (200 OK):**
@@ -246,7 +246,7 @@
   "tier": "Club Partner Tier",
   "cause": "Clubhouse & Kennel Repair",
   "donorName": "Lalit Panchole",
-  "donorEmail": "pancholelalit52@gmail.com"
+  "donorEmail": "demo@example.com"
 }
 ```
 - **Response (200 OK):**

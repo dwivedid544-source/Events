@@ -274,7 +274,7 @@ CREATE TABLE `user` (
 --
 
 INSERT INTO `user` (`id`, `email`, `passwordHash`, `name`, `role`, `phone`, `stateCode`, `clubId`, `createdAt`, `updatedAt`) VALUES
-('usr-lalit', 'pancholelalit52@gmail.com', '$2a$10$nTnliq1FmEm1BVgEVoWIwuZEVdqTchqLrnNvj.ShvQmJtU63w.6Uu', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1', '2026-08-17 12:42:10', '2026-08-17 12:42:10');
+('usr-lalit', 'demo@example.com', '$2a$10$nTnliq1FmEm1BVgEVoWIwuZEVdqTchqLrnNvj.ShvQmJtU63w.6Uu', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1', '2026-08-17 12:42:10', '2026-08-17 12:42:10');
 
 --
 -- Indexes for dumped tables

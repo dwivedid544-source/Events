@@ -9,12 +9,12 @@ async function main() {
   // 1. Seed Users
   const passwordHash = await bcrypt.hash('Password123!', 10);
   await prisma.user.upsert({
-    where: { email: 'pancholelalit52@gmail.com' },
+    where: { email: 'demo@example.com' },
     update: {},
     create: {
       id: 'usr-lalit',
       name: 'Lalit Panchole',
-      email: 'pancholelalit52@gmail.com',
+      email: 'demo@example.com',
       passwordHash,
       role: 'SUPER_ADMIN',
       phone: '(800) 555-0192',

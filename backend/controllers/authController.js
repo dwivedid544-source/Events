@@ -116,13 +116,13 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const userEmail = req.user ? req.user.email : 'pancholelalit52@gmail.com';
+    const userEmail = req.user ? req.user.email : 'demo@example.com';
     const [rows] = await db.query('SELECT id, email, name, role, phone, stateCode, clubId, createdAt FROM `User` WHERE LOWER(email) = ?', [userEmail.toLowerCase()]);
 
     const profileData = rows[0] || {
       id: 'usr-lalit',
       name: 'Lalit Panchole',
-      email: 'pancholelalit52@gmail.com',
+      email: 'demo@example.com',
       role: 'SUPER_ADMIN',
       phone: '(800) 555-0192',
       stateCode: 'TX',

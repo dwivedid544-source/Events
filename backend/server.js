@@ -149,19 +149,61 @@ app.get('/api/v1/commissions', async (req, res) => {
   }
 });
 
-// Club Claims API Endpoint from MySQL Database
+// In-Memory & Database Club Claims Store
+let storedClaims = [
+  { id: 'CLM-501', club: 'Hawaii State Association', state: 'HI', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 23, 2026', claimStatus: 'Pending', status: 'Pending', verificationStatus: 'Pending Verification', message: 'Official state association administration & treasury bank account setup for Hawaii sandbox.' },
+  { id: 'CLM-502', club: 'Texas Hound Association', state: 'TX', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 23, 2026', claimStatus: 'Pending', status: 'Pending', verificationStatus: 'Tax ID & Charter Submitted', message: 'Application to administer Texas State Hound Association and affiliate local hunting clubs.' },
+  { id: 'CLM-503', club: 'Tennessee State Association', state: 'TN', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 22, 2026', claimStatus: 'Pending', status: 'Pending', verificationStatus: 'Officer Application Submitted', message: 'State director registration for Tennessee field trials and Oak Ridge hunting club.' },
+  { id: 'clm-1', club: 'Lone Star Hound Club', clubName: 'Lone Star Hound Club', applicant: 'Jake Miller', email: 'jake@lonestar.org', phone: '(512) 555-0199', claimStatus: 'Pending', status: 'Pending Review', submittedDate: 'Aug 14, 2026', verificationStatus: 'Pending Review', message: 'Official Texas charter registration.' }
+];
+
 app.get('/api/v1/club-claims', async (req, res) => {
+  return res.json({
+    success: true,
+    data: storedClaims,
+    message: 'Club claim verification requests fetched',
+    timestamp: new Date().toISOString()
+  });
+});
+
+app.post('/api/v1/club-claims', async (req, res) => {
   try {
-    return res.json({
-      success: true,
-      data: [
-        { id: 'clm-1', clubName: 'Lone Star Hound Club', applicant: 'Jake Miller', email: 'jake@lonestar.org', status: 'Pending Review', date: 'Aug 14, 2026' }
-      ],
-      message: 'Club claim verification requests fetched from MySQL database `club`',
-      timestamp: new Date().toISOString()
-    });
+    const claim = {
+      id: req.body.id || ('CLM-' + Math.floor(100 + Math.random() * 900)),
+      club: req.body.club || req.body.clubName || 'State Association',
+      state: req.body.state || 'HI',
+      applicant: req.body.applicant || 'Applicant',
+      email: req.body.email || 'demo@example.com',
+      phone: req.body.phone || '(800) 555-0192',
+      message: req.body.message || 'Official State/Club administration claim request.',
+      claimStatus: 'Pending',
+      status: 'Pending',
+      submittedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+      verificationStatus: 'Pending Review',
+      ...req.body
+    };
+    storedClaims.unshift(claim);
+    console.log('✅ New Claim Registered in Backend:', claim);
+    return res.status(201).json({ success: true, data: claim, message: 'Claim submitted successfully' });
   } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+    return res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+app.put('/api/v1/club-claims/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { claimStatus, status } = req.body;
+    const nextStatus = claimStatus || status || 'Approved';
+    const found = storedClaims.find(c => c.id === id);
+    if (found) {
+      found.claimStatus = nextStatus;
+      found.status = nextStatus;
+      found.verificationStatus = nextStatus === 'Approved' ? 'Verified Official' : 'Rejected';
+    }
+    return res.json({ success: true, data: found || { id, claimStatus: nextStatus }, message: 'Claim status updated to ' + nextStatus });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: err.message });
   }
 });
 

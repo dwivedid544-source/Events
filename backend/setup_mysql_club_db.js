@@ -212,7 +212,7 @@ async function setupMySQL() {
     const hash = bcrypt.hashSync('Password123!', 10);
     await connection.query(`
       INSERT INTO \`User\` (\`id\`, \`email\`, \`passwordHash\`, \`name\`, \`role\`, \`phone\`, \`stateCode\`, \`clubId\`)
-      VALUES ('usr-lalit', 'pancholelalit52@gmail.com', '${hash}', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1')
+      VALUES ('usr-lalit', 'demo@example.com', '${hash}', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1')
       ON DUPLICATE KEY UPDATE \`name\`='Lalit Panchole';
     `);
 
