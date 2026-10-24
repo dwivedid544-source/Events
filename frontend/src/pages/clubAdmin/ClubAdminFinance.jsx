@@ -667,6 +667,122 @@ export const ClubAdminFinance = () => {
         </div>
       )}
 
+      {/* 🏛️ Direct Deposit & Banking Configuration Card for Local Club */}
+      <div className="bg-surface-lowest p-6 rounded-3xl border-2 border-surface-border shadow-ambient space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-border pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-200 shadow-xs">
+              <Landmark className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="font-black text-lg text-forest-950">
+                  {stateOrClubName} Treasury & Direct Deposit
+                </h3>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  {clubBankInfo.status}
+                </span>
+              </div>
+              <p className="text-xs text-charcoal-muted mt-0.5">
+                Attached bank account #2 for local club dues deposits and 100% merchandise profit margins.
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsEditingClubBank(!isEditingClubBank)}
+            className="px-4 py-2 bg-forest-900 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow cursor-pointer transition-all self-start sm:self-center"
+          >
+            {isEditingClubBank ? 'Cancel' : 'Edit Club Bank Account'}
+          </button>
+        </div>
+
+        {isEditingClubBank ? (
+          <form onSubmit={handleSaveClubBank} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs pt-2">
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Financial Institution</label>
+              <input
+                type="text"
+                required
+                value={clubBankInfo.bankName}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, bankName: e.target.value })}
+                placeholder="e.g. Bank of Hawaii / Wells Fargo"
+                className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Account Holder Legal Name</label>
+              <input
+                type="text"
+                required
+                value={clubBankInfo.accountHolder}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, accountHolder: e.target.value })}
+                placeholder="e.g. Honolulu Hound & Hunting Club Treasury"
+                className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Routing Number (ACH 9-digit)</label>
+              <input
+                type="text"
+                required
+                maxLength={9}
+                value={clubBankInfo.routingNumber}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, routingNumber: e.target.value })}
+                placeholder="121000248"
+                className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-mono font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Account Number</label>
+              <input
+                type="text"
+                required
+                value={clubBankInfo.accountNumber}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, accountNumber: e.target.value })}
+                placeholder="••••••••7712"
+                className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-mono font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div className="col-span-1 sm:col-span-2 lg:col-span-4 flex items-center justify-end gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setIsEditingClubBank(false)}
+                className="px-4 py-2 border border-surface-border text-charcoal font-bold text-xs rounded-xl"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs rounded-xl shadow-md flex items-center gap-1.5"
+              >
+                <Save className="w-3.5 h-3.5" />
+                <span>Save Bank Information</span>
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1">
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] text-charcoal-muted uppercase font-bold block">Bank Name</span>
+              <strong className="text-xs font-black text-forest-950 mt-0.5 block">{clubBankInfo.bankName}</strong>
+            </div>
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] text-charcoal-muted uppercase font-bold block">Account Holder</span>
+              <strong className="text-xs font-black text-forest-950 mt-0.5 block truncate">{clubBankInfo.accountHolder}</strong>
+            </div>
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] text-charcoal-muted uppercase font-bold block">Routing Number</span>
+              <strong className="text-xs font-mono font-black text-forest-950 mt-0.5 block">{clubBankInfo.routingNumber}</strong>
+            </div>
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] text-charcoal-muted uppercase font-bold block">Account Number</span>
+              <strong className="text-xs font-mono font-black text-forest-950 mt-0.5 block">{clubBankInfo.accountNumber}</strong>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* 5 CATEGORY CARDS + TOTAL INCOME CARD */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {/* 1. Memberships */}
