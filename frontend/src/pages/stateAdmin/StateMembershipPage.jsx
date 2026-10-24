@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
 import {
   Users,
@@ -203,7 +203,7 @@ export const StateMembershipPage = () => {
     if (!noticeTargetMember) return;
 
     try {
-      await fetch('http://localhost:5050/api/v1/states/send-renewal-notices', {
+      await fetch(`${API_BASE_URL}/states/send-renewal-notices`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -228,7 +228,7 @@ export const StateMembershipPage = () => {
   const handleSendBroadcast = async (e) => {
     e.preventDefault();
     try {
-      await fetch('http://localhost:5050/api/v1/states/communicate', {
+      await fetch(`${API_BASE_URL}/states/communicate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

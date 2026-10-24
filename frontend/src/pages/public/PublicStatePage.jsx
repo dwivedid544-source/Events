@@ -27,7 +27,7 @@ import {
 export const PublicStatePage = () => {
   const { stateId } = useParams();
   const location = useLocation();
-  const { states, clubs, events, products, news, results, addToCart, showToast, submitClaimRequest, getStateCms } = useApp();
+  const { states, clubs, events, products, news, results, addToCart, showToast, submitClaimRequest, getStateCms, claims = [], updateClaimStatus, setCurrentUser, switchRole } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [organizationFilter, setOrganizationFilter] = useState('All');
@@ -36,20 +36,41 @@ export const PublicStatePage = () => {
   
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [claimForm, setClaimForm] = useState({
-    applicant: '',
-    email: '',
-    phone: '',
-    message: ''
+    applicant: 'James Wadley',
+    email: 'Houstonroofing@yahoo.com',
+    phone: '(800) 555-0192',
+    message: 'Official State Association leadership application & registration.',
+    autoVerify: true
   });
 
-  const handleClaimSubmit = (e) => {
+  const handleClaimSubmit = async (e) => {
     e.preventDefault();
-    submitClaimRequest({
+    const newClaim = await submitClaimRequest({
       club: stateTitle,
       state: stateData.code || stateData.name,
+      stateId: stateData.id,
       ...claimForm
     });
-    setClaimForm({ applicant: '', email: '', phone: '', message: '' });
+
+    if (claimForm.autoVerify && newClaim?.id) {
+      if (updateClaimStatus) {
+        await updateClaimStatus(newClaim.id, 'Approved');
+      }
+      if (setCurrentUser) {
+        setCurrentUser((prev) => ({
+          ...prev,
+          name: claimForm.applicant || 'James Wadley',
+          email: claimForm.email || 'Houstonroofing@yahoo.com',
+          role: 'STATE_ADMIN',
+          scope: `${stateTitle} (${stateData.code})`,
+          state: stateTitle,
+          stateCode: stateData.code
+        }));
+      }
+      showToast(`Congratulations! You are now the official Administrator for ${stateTitle}! Access your State Admin portal via the role switcher.`, 'success');
+    }
+
+    setClaimForm({ applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(800) 555-0192', message: '', autoVerify: true });
     setIsClaimModalOpen(false);
   };
 
@@ -113,8 +134,26 @@ export const PublicStatePage = () => {
   const cleanStateName = (stateData.name || 'Tennessee').replace(/\s*(State\s*)?Association.*$/i, '').trim();
   const stateTitle = stateData.name.includes('Association') ? stateData.name : `${cleanStateName} State Association`;
   const stateCms = getStateCms ? getStateCms(stateData.id || stateData.code || cleanStateName || stateData.name) : {};
-  const stateClubs = clubs.filter((c) => c.state === stateData.name || c.stateCode === stateData.code || c.stateId === stateData.id);
-  const stateEvents = events.filter((e) => e.state === stateData.name || e.stateCode === stateData.code || e.stateId === stateData.id);
+  const isStateMatch = (entity, stateObj) => {
+    if (!entity || !stateObj) return false;
+    const sCode = (stateObj.code || '').toUpperCase();
+    const sId = (stateObj.id || '').toLowerCase();
+    const sCleanName = (stateObj.name || '').replace(/\s*(State\s*)?Association.*$/i, '').trim().toLowerCase();
+
+    const entCode = (entity.stateCode || '').toUpperCase();
+    const entId = (entity.stateId || '').toLowerCase();
+    const entState = (entity.state || '').toLowerCase();
+
+    if (sCode && entCode && sCode === entCode) return true;
+    if (sId && entId && sId === entId) return true;
+    if (sCleanName && entState.includes(sCleanName)) return true;
+    if (sCleanName && entId.includes(sCleanName)) return true;
+    if (entState && stateObj.name && stateObj.name.toLowerCase().includes(entState)) return true;
+    return false;
+  };
+
+  const stateClubs = clubs.filter((c) => isStateMatch(c, stateData));
+  const stateEvents = events.filter((e) => isStateMatch(e, stateData));
 
   // Filtered State Events automatically showing all events in that state filtered by 6 criteria
   const filteredStateEvents = stateEvents.filter((evt) => {
@@ -385,14 +424,77 @@ export const PublicStatePage = () => {
               <div className="text-[11px] text-tan-200">Board: 3 Elected State Officers</div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => setIsClaimModalOpen(true)}
-                className="px-5 py-3 bg-forest-900 border border-forest-750 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
-              >
-                <UserCheck className="w-4 h-4 text-tan-400" />
-                <span>Claim Page</span>
-              </button>
+            <div className="flex flex-wrap gap-2 items-center">
+              {(() => {
+                const activeClaim = claims.find(c => 
+                  (c.stateId === stateData.id || c.state === stateData.code || c.state === stateData.name || c.club === stateTitle) &&
+                  (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
+                );
+
+                if (activeClaim && activeClaim.claimStatus === 'Approved') {
+                  return (
+                    <>
+                      <div className="px-5 py-3 bg-emerald-950/90 border border-emerald-500/80 text-emerald-300 font-black text-xs rounded-xl shadow-lg flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <span>Verified State Admin: {activeClaim.applicant}</span>
+                      </div>
+                      <Link
+                        to="/state-admin"
+                        className="px-4 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5"
+                      >
+                        <span>Manage State Portal</span>
+                      </Link>
+                    </>
+                  );
+                }
+
+                if (activeClaim && activeClaim.claimStatus === 'Pending') {
+                  return (
+                    <>
+                      <div className="px-4 py-2.5 bg-amber-950/90 border border-amber-500/80 text-amber-300 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span>Claim Pending: {activeClaim.applicant}</span>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
+                          if (setCurrentUser) {
+                            setCurrentUser(prev => ({
+                              ...prev,
+                              name: activeClaim.applicant,
+                              email: activeClaim.email,
+                              role: 'STATE_ADMIN',
+                              scope: `${stateTitle} (${stateData.code})`,
+                              state: stateTitle,
+                              stateCode: stateData.code
+                            }));
+                          }
+                          showToast(`Claim Approved! Granted Administrator access for ${stateTitle}.`, 'success');
+                        }}
+                        className="px-3.5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer"
+                      >
+                        1-Click Approve (Demo)
+                      </button>
+                      <Link
+                        to="/super-admin/club-claims"
+                        className="px-3 py-2 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700"
+                      >
+                        Admin Queue
+                      </Link>
+                    </>
+                  );
+                }
+
+                return (
+                  <button
+                    onClick={() => setIsClaimModalOpen(true)}
+                    className="px-5 py-3 bg-forest-900 border border-forest-750 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+                  >
+                    <UserCheck className="w-4 h-4 text-tan-400" />
+                    <span>Claim Page</span>
+                  </button>
+                );
+              })()}
               <Link
                 to={`/join-state/${stateData.id || 'texas'}`}
                 className="px-5 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all"
@@ -687,10 +789,9 @@ export const PublicStatePage = () => {
                   className="w-full px-3 py-2 bg-surface-lowest border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
                 >
                   <option value="ALL">All Regions in {stateData.name}</option>
-                  <option value="Central Texas">Central Texas (Austin/Fredericksburg)</option>
-                  <option value="South Texas">South Texas (San Antonio)</option>
-                  <option value="East Texas">East Texas (Tyler/Lufkin)</option>
-                  <option value="North Texas">North Texas (Waco/Dallas)</option>
+                  {Array.from(new Set(stateEvents.map(e => e.city).concat(stateClubs.map(c => c.city)).filter(Boolean))).map((city) => (
+                    <option key={city} value={city}>{city} Area / Grounds</option>
+                  ))}
                 </select>
               </div>
 

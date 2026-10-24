@@ -28,7 +28,11 @@ import {
   ArrowUpRight,
   Layers,
   ChevronDown,
-  Check
+  Check,
+  DollarSign,
+  TrendingUp,
+  Landmark,
+  CreditCard
 } from 'lucide-react';
 
 export const HomePage = () => {
@@ -120,10 +124,25 @@ export const HomePage = () => {
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-tan-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
         <div className="relative max-w-6xl mx-auto text-center space-y-8">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-3 px-5 py-2 rounded-full bg-forest-900/90 text-tan-300 border border-tan-500/40 text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-lg">
-            <img src="/logo.png" alt="UHC Logo" className="h-10 sm:h-12 w-auto object-contain" />
-            <span>Ultimate Hound Club (UHC)</span>
+          {/* Majestic Hero Brand Mark & Emblem Redesign */}
+          <div className="flex flex-col items-center justify-center space-y-4 pt-2">
+            <div className="relative group">
+              <div className="absolute -inset-4 bg-gradient-to-r from-tan-500/30 via-tan-300/40 to-tan-500/30 rounded-full blur-2xl opacity-75 group-hover:opacity-100 transition duration-1000"></div>
+              <div className="relative p-3 sm:p-4 rounded-3xl bg-forest-900/90 border-2 border-tan-500/60 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-xl">
+                <img
+                  src="/logo.png"
+                  alt="Ultimate Hound Club (UHC)"
+                  className="h-24 sm:h-32 md:h-36 w-auto object-contain drop-shadow-[0_10px_25px_rgba(217,166,97,0.35)] transform transition-transform duration-300 group-hover:scale-105"
+                />
+              </div>
+            </div>
+
+            {/* Authoritative Sanctioned Seal Badge */}
+            <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full bg-forest-900/95 text-tan-300 border border-tan-500/50 text-xs font-black uppercase tracking-widest backdrop-blur-md shadow-xl">
+              <ShieldCheck className="w-4 h-4 text-tan-400" />
+              <span>Official Sanctioned National Gateway • Ultimate Hound Club</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            </div>
           </div>
 
           {/* Heading & Subheading */}
@@ -302,6 +321,57 @@ export const HomePage = () => {
               </div>
             </div>
           </div>
+
+          {/* Hawaii State Sandbox & Live Testing Control Hub */}
+          <div className="max-w-5xl mx-auto mt-8 bg-gradient-to-r from-emerald-950/90 via-forest-900/95 to-emerald-950/90 border-2 border-emerald-500/40 rounded-2xl p-5 sm:p-6 shadow-2xl backdrop-blur-xl text-left">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-5">
+              <div className="space-y-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 text-[10px] font-black uppercase tracking-widest flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Live Testing Sandbox Active
+                  </span>
+                  <span className="text-xs font-bold text-tan-300">Hawaii (HI) Charter & Honolulu Hound Club</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-white">
+                  State Treasury & Local Club Banking Verification Ready
+                </h3>
+                <p className="text-xs text-tan-100/90 max-w-2xl leading-relaxed">
+                  Sandbox active for testing automated deposits: claim Hawaii state, attach State Direct Deposit ACH, attach Local Club ACH, and process live credit card transactions on Clover.
+                </p>
+              </div>
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                <Link
+                  to="/states/hi"
+                  className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5 active:scale-95"
+                >
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Hawaii State</span>
+                </Link>
+                <Link
+                  to="/state-admin"
+                  className="px-4 py-2.5 bg-forest-800 hover:bg-forest-700 text-tan-200 border border-tan-500/30 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5 active:scale-95"
+                >
+                  <Building2 className="w-3.5 h-3.5 text-tan-400" />
+                  <span>State Banking</span>
+                </Link>
+                <Link
+                  to="/club-admin/finance"
+                  className="px-4 py-2.5 bg-forest-800 hover:bg-forest-700 text-tan-200 border border-tan-500/30 font-bold text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5 active:scale-95"
+                >
+                  <Users className="w-3.5 h-3.5 text-tan-400" />
+                  <span>Club Banking</span>
+                </Link>
+                <Link
+                  to="/join"
+                  className="px-4 py-2.5 bg-gradient-to-r from-tan-400 to-tan-600 hover:from-tan-500 hover:to-tan-700 text-forest-950 font-black text-xs rounded-xl shadow-lg transition-all flex items-center gap-1.5 active:scale-95"
+                >
+                  <span>Live Card Test</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -398,6 +468,179 @@ export const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 lg:px-8">
         <ConnectedNetworkBanner />
       </section>
+
+      {/* Selling the Program: Automated Banking & Revenue Distribution Flow */}
+      <section className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">
+        <div className="bg-gradient-to-br from-forest-900 via-forest-950 to-charcoal-900 text-white rounded-3xl p-8 lg:p-12 border border-tan-500/30 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-tan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          {/* Section Header */}
+          <div className="text-center max-w-3xl mx-auto space-y-3 mb-10">
+            <span className="px-3.5 py-1 rounded-full bg-tan-500/20 text-tan-300 border border-tan-500/40 text-[10px] font-black uppercase tracking-widest inline-block">
+              Revenue Model & Banking Architecture
+            </span>
+            <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-white">
+              Selling the Program: How Calculations, <br className="hidden sm:block" />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-tan-300 via-tan-400 to-tan-200">
+                Deposits & Direct Banking Work
+              </span>
+            </h2>
+            <p className="text-xs sm:text-sm text-tan-100/80 font-medium leading-relaxed">
+              Every membership sale, hunt registration, and merchandise order automatically routes funds directly to attached state and local club treasuries. Zero manual bookkeeping.
+            </p>
+          </div>
+
+          {/* 3 Pillars Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mb-10">
+            {/* Pillar 1: State Associations */}
+            <div className="bg-forest-950/80 backdrop-blur-md rounded-2xl p-6 border border-forest-800 hover:border-tan-500/50 transition-all flex flex-col justify-between space-y-5">
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-tan-500/20 border border-tan-500/40 text-tan-400 flex items-center justify-center">
+                  <Landmark className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-tan-400">Pillar 1 • State Association</span>
+                  <h3 className="text-lg font-black text-white">Attached State Treasury</h3>
+                  <p className="text-xs text-tan-200/80 leading-relaxed font-medium">
+                    State associations register their official charter and link their ACH direct deposit account to unlock automated non-dues revenue.
+                  </p>
+                </div>
+                <ul className="space-y-2 pt-2 border-t border-forest-800 text-xs text-tan-100/90 font-medium">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Automated Revenue Split:</strong> Earn cut on every sanctioned hunt & state member signup.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Direct Deposit ACH:</strong> Funds transferred weekly directly to your bank.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Sanctioned Events:</strong> List and govern statewide championship hunts.</span>
+                  </li>
+                </ul>
+              </div>
+              <Link
+                to="/state-admin"
+                className="w-full py-2.5 px-4 bg-forest-900 hover:bg-forest-800 text-tan-300 border border-tan-500/30 rounded-xl text-xs font-black text-center transition-all flex items-center justify-center gap-2"
+              >
+                <span>State Treasury Settings</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* Pillar 2: Local Clubs */}
+            <div className="bg-forest-950/80 backdrop-blur-md rounded-2xl p-6 border-2 border-tan-500/40 hover:border-tan-500 transition-all flex flex-col justify-between space-y-5 shadow-2xl relative">
+              <div className="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-tan-500 text-forest-950 text-[9px] font-black uppercase tracking-wider shadow">
+                Local Backbone
+              </div>
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-tan-500 text-forest-950 flex items-center justify-center shadow-lg">
+                  <Building2 className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-tan-400">Pillar 2 • Chartered Club</span>
+                  <h3 className="text-lg font-black text-white">Attached Club Treasury</h3>
+                  <p className="text-xs text-tan-200/80 leading-relaxed font-medium">
+                    Local clubs claim their club page, link their local checking account, and start earning from memberships & apparel immediately.
+                  </p>
+                </div>
+                <ul className="space-y-2 pt-2 border-t border-forest-800 text-xs text-tan-100/90 font-medium">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>100% Club Dues:</strong> Keep full membership dues minus standard 2.9% Clover processing.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Zero-Inventory Dropship Merch:</strong> Wholesalers ship directly; your club pockets margin.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Instant Bank Payouts:</strong> Automated deposit ledger with exportable statements.</span>
+                  </li>
+                </ul>
+              </div>
+              <Link
+                to="/club-admin/finance"
+                className="w-full py-2.5 px-4 bg-tan-500 hover:bg-tan-400 text-forest-950 rounded-xl text-xs font-black text-center transition-all flex items-center justify-center gap-2 shadow-lg"
+              >
+                <span>Club Treasury Settings</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            {/* Pillar 3: Hunters & Members */}
+            <div className="bg-forest-950/80 backdrop-blur-md rounded-2xl p-6 border border-forest-800 hover:border-tan-500/50 transition-all flex flex-col justify-between space-y-5">
+              <div className="space-y-3">
+                <div className="w-12 h-12 rounded-xl bg-tan-500/20 border border-tan-500/40 text-tan-400 flex items-center justify-center">
+                  <CreditCard className="w-6 h-6" />
+                </div>
+                <div className="space-y-1">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-tan-400">Pillar 3 • Member & Hunter</span>
+                  <h3 className="text-lg font-black text-white">Live Clover Checkout</h3>
+                  <p className="text-xs text-tan-200/80 leading-relaxed font-medium">
+                    Hunters join online with instant credit card processing, digital membership cards, and automatic club affiliation.
+                  </p>
+                </div>
+                <ul className="space-y-2 pt-2 border-t border-forest-800 text-xs text-tan-100/90 font-medium">
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Live Card Processing:</strong> Encrypted card input with Clover Merchant gateway.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>Instant Credentials:</strong> Digital membership card issued immediately on signup.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span><strong>National Hunt Entries:</strong> 1-click registration for UKC/PKC sanctioned hunts.</span>
+                  </li>
+                </ul>
+              </div>
+              <Link
+                to="/join"
+                className="w-full py-2.5 px-4 bg-forest-900 hover:bg-forest-800 text-tan-300 border border-tan-500/30 rounded-xl text-xs font-black text-center transition-all flex items-center justify-center gap-2"
+              >
+                <span>Test Member Checkout</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Interactive Calculation & Deposit Simulation Bar */}
+          <div className="bg-forest-950 border border-tan-500/30 rounded-2xl p-5 sm:p-6 text-left">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400">
+                  Example Deposit Calculation ($100 Member Sale)
+                </span>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-bold text-white">
+                  <span className="px-3 py-1 rounded-lg bg-emerald-950 border border-emerald-500/50 text-emerald-300">
+                    Local Club Bank: <strong>$75.00 (Direct Deposit)</strong>
+                  </span>
+                  <span>+</span>
+                  <span className="px-3 py-1 rounded-lg bg-blue-950 border border-blue-500/50 text-blue-300">
+                    State Association Bank: <strong>$15.00 (Direct Deposit)</strong>
+                  </span>
+                  <span>+</span>
+                  <span className="px-3 py-1 rounded-lg bg-forest-900 border border-tan-500/30 text-tan-300">
+                    National & Clover Processing: <strong>$10.00</strong>
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 shrink-0">
+                <Link
+                  to="/states/hi"
+                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl shadow-lg transition-all"
+                >
+                  Test on Hawaii Sandbox
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
 
       {/* 3. The 9 Visitor Actions Gateways */}
       <section className="max-w-7xl mx-auto px-4 lg:px-8 space-y-8">

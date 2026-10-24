@@ -389,7 +389,7 @@ export const StateAdminStorePage = () => {
                       </div>
                       <div className="text-[11px] text-charcoal-muted font-medium flex items-center gap-1 mt-0.5">
                         <Mail className="w-3 h-3 text-charcoal-light" />
-                        <span>{o.email || 'pancholelalit52@gmail.com'}</span>
+                        <span>{o.email || 'demo@example.com'}</span>
                       </div>
                       <div className="text-[10px] text-charcoal-light font-mono mt-0.5">
                         Order ID: <strong>{o.id}</strong> • {o.date || 'Aug 10'}
@@ -491,7 +491,7 @@ export const StateAdminStorePage = () => {
                       </div>
                       <div className="text-[11px] text-charcoal-muted flex items-center gap-1 mt-0.5 whitespace-nowrap">
                         <Mail className="w-3 h-3 text-charcoal-light shrink-0" />
-                        <span>{o.email || 'pancholelalit52@gmail.com'}</span>
+                        <span>{o.email || 'demo@example.com'}</span>
                       </div>
                       <div className="text-[10px] text-charcoal-light font-mono mt-0.5 whitespace-nowrap">
                         ID: <strong className="text-forest-900">{o.id}</strong> • {o.date || 'Aug 10, 2026'}

@@ -32,10 +32,14 @@ export const Header = ({ toggleMobileSidebar }) => {
 
   const effectiveRole = getRoleFromPath(location.pathname) || currentUser?.role || 'MEMBER';
 
+  const stateScopeLabel = currentUser?.role === 'STATE_ADMIN' && currentUser?.scope
+    ? currentUser.scope
+    : (currentUser?.state ? `${currentUser.state} (${currentUser.stateCode || 'HI'})` : 'Hawaii (HI) / TN');
+
   const roleLabels = {
     MEMBER: { label: 'Member Portal', scope: 'Own Account', path: '/member' },
-    CLUB_ADMIN: { label: 'Club Admin', scope: 'Oak Ridge Hunting Club', path: '/club-admin' },
-    STATE_ADMIN: { label: 'State Admin', scope: 'Tennessee Association', path: '/state-admin' },
+    CLUB_ADMIN: { label: 'Club Admin', scope: currentUser?.scope || 'Honolulu / Oak Ridge HC', path: '/club-admin' },
+    STATE_ADMIN: { label: 'State Admin', scope: stateScopeLabel, path: '/state-admin' },
     EVENT_ADMIN: { label: 'Event Admin', scope: 'Nite Hunt Sep 19', path: '/event-admin' },
     NATIONAL_ADMIN: { label: 'National Admin', scope: 'National Org', path: '/national-admin' },
     SUPER_ADMIN: { label: 'Super Admin', scope: 'Platform Master', path: '/super-admin' }
@@ -43,8 +47,8 @@ export const Header = ({ toggleMobileSidebar }) => {
 
   const PORTAL_LIST = [
     { role: 'MEMBER', label: 'Member Portal', scope: 'Personal Account', path: '/member' },
-    { role: 'CLUB_ADMIN', label: 'Local Club Admin', scope: 'Oak Ridge HC', path: '/club-admin' },
-    { role: 'STATE_ADMIN', label: 'State Admin', scope: 'Tennessee Assoc', path: '/state-admin' },
+    { role: 'CLUB_ADMIN', label: 'Local Club Admin', scope: 'Honolulu Hound & Hunting Club', path: '/club-admin' },
+    { role: 'STATE_ADMIN', label: 'State Admin', scope: stateScopeLabel, path: '/state-admin' },
     { role: 'EVENT_ADMIN', label: 'Event Admin', scope: 'Nite Hunt Sep 19', path: '/event-admin' },
     { role: 'NATIONAL_ADMIN', label: 'National Admin', scope: 'National Org', path: '/national-admin' },
     { role: 'SUPER_ADMIN', label: 'Super Admin', scope: 'Platform Master', path: '/super-admin' }

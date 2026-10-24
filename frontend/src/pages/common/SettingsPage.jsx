@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { Settings, Save, Shield, Mail, Phone, MapPin, Globe, Bell } from 'lucide-react';
 
 export const SettingsPage = ({ scopeTitle = 'Configuration & Platform Settings' }) => {
@@ -19,7 +19,7 @@ export const SettingsPage = ({ scopeTitle = 'Configuration & Platform Settings' 
 
   // Flow-Wise Page Mount API Call to Express REST Backend & MySQL `club` Database
   useEffect(() => {
-    fetch('http://localhost:5050/api/v1/settings')
+    fetch(`${API_BASE_URL}/settings`)
       .then((res) => res.json())
       .then((data) => {
         console.log('⚙️ [Settings Flow API Call]:', data);
@@ -34,7 +34,7 @@ export const SettingsPage = ({ scopeTitle = 'Configuration & Platform Settings' 
     e.preventDefault();
 
     // Live API Call to Save Settings into MySQL `club` Database
-    fetch('http://localhost:5050/api/v1/settings', {
+    fetch(`${API_BASE_URL}/settings`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings)

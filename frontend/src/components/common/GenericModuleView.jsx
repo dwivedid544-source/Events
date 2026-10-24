@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { StatCard } from './StatCard';
 import { DataTable } from './DataTable';
 import { Layers, Download, Plus, Filter, RefreshCw, CheckCircle } from 'lucide-react';
@@ -13,7 +13,7 @@ export const GenericModuleView = ({ title, subtitle, category = 'Management Modu
   useEffect(() => {
     setLoading(true);
     const endpointName = title.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const apiUrl = `http://localhost:5050/api/v1/${endpointName}`;
+    const apiUrl = `${API_BASE_URL}/${endpointName}`;
 
     fetch(apiUrl)
       .then((res) => res.json())

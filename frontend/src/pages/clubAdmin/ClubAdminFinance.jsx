@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import {
+  Landmark,
+  Save,
   DollarSign,
   Users,
   ShoppingBag,
@@ -50,6 +52,27 @@ export const ClubAdminFinance = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  // Local Club Bank Account State
+  const [clubBankInfo, setClubBankInfo] = useState(() => {
+    const saved = localStorage.getItem('nh_bank_local_club');
+    return saved ? JSON.parse(saved) : {
+      bankName: 'Wells Fargo / Local Community Bank',
+      accountHolder: 'Honolulu Hound & Hunting Club Treasury',
+      routingNumber: '121000248',
+      accountNumber: '••••••••7712',
+      accountType: 'Commercial Checking',
+      status: 'Active for Direct Deposits'
+    };
+  });
+  const [isEditingClubBank, setIsEditingClubBank] = useState(false);
+
+  const handleSaveClubBank = (e) => {
+    e.preventDefault();
+    localStorage.setItem('nh_bank_local_club', JSON.stringify(clubBankInfo));
+    setIsEditingClubBank(false);
+    showToast(`Bank account successfully updated for ${stateOrClubName} Treasury!`, 'success');
+  };
 
   const [customRange, setCustomRange] = useState({
     startDate: '2026-10-01',
@@ -809,6 +832,110 @@ export const ClubAdminFinance = () => {
             <span className="text-tan-400 font-black">100% Fully Reconciled</span>
           </div>
         </div>
+      </div>
+
+      {/* Local Club Direct Deposit & Banking Setup Card */}
+      <div className="bg-surface-lowest p-6 sm:p-8 rounded-3xl border border-surface-border shadow-ambient space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-surface-border pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-tan-500/20 text-forest-950 flex items-center justify-center border border-tan-500/40">
+              <Landmark className="w-5 h-5 text-forest-900" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-forest-950 flex items-center gap-2">
+                <span>{stateOrClubName} — Club Treasury & Direct Deposit Account</span>
+                <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  {clubBankInfo.status}
+                </span>
+              </h3>
+              <p className="text-xs text-charcoal-muted">Attached bank account for receiving 100% merchandise profit margins and local club membership dues.</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsEditingClubBank(!isEditingClubBank)}
+            className="px-4 py-2 bg-forest-900 hover:bg-forest-950 text-white font-bold text-xs rounded-xl shadow cursor-pointer transition-all self-start sm:self-center"
+          >
+            {isEditingClubBank ? 'Cancel' : 'Edit Club Bank Info'}
+          </button>
+        </div>
+
+        {isEditingClubBank ? (
+          <form onSubmit={handleSaveClubBank} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs pt-2">
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Bank Name</label>
+              <input
+                type="text"
+                required
+                value={clubBankInfo.bankName}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, bankName: e.target.value })}
+                placeholder="e.g. Bank of Hawaii / Wells Fargo"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Account Holder Legal Name</label>
+              <input
+                type="text"
+                required
+                value={clubBankInfo.accountHolder}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, accountHolder: e.target.value })}
+                placeholder="e.g. Honolulu Hound Club LLC"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">ACH Routing Number (9-digit)</label>
+              <input
+                type="text"
+                required
+                maxLength={9}
+                value={clubBankInfo.routingNumber}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, routingNumber: e.target.value })}
+                placeholder="121000248"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-mono font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Account Number</label>
+              <input
+                type="text"
+                required
+                value={clubBankInfo.accountNumber}
+                onChange={(e) => setClubBankInfo({ ...clubBankInfo, accountNumber: e.target.value })}
+                placeholder="7712904812"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-mono font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div className="sm:col-span-2 lg:col-span-4 flex justify-end pt-2">
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow flex items-center gap-1.5 cursor-pointer"
+              >
+                <Save className="w-4 h-4" /> Save Club Bank Account
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-1">
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Bank Name</span>
+              <strong className="text-sm font-extrabold text-forest-950">{clubBankInfo.bankName}</strong>
+            </div>
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Account Holder</span>
+              <strong className="text-sm font-extrabold text-forest-950">{clubBankInfo.accountHolder}</strong>
+            </div>
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Routing Number</span>
+              <strong className="text-sm font-mono font-black text-forest-950">{clubBankInfo.routingNumber}</strong>
+            </div>
+            <div className="p-3.5 bg-surface-low rounded-2xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Direct Deposit Account</span>
+              <strong className="text-sm font-mono font-black text-emerald-800">{clubBankInfo.accountNumber}</strong>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Financial Category Breakdown Table */}

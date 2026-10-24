@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import {
   Globe,
   MapPin,
@@ -22,7 +22,7 @@ export const NationalAdminDashboard = () => {
 
   // Dedicated Flow-Wise Page Load API Call to Express Backend & MySQL `club` Database
   React.useEffect(() => {
-    fetch('http://localhost:5050/api/v1/national')
+    fetch(`${API_BASE_URL}/national`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📡 [National Admin Flow API Call]:', data);

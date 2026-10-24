@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import {
   Users,
   Search,
@@ -27,7 +27,7 @@ export const EventAdminParticipants = () => {
 
   // Dedicated Flow-Wise API Call on Page Mount
   React.useEffect(() => {
-    fetch('http://localhost:5050/api/v1/members')
+    fetch(`${API_BASE_URL}/members`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📡 [Event Admin Participants Flow API Call]:', data);
@@ -42,7 +42,7 @@ export const EventAdminParticipants = () => {
         id: 'part-1',
         name: 'Lalit Panchole',
         membershipId: 'TN-ORHC-2026-94812',
-        email: 'pancholelalit52@gmail.com',
+        email: 'demo@example.com',
         phone: '(865) 555-0192',
         club: 'Oak Ridge Hunting Club',
         state: 'Tennessee',

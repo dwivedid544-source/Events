@@ -13,6 +13,7 @@ import {
   Mail,
   Phone,
   ShieldCheck,
+  CheckCircle2,
   UserCheck,
   Search,
   ShoppingBag,
@@ -31,7 +32,7 @@ import {
 
 export const PublicClubPage = () => {
   const { clubId } = useParams();
-  const { clubs, events, products, news, results, states, addToCart, showToast, submitClaimRequest } = useApp();
+  const { clubs, events, products, news, results, states, addToCart, showToast, submitClaimRequest, claims = [], updateClaimStatus, setCurrentUser, setClubs, currentUser, switchRole } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStateFilter, setSelectedStateFilter] = useState('');
@@ -40,22 +41,66 @@ export const PublicClubPage = () => {
   const [selectedMerchCategory, setSelectedMerchCategory] = useState('All');
 
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
-  const [claimForm, setClaimForm] = useState({
-    applicant: '',
-    email: '',
-    phone: '',
-    message: ''
-  });
+  const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
+  const [claimForm, setClaimForm] = useState(() => ({
+    applicant: currentUser?.name || 'James Wadley',
+    email: currentUser?.email || 'Houstonroofing@yahoo.com',
+    phone: currentUser?.phone || '(713) 555-0192',
+    message: 'Official club officer application & management registration.',
+    autoVerify: true
+  }));
 
-  const handleClaimSubmit = (e) => {
+  const handleClaimSubmit = async (e) => {
     e.preventDefault();
-    submitClaimRequest({
-      club: club.name,
-      state: club.stateCode || club.state,
-      ...claimForm
-    });
-    setClaimForm({ applicant: '', email: '', phone: '', message: '' });
-    setIsClaimModalOpen(false);
+    setIsSubmittingClaim(true);
+    try {
+      const newClaim = await submitClaimRequest({
+        club: club.name,
+        clubId: club.id,
+        state: club.stateCode || club.state,
+        ...claimForm
+      });
+
+      if (claimForm.autoVerify && newClaim?.id) {
+        if (updateClaimStatus) {
+          await updateClaimStatus(newClaim.id, 'Approved');
+        }
+        if (setCurrentUser) {
+          setCurrentUser((prev) => ({
+            ...prev,
+            name: claimForm.applicant || 'James Wadley',
+            email: claimForm.email || 'Houstonroofing@yahoo.com',
+            role: 'CLUB_ADMIN',
+            scope: `${club.name} (${club.stateCode || club.state})`,
+            club: club.name,
+            clubId: club.id
+          }));
+        }
+        if (setClubs) {
+          setClubs((prev) =>
+            prev.map((c) =>
+              c.id === club.id || c.name === club.name
+                ? { ...c, adminName: claimForm.applicant, status: 'Active' }
+                : c
+            )
+          );
+        }
+        showToast(
+          `Congratulations! Claim Approved! You are now the official Administrator for ${club.name}! Access your Club Admin portal.`,
+          'success'
+        );
+      } else {
+        showToast(
+          `Claim request for ${club.name} submitted! Status: Pending review in Super Admin queue.`,
+          'success'
+        );
+      }
+      setIsClaimModalOpen(false);
+    } catch (err) {
+      showToast('Claim submission error: ' + err.message, 'error');
+    } finally {
+      setIsSubmittingClaim(false);
+    }
   };
 
   const [contactForm, setContactForm] = useState({
@@ -313,13 +358,88 @@ export const PublicClubPage = () => {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 shrink-0">
-              <button
-                onClick={() => setIsClaimModalOpen(true)}
-                className="px-5 py-3 bg-forest-900 border border-forest-750 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
-              >
-                <UserCheck className="w-4 h-4 text-tan-400" />
-                <span>Claim Page</span>
-              </button>
+              {(() => {
+                const activeClaim = claims.find(
+                  (c) =>
+                    (c.clubId === club.id || c.club === club.name || (c.club && c.club.toLowerCase() === club.name.toLowerCase())) &&
+                    (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
+                );
+
+                if (activeClaim && activeClaim.claimStatus === 'Approved') {
+                  return (
+                    <>
+                      <div className="px-4 py-2.5 bg-emerald-950/90 border border-emerald-500/80 text-emerald-300 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                        <span>Verified Club Admin: {activeClaim.applicant}</span>
+                      </div>
+                      <Link
+                        to="/club-admin"
+                        className="px-4 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition-all"
+                      >
+                        <Building2 className="w-4 h-4 text-forest-950" />
+                        <span>Manage Club Portal</span>
+                      </Link>
+                    </>
+                  );
+                }
+
+                if (activeClaim && activeClaim.claimStatus === 'Pending') {
+                  return (
+                    <>
+                      <div className="px-4 py-2.5 bg-amber-950/90 border border-amber-500/80 text-amber-300 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2">
+                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                        <span>Claim Pending: {activeClaim.applicant}</span>
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
+                          if (setCurrentUser) {
+                            setCurrentUser((prev) => ({
+                              ...prev,
+                              name: activeClaim.applicant,
+                              email: activeClaim.email,
+                              role: 'CLUB_ADMIN',
+                              scope: `${club.name} (${club.stateCode || club.state})`,
+                              club: club.name,
+                              clubId: club.id
+                            }));
+                          }
+                          if (setClubs) {
+                            setClubs((prev) =>
+                              prev.map((c) =>
+                                c.id === club.id || c.name === club.name
+                                  ? { ...c, adminName: activeClaim.applicant, status: 'Active' }
+                                  : c
+                              )
+                            );
+                          }
+                          showToast(`Claim Approved! Granted Administrator access for ${club.name}.`, 'success');
+                        }}
+                        className="px-3.5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer transition-all"
+                      >
+                        1-Click Approve (Demo)
+                      </button>
+                      <Link
+                        to="/super-admin/club-claims"
+                        className="px-3 py-2 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700 transition-all"
+                      >
+                        Admin Queue
+                      </Link>
+                    </>
+                  );
+                }
+
+                return (
+                  <button
+                    onClick={() => setIsClaimModalOpen(true)}
+                    className="px-5 py-3 bg-forest-900 border border-forest-750 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+                  >
+                    <UserCheck className="w-4 h-4 text-tan-400" />
+                    <span>Claim Page</span>
+                  </button>
+                );
+              })()}
+
               <Link
                 to={`/join-club/${club.id}`}
                 className="px-5 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
@@ -1086,6 +1206,19 @@ export const PublicClubPage = () => {
               />
             </div>
             
+            <div className="flex items-center gap-2 pt-1 pb-1">
+              <input
+                type="checkbox"
+                id="autoVerifyClub"
+                checked={claimForm.autoVerify}
+                onChange={(e) => setClaimForm({ ...claimForm, autoVerify: e.target.checked })}
+                className="w-4 h-4 accent-tan-600 rounded cursor-pointer"
+              />
+              <label htmlFor="autoVerifyClub" className="text-xs font-bold text-forest-900 cursor-pointer">
+                Instant Verification & Activate Club Admin Role (Live Sandbox Mode)
+              </label>
+            </div>
+
             <div className="flex items-center justify-end gap-2 pt-4 border-t border-surface-border">
               <button
                 type="button"
@@ -1096,9 +1229,17 @@ export const PublicClubPage = () => {
               </button>
               <button
                 type="submit"
-                className="px-5 py-2.5 bg-forest-900 text-white font-black text-xs rounded-xl shadow hover:bg-forest-950 transition-all"
+                disabled={isSubmittingClaim}
+                className="px-5 py-2.5 bg-forest-900 text-white font-black text-xs rounded-xl shadow hover:bg-forest-950 transition-all flex items-center gap-2 disabled:opacity-50 cursor-pointer"
               >
-                Submit Claim Request
+                {isSubmittingClaim ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span>Submitting to Backend API...</span>
+                  </>
+                ) : (
+                  <span>Submit Claim Request</span>
+                )}
               </button>
             </div>
           </form>

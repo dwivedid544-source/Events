@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
 import { downloadStateAssociationReportPDF } from '../../utils/pdfReportGenerator';
 import {
@@ -33,7 +33,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
   // Flow-Wise Page Load & Filter API Call to Express REST Backend & MySQL `club` Database
   React.useEffect(() => {
     const customParams = periodFilter === 'Custom' ? `&startDate=${startDate}&endDate=${endDate}` : '';
-    const apiUrl = `http://localhost:5050/api/v1/reports/financial-overview?period=${periodFilter.toLowerCase()}${customParams}`;
+    const apiUrl = `${API_BASE_URL}/reports/financial-overview?period=${periodFilter.toLowerCase()}${customParams}`;
     fetch(apiUrl)
       .then((res) => res.json())
       .then((data) => {

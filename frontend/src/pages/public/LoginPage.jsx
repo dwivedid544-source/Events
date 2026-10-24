@@ -29,7 +29,7 @@ export const LoginPage = () => {
   const isNewAccount = searchParams.get('newAccount') === 'true';
 
   const [activeTab, setActiveTab] = useState(isNewAccount || urlEmail ? 'LOGIN' : 'ROLE_SWITCHER');
-  const [email, setEmail] = useState(urlEmail || 'pancholelalit52@gmail.com');
+  const [email, setEmail] = useState(urlEmail || 'demo@example.com');
   const [password, setPassword] = useState('123');
   const [showPassword, setShowPassword] = useState(false);
 
@@ -184,7 +184,7 @@ export const LoginPage = () => {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="pancholelalit52@gmail.com"
+                  placeholder="demo@example.com"
                   className="w-full px-3.5 py-2.5 text-xs bg-surface-low border border-surface-border rounded-lg focus:outline-none focus:border-forest-800 font-medium"
                 />
               </div>

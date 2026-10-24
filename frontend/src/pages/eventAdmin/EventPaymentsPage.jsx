@@ -1,5 +1,5 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { DataTable } from '../../components/common/DataTable';
 import { DollarSign, CheckCircle2, AlertCircle } from 'lucide-react';
 
@@ -20,12 +20,12 @@ export const EventPaymentsPage = () => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/events/entries/${id}/payment`, {
+      await fetch(`${API_BASE_URL}/events/entries/${id}/payment`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ paymentStatus: nextStatus })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/events/entries/${id}/payment -> ${nextStatus}`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/events/entries/${id}/payment -> ${nextStatus}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }

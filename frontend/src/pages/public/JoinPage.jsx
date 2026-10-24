@@ -23,15 +23,30 @@ export const JoinPage = () => {
   });
 
   const [createdMember, setCreatedMember] = useState(null);
+  const [isCharging, setIsCharging] = useState(false);
+  const [cardData, setCardData] = useState({
+    name: 'James Wadley',
+    number: '4532 8821 9912 3401',
+    expiry: '08/28',
+    cvc: '391',
+    zip: '77001'
+  });
 
   const handleNext = async (e) => {
     if (e) e.preventDefault();
     if (step === 5) {
-      // Complete payment & create membership
-      const member = await registerMembership(formData);
-      setCreatedMember(member);
-      setStep(6);
-      showToast('Membership activated! Please log in with your credentials.', 'success');
+      // Live Clover Gateway Charge Trigger
+      setIsCharging(true);
+      try {
+        const member = await registerMembership({ ...formData, cardData });
+        setCreatedMember(member);
+        setStep(6);
+        showToast('Payment settled via Clover & Membership activated!', 'success');
+      } catch (err) {
+        showToast('Payment processing error: ' + err.message, 'error');
+      } finally {
+        setIsCharging(false);
+      }
     } else {
       setStep((s) => s + 1);
     }
@@ -284,26 +299,102 @@ export const JoinPage = () => {
             <div className="space-y-3 bg-emerald-50/80 p-4 rounded-xl border border-emerald-300">
               <div className="flex items-center justify-between">
                 <div className="text-[11px] font-black text-emerald-950 flex items-center gap-1.5">
-                  <Shield className="w-4 h-4 text-emerald-700" /> Clover Payment Gateway
+                  <Shield className="w-4 h-4 text-emerald-700" /> Clover Live Payment Gateway
                 </div>
-                <span className="text-[10px] font-mono font-bold bg-white/80 px-2 py-0.5 rounded border border-emerald-200 text-emerald-800">
-                  MID: 526695041883
+                <span className="text-[10px] font-mono font-bold bg-white/90 px-2 py-0.5 rounded border border-emerald-300 text-emerald-900">
+                  Merchant ID: 526695041883
                 </span>
               </div>
-              <input type="text" readOnly value="4532 •••• •••• 8921" className="w-full px-3 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal" />
-              <div className="grid grid-cols-2 gap-2">
-                <input type="text" readOnly value="08/28" className="px-3 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal" />
-                <input type="text" readOnly value="CVC 391" className="px-3 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal" />
+
+              <div>
+                <label className="block text-[11px] font-bold text-charcoal mb-1">Cardholder Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={cardData.name}
+                  onChange={(e) => setCardData({ ...cardData, name: e.target.value })}
+                  placeholder="e.g. James Wadley"
+                  className="w-full px-3 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-semibold text-charcoal focus:outline-none focus:border-emerald-600 shadow-sm"
+                />
               </div>
-              <div className="text-[10px] text-emerald-700 font-semibold flex items-center gap-1">
-                <span>🔒 Secured via Clover End-to-End Encryption & PCI-DSS Compliance</span>
+
+              <div>
+                <label className="block text-[11px] font-bold text-charcoal mb-1">Credit / Debit Card Number</label>
+                <input
+                  type="text"
+                  required
+                  maxLength={19}
+                  value={cardData.number}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/\D/g, '').slice(0, 16);
+                    const formatted = raw.match(/.{1,4}/g)?.join(' ') || raw;
+                    setCardData({ ...cardData, number: formatted });
+                  }}
+                  placeholder="4532 8821 9912 3401"
+                  className="w-full px-3 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal focus:outline-none focus:border-emerald-600 shadow-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <label className="block text-[10px] font-bold text-charcoal mb-0.5">Expiry (MM/YY)</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={5}
+                    value={cardData.expiry}
+                    onChange={(e) => setCardData({ ...cardData, expiry: e.target.value })}
+                    placeholder="08/28"
+                    className="w-full px-2.5 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal focus:outline-none focus:border-emerald-600 shadow-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-charcoal mb-0.5">CVV / CVC</label>
+                  <input
+                    type="password"
+                    required
+                    maxLength={4}
+                    value={cardData.cvc}
+                    onChange={(e) => setCardData({ ...cardData, cvc: e.target.value })}
+                    placeholder="391"
+                    className="w-full px-2.5 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal focus:outline-none focus:border-emerald-600 shadow-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[10px] font-bold text-charcoal mb-0.5">Billing ZIP</label>
+                  <input
+                    type="text"
+                    required
+                    maxLength={5}
+                    value={cardData.zip}
+                    onChange={(e) => setCardData({ ...cardData, zip: e.target.value })}
+                    placeholder="77001"
+                    className="w-full px-2.5 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal focus:outline-none focus:border-emerald-600 shadow-sm"
+                  />
+                </div>
+              </div>
+
+              <div className="text-[10px] text-emerald-800 font-semibold flex items-center justify-between pt-1">
+                <span className="flex items-center gap-1">🔒 Clover End-to-End Encryption Active</span>
+                <span className="text-[9px] text-emerald-700 bg-white px-1.5 py-0.5 rounded border border-emerald-200 font-bold">PCI-DSS Level 1</span>
               </div>
             </div>
 
             <div className="flex justify-between pt-2">
               <button onClick={() => setStep(4)} className="px-4 py-2 border rounded text-xs font-bold">Back</button>
-              <button onClick={handleNext} className="px-6 py-2.5 bg-tan-500 hover:bg-tan-600 text-forest-900 font-black text-xs rounded shadow">
-                Pay ${formData.price + 2}.00 & Activate
+              <button
+                onClick={handleNext}
+                disabled={isCharging}
+                className="px-6 py-2.5 bg-tan-500 hover:bg-tan-600 text-forest-900 font-black text-xs rounded shadow flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                {isCharging ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-forest-900 border-t-transparent rounded-full animate-spin"></span>
+                    <span>Processing with Clover...</span>
+                  </>
+                ) : (
+                  <span>Pay ${formData.price + 2}.00 & Activate</span>
+                )}
               </button>
             </div>
           </div>

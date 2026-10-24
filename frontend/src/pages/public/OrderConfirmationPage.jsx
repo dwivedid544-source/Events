@@ -128,6 +128,15 @@ export const OrderConfirmationPage = () => {
                   {order.fulfillmentStatus || 'Processing'}
                 </span>
               </div>
+
+              <div className="flex justify-between items-center pt-2 border-t border-surface-border">
+                <span className="text-emerald-800 font-bold flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Clover Gateway:
+                </span>
+                <span className="font-mono text-[10px] font-bold text-emerald-900 bg-emerald-100/80 px-2 py-0.5 rounded border border-emerald-200">
+                  MID: 526695041883 • PAID
+                </span>
+              </div>
             </div>
           </div>
         </div>

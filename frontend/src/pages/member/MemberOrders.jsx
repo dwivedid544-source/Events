@@ -21,7 +21,7 @@ export const MemberOrders = () => {
       total: rawTotal,
       amount: rawTotal,
       customer: o.customer || currentUser?.name || 'Lalit Panchole',
-      email: o.email || currentUser?.email || 'pancholelalit52@gmail.com',
+      email: o.email || currentUser?.email || 'demo@example.com',
       paymentStatus: o.paymentStatus || 'Paid',
       fulfillmentStatus: o.fulfillmentStatus || o.status || 'Delivered'
     };
@@ -44,7 +44,7 @@ export const MemberOrders = () => {
       render: (r) => (
         <div>
           <div className="font-bold text-forest-950">{r.customer || 'Lalit Panchole'}</div>
-          <div className="text-[10px] text-charcoal-muted font-medium">{r.email || 'pancholelalit52@gmail.com'}</div>
+          <div className="text-[10px] text-charcoal-muted font-medium">{r.email || 'demo@example.com'}</div>
         </div>
       )
     },

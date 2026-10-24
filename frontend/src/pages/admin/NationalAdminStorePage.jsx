@@ -72,7 +72,7 @@ export const NationalAdminStorePage = () => {
   // Manual Test Order Form State
   const [orderForm, setOrderForm] = useState({
     customerName: 'Lalit Panchole',
-    customerEmail: 'pancholelalit52@gmail.com',
+    customerEmail: 'demo@example.com',
     customerPhone: '(865) 555-0199',
     productId: products[0]?.id || '',
     originType: 'CLUB', // CLUB | STATE | NATIONAL

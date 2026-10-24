@@ -1,7 +1,7 @@
 // Master Mock Data for Nationwide Hunting Club, Membership & Event Management Platform
 
 export const INITIAL_USERS = [
-  { id: 'usr-lalit', name: 'Lalit Panchole', email: 'pancholelalit52@gmail.com', role: 'MEMBER', scope: 'Oak Ridge Hunting Club (Tennessee)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now', membershipId: 'TN-ORHC-2026-99012' },
+  { id: 'usr-lalit', name: 'Lalit Panchole', email: 'demo@example.com', role: 'MEMBER', scope: 'Oak Ridge Hunting Club (Tennessee)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now', membershipId: 'TN-ORHC-2026-99012' },
   { id: 'usr-2', name: 'Robert Miller', email: 'robert.miller@oakridgehc.org', role: 'CLUB_ADMIN', scope: 'Oak Ridge Hunting Club', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '10 mins ago' },
   { id: 'usr-3', name: 'Sarah Tennessee', email: 'sarah.tn@tn-hunting.org', role: 'STATE_ADMIN', scope: 'Tennessee', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '1 hour ago' },
   { id: 'usr-4', name: 'David Eventmaster', email: 'david@nitehunt2026.com', role: 'EVENT_ADMIN', scope: 'Nite Hunt (Sep 19, 2026)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now' },
@@ -10,7 +10,7 @@ export const INITIAL_USERS = [
 ];
 
 export const INITIAL_MEMBERS = [
-  { id: 'mem-1', name: 'Lalit Panchole', membershipId: 'TN-STATE-2026-001', club: 'Oak Ridge Hunting Club', state: 'Tennessee', city: 'Knoxville', address: '1420 Hunting Ridge Rd', type: 'Individual Membership', category: 'Standard', status: 'Active', isNew: true, isRenewalDue: false, isLifetime: false, isYouth: false, isFamily: false, duesAmount: 35.00, joined: 'Aug 01, 2026', expires: 'Aug 01, 2027', phone: '(865) 555-0192', email: 'pancholelalit52@gmail.com', dogSportInterests: ['Coonhound Hunts', 'Treeing Contest'] },
+  { id: 'mem-1', name: 'Lalit Panchole', membershipId: 'TN-STATE-2026-001', club: 'Oak Ridge Hunting Club', state: 'Tennessee', city: 'Knoxville', address: '1420 Hunting Ridge Rd', type: 'Individual Membership', category: 'Standard', status: 'Active', isNew: true, isRenewalDue: false, isLifetime: false, isYouth: false, isFamily: false, duesAmount: 35.00, joined: 'Aug 01, 2026', expires: 'Aug 01, 2027', phone: '(865) 555-0192', email: 'demo@example.com', dogSportInterests: ['Coonhound Hunts', 'Treeing Contest'] },
   { id: 'mem-tn-2', name: 'divya soni', membershipId: 'TN-ORHC-2026-17689', club: 'Oak Ridge Hunting Club', state: 'Tennessee', city: 'Knoxville', address: '742 Kingston Pike', type: 'Youth Handler Membership', category: 'Youth Members', status: 'Active', isNew: true, isRenewalDue: false, isLifetime: false, isYouth: true, isFamily: false, duesAmount: 20.00, joined: 'Oct 13, 2026', expires: 'Sep 18, 2027', phone: '(865) 986-7854', email: 'divya@gmail.com', dogSportInterests: ['Coonhound Hunts'] },
   { id: 'mem-tn-3', name: 'Sarah Tennessee', membershipId: 'TN-STATE-2026-002', club: 'Oak Ridge Hunting Club', state: 'Tennessee', city: 'Knoxville', address: '500 State St', type: 'Lifetime Membership', category: 'Lifetime Members', status: 'Active', isNew: false, isRenewalDue: false, isLifetime: true, isYouth: false, isFamily: false, duesAmount: 350.00, joined: 'Jan 10, 2023', expires: 'Lifetime', phone: '(865) 555-0100', email: 'sarah.tn@tn-hunting.org', dogSportInterests: ['Coonhound Hunts', 'Field Trials'] },
   { id: 'mem-2', name: 'Austin Sterling', membershipId: 'TX-STATE-2026-101', club: 'Lone Star Hound Club', state: 'Texas', city: 'Austin', address: '450 Congress Ave', type: 'Lifetime Membership', category: 'Lifetime Members', status: 'Active', isNew: false, isRenewalDue: false, isLifetime: true, isYouth: false, isFamily: false, duesAmount: 350.00, joined: 'Jan 15, 2022', expires: 'Lifetime', phone: '(512) 555-0188', email: 'austin@texashound.org', dogSportInterests: ['Coonhound Hunts', 'Field Trials'] },
@@ -77,6 +77,7 @@ export const INITIAL_STATES = [
 ];
 
 export const INITIAL_CLUBS = [
+  { id: 'club-hi-1', name: 'Honolulu Hound & Hunting Club', city: 'Honolulu', county: 'Honolulu County', state: 'Hawaii', stateCode: 'HI', stateId: 'hi', zip: '96813', distance: '12 miles away', distanceMiles: 12, dogType: 'Treeing Walker & Tracking Hounds', federation: 'UKC (United Kennel Club)', eventType: 'Field Trial & Tracking', membersCount: 38, eventsCount: 4, entriesCount: 110, estYear: 2018, status: 'Active', adminName: 'James Wadley', revenue: 6400, logo: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=120&auto=format&fit=crop&q=80', description: 'Hawaii island sanctioned tracking trials, obedience bench shows, and field tests.' },
   {
     id: 'club-5',
     name: 'Lone Star Hound Club',
@@ -207,8 +208,8 @@ export const INITIAL_CLUBS = [
 ];
 
 export const INITIAL_DOGS = [
-  { id: 'dog-1', callName: 'Ranger', registeredName: 'Mountain Creek Ranger', breed: 'Treeing Walker Coonhound', gender: 'Male', age: '4 Years', dob: 'May 14, 2022', regNo: 'UKC-204815', owner: 'Lalit Panchole', ownerEmail: 'pancholelalit52@gmail.com', eventsCount: 12, winsCount: 4, photo: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=300&auto=format&fit=crop&q=80' },
-  { id: 'dog-2', callName: 'Belle', registeredName: 'Timberline Bell', breed: 'English Redtick Coonhound', gender: 'Female', age: '3 Years', dob: 'Aug 02, 2023', regNo: 'UKC-219402', owner: 'Lalit Panchole', ownerEmail: 'pancholelalit52@gmail.com', eventsCount: 8, winsCount: 2, photo: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&auto=format&fit=crop&q=80' },
+  { id: 'dog-1', callName: 'Ranger', registeredName: 'Mountain Creek Ranger', breed: 'Treeing Walker Coonhound', gender: 'Male', age: '4 Years', dob: 'May 14, 2022', regNo: 'UKC-204815', owner: 'Lalit Panchole', ownerEmail: 'demo@example.com', eventsCount: 12, winsCount: 4, photo: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=300&auto=format&fit=crop&q=80' },
+  { id: 'dog-2', callName: 'Belle', registeredName: 'Timberline Bell', breed: 'English Redtick Coonhound', gender: 'Female', age: '3 Years', dob: 'Aug 02, 2023', regNo: 'UKC-219402', owner: 'Lalit Panchole', ownerEmail: 'demo@example.com', eventsCount: 8, winsCount: 2, photo: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=300&auto=format&fit=crop&q=80' },
 ];
 
 export const INITIAL_EVENTS = [
@@ -608,8 +609,8 @@ export const INITIAL_EVENTS = [
 ];
 
 export const INITIAL_ENTRIES = [
-  { id: 'E1045', eventId: 'evt-1', eventName: 'Nite Hunt & Treeing Contest', club: 'Oak Ridge Hunting Club', participant: 'Lalit Panchole', participantEmail: 'pancholelalit52@gmail.com', dog: 'Ranger', date: 'Sep 19, 2026', fee: 30, paymentStatus: 'Paid', entryStatus: 'Confirmed', checkInStatus: 'Checked In', result: '1st Place (375 Pts)' },
-  { id: 'E1048', eventId: 'evt-2', eventName: 'Fall Championship Hunt', club: 'Oak Ridge Hunting Club', participant: 'Lalit Panchole', participantEmail: 'pancholelalit52@gmail.com', dog: 'Belle', date: 'Oct 24, 2026', fee: 45, paymentStatus: 'Paid', entryStatus: 'Confirmed', checkInStatus: 'Not Arrived', result: 'Pending' }
+  { id: 'E1045', eventId: 'evt-1', eventName: 'Nite Hunt & Treeing Contest', club: 'Oak Ridge Hunting Club', participant: 'Lalit Panchole', participantEmail: 'demo@example.com', dog: 'Ranger', date: 'Sep 19, 2026', fee: 30, paymentStatus: 'Paid', entryStatus: 'Confirmed', checkInStatus: 'Checked In', result: '1st Place (375 Pts)' },
+  { id: 'E1048', eventId: 'evt-2', eventName: 'Fall Championship Hunt', club: 'Oak Ridge Hunting Club', participant: 'Lalit Panchole', participantEmail: 'demo@example.com', dog: 'Belle', date: 'Oct 24, 2026', fee: 45, paymentStatus: 'Paid', entryStatus: 'Confirmed', checkInStatus: 'Not Arrived', result: 'Pending' }
 ];
 
 export const INITIAL_RESULTS = [
@@ -644,7 +645,7 @@ export const INITIAL_ORDERS = [
   {
     id: 'ORD-9012',
     customer: 'Lalit Panchole',
-    email: 'pancholelalit52@gmail.com',
+    email: 'demo@example.com',
     phone: '(865) 555-0199',
     product: 'Official UKC Tracking Collar',
     items: 'Official UKC Tracking Collar (Qty: 1)',
@@ -671,7 +672,7 @@ export const INITIAL_ORDERS = [
   {
     id: 'ORD-9015',
     customer: 'Lalit Panchole',
-    email: 'pancholelalit52@gmail.com',
+    email: 'demo@example.com',
     phone: '(865) 555-0199',
     product: 'Oak Ridge Hunting Club Official Cap',
     items: 'Oak Ridge Hunting Club Official Cap (Qty: 1)',
@@ -698,7 +699,7 @@ export const INITIAL_ORDERS = [
   {
     id: 'ORD-9018',
     customer: 'Lalit Panchole',
-    email: 'pancholelalit52@gmail.com',
+    email: 'demo@example.com',
     phone: '(865) 555-0199',
     product: 'Tennessee State Sanctioned LED Hunt Vest',
     items: 'Tennessee State Sanctioned LED Hunt Vest (Qty: 1)',
@@ -725,7 +726,7 @@ export const INITIAL_ORDERS = [
   {
     id: 'ORD-8820',
     customer: 'Lalit Panchole',
-    email: 'pancholelalit52@gmail.com',
+    email: 'demo@example.com',
     phone: '(865) 555-0199',
     product: 'Field & Forest Water-Resistant Jacket',
     items: 'Field & Forest Water-Resistant Jacket (Qty: 1)',
@@ -754,7 +755,7 @@ export const INITIAL_ORDERS = [
 export const INITIAL_MEMBERSHIPS = [
   {
     id: 'ms-1',
-    userEmail: 'pancholelalit52@gmail.com',
+    userEmail: 'demo@example.com',
     tier: 'National Membership',
     scopeName: 'Ultimate Hound Club National HQ',
     membershipId: 'UHC-NAT-2026-8801',
@@ -765,7 +766,7 @@ export const INITIAL_MEMBERSHIPS = [
   },
   {
     id: 'ms-2',
-    userEmail: 'pancholelalit52@gmail.com',
+    userEmail: 'demo@example.com',
     tier: 'State Association Charter',
     scopeName: 'Tennessee State Association',
     membershipId: 'TN-STATE-2026-4412',
@@ -776,7 +777,7 @@ export const INITIAL_MEMBERSHIPS = [
   },
   {
     id: 'ms-3',
-    userEmail: 'pancholelalit52@gmail.com',
+    userEmail: 'demo@example.com',
     tier: 'State Association Charter',
     scopeName: 'Oklahoma State Association',
     membershipId: 'OK-STATE-2026-9011',
@@ -787,7 +788,7 @@ export const INITIAL_MEMBERSHIPS = [
   },
   {
     id: 'ms-4',
-    userEmail: 'pancholelalit52@gmail.com',
+    userEmail: 'demo@example.com',
     tier: 'Local Chartered Club',
     scopeName: 'Oak Ridge Hunting Club (TN)',
     membershipId: 'TN-ORHC-2026-99012',
@@ -798,7 +799,7 @@ export const INITIAL_MEMBERSHIPS = [
   },
   {
     id: 'ms-5',
-    userEmail: 'pancholelalit52@gmail.com',
+    userEmail: 'demo@example.com',
     tier: 'Local Chartered Club',
     scopeName: 'Cumberland Mountain Club (KY)',
     membershipId: 'KY-CMC-2026-3391',
@@ -1066,6 +1067,9 @@ export const INITIAL_PRODUCTS = [
 ];
 
 export const INITIAL_CLAIMS = [
+  { id: 'CLM-501', club: 'Hawaii State Association', state: 'HI', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 23, 2026', claimStatus: 'Pending', verificationStatus: 'Pending Verification', message: 'Official state association administration & treasury bank account setup for Hawaii sandbox.' },
+  { id: 'CLM-502', club: 'Texas Hound Association', state: 'TX', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 23, 2026', claimStatus: 'Pending', verificationStatus: 'Tax ID & Charter Submitted', message: 'Application to administer Texas State Hound Association and affiliate local hunting clubs.' },
+  { id: 'CLM-503', club: 'Tennessee State Association', state: 'TN', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 22, 2026', claimStatus: 'Pending', verificationStatus: 'Officer Application Submitted', message: 'State director registration for Tennessee field trials and Oak Ridge hunting club.' },
   { id: 'CLM-401', club: 'Oak Ridge Hunting Club', state: 'TN', applicant: 'Robert Miller', email: 'robert.miller@oakridgehc.org', phone: '(865) 555-0199', submittedDate: 'Aug 06, 2026', claimStatus: 'Pending', verificationStatus: 'Charter Uploaded', message: 'Requesting administrative rights to update the Oak Ridge club page with official officers list, state championship news, and direct signup links.' },
   { id: 'CLM-402', club: 'Cumberland Mountain Club', state: 'KY', applicant: 'Thomas Shelby', email: 'thomas@cumberlandhc.org', phone: '(606) 555-0311', submittedDate: 'Aug 02, 2026', claimStatus: 'Approved', verificationStatus: 'Tax ID Verified', message: 'Claiming control over the Cumberland local chapter page to manage member directory.' },
 ];

@@ -8,7 +8,7 @@ export const PreSignUpModal = ({ event, onClose }) => {
   const [selectedDogId, setSelectedDogId] = useState(dogs[0]?.id || '');
   const [handlerName, setHandlerName] = useState(currentUser?.name || 'Lalit Panchole');
   const [handlerPhone, setHandlerPhone] = useState('(865) 555-0192');
-  const [handlerEmail, setHandlerEmail] = useState(currentUser?.email || 'pancholelalit52@gmail.com');
+  const [handlerEmail, setHandlerEmail] = useState(currentUser?.email || 'demo@example.com');
   const [division, setDivision] = useState('Open Division');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [regConfirmationCode, setRegConfirmationCode] = useState('');

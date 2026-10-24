@@ -1,7 +1,7 @@
 import React from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
-import { Users, Building2, Calendar, DollarSign, MapPin, Trophy } from 'lucide-react';
+import { Users, Building2, Calendar, DollarSign, MapPin, Trophy, Landmark, CheckCircle2, ShieldCheck, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export const StateAdminDashboard = () => {
@@ -9,14 +9,41 @@ export const StateAdminDashboard = () => {
 
   // Dedicated Flow-Wise Page Load API Call to Express Backend & MySQL `club` Database
   React.useEffect(() => {
-    fetch('http://localhost:5050/api/v1/states/tn')
+    fetch(`${API_BASE_URL}/states/tn`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📡 [State Admin Flow API Call]:', data);
       })
       .catch((err) => console.warn('Failed fetching state admin API:', err.message));
   }, []);
-  const myState = states[0] || {}; // Tennessee Association
+  const { showToast, currentUser } = useApp();
+  const [selectedStateCode, setSelectedStateCode] = React.useState(() => {
+    return currentUser?.stateCode || (currentUser?.state?.toLowerCase().includes('hawaii') ? 'HI' : 'TN');
+  });
+
+  const myState = states.find(s => s.code === selectedStateCode || s.name.toLowerCase().includes(selectedStateCode.toLowerCase())) || states[0] || {};
+
+  // Bank Account State for State Direct Deposit
+  const [bankInfo, setBankInfo] = React.useState(() => {
+    const saved = localStorage.getItem(`nh_bank_state_${myState.code || 'default'}`);
+    return saved ? JSON.parse(saved) : {
+      bankName: 'First Hawaiian Bank',
+      accountHolder: 'Hawaii State Hunting Association LLC',
+      routingNumber: '121301574',
+      accountNumber: '••••••••4892',
+      accountType: 'Checking',
+      status: 'Verified & Active'
+    };
+  });
+
+  const [isEditingBank, setIsEditingBank] = React.useState(false);
+
+  const handleSaveBank = (e) => {
+    e.preventDefault();
+    localStorage.setItem(`nh_bank_state_${myState.code || 'default'}`, JSON.stringify(bankInfo));
+    setIsEditingBank(false);
+    showToast(`Bank deposit account successfully connected for ${myState.name} State Treasury!`, 'success');
+  };
 
   // Calculate State Merchandise Sales & 7% Commissions
   const myStateOrders = orders.filter((o) => (o.state === myState.name || o.orderSource?.includes(myState.name) || o.originType === 'STATE' || o.originType === 'CLUB'));
@@ -29,9 +56,23 @@ export const StateAdminDashboard = () => {
       {/* Header Banner */}
       <div className="bg-forest-800 text-white rounded-xl p-6 lg:p-8 shadow-ambient flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <span className="text-[10px] font-extrabold uppercase tracking-widest text-tan-400">Assigned Scope: State Charter</span>
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight mt-1">{myState.name} State Association</h1>
-          <p className="text-xs text-tan-200 mt-1">State Admin: {myState.adminName} • Governance over {myState.clubsCount} Local Clubs</p>
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-tan-400">Assigned Scope: State Charter</span>
+            <select
+              value={selectedStateCode}
+              onChange={(e) => setSelectedStateCode(e.target.value)}
+              className="bg-forest-900 border border-forest-700 text-tan-300 text-xs font-black rounded-lg px-2 py-0.5 focus:outline-none cursor-pointer"
+            >
+              <option value="HI">Hawaii (HI) - Active Sandbox</option>
+              <option value="TN">Tennessee (TN)</option>
+              <option value="TX">Texas (TX)</option>
+              {states.filter(s => !['HI', 'TN', 'TX'].includes(s.code)).map(s => (
+                <option key={s.id} value={s.code}>{s.name} ({s.code})</option>
+              ))}
+            </select>
+          </div>
+          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">{myState.name} State Association</h1>
+          <p className="text-xs text-tan-200 mt-1">State Admin: <strong>{myState.adminName || 'James Wadley'}</strong> • Governance over {myState.clubsCount || 5} Local Clubs</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -50,6 +91,110 @@ export const StateAdminDashboard = () => {
         <StatCard title="Participating Clubs" value={myState.clubsCount.toString()} subtext="Chartered Local Clubs" icon={Building2} />
         <StatCard title="Merchandise Sales" value={`$${stateMerchSales.toFixed(2)}`} subtext={`${myStateOrders.length} State & Club Orders`} icon={Calendar} />
         <StatCard title="State Commission (7%)" value={`$${stateCommissionsEarned.toFixed(2)}`} subtext={`Pending Payout: $${pendingStatePayouts.toFixed(2)}`} icon={DollarSign} trend="+7% Margin Share" />
+      </div>
+
+      {/* State Direct Deposit & Banking Configuration Card */}
+      <div className="bg-surface-lowest p-6 rounded-2xl border border-surface-border shadow-ambient space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-border pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-800 flex items-center justify-center border border-emerald-200">
+              <Landmark className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-extrabold text-base text-forest-950 flex items-center gap-2">
+                <span>{myState.name} State Treasury & Direct Deposit Settings</span>
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  {bankInfo.status}
+                </span>
+              </h3>
+              <p className="text-xs text-charcoal-muted">Attached bank account for receiving 7% state membership dues and merchandise splits.</p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsEditingBank(!isEditingBank)}
+            className="px-4 py-2 bg-forest-900 hover:bg-forest-950 text-white font-bold text-xs rounded-xl shadow cursor-pointer transition-all self-start sm:self-center"
+          >
+            {isEditingBank ? 'Cancel' : 'Edit Bank Account'}
+          </button>
+        </div>
+
+        {isEditingBank ? (
+          <form onSubmit={handleSaveBank} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs pt-2">
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Financial Institution</label>
+              <input
+                type="text"
+                required
+                value={bankInfo.bankName}
+                onChange={(e) => setBankInfo({ ...bankInfo, bankName: e.target.value })}
+                placeholder="e.g. First Hawaiian Bank / Chase"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Account Holder Legal Name</label>
+              <input
+                type="text"
+                required
+                value={bankInfo.accountHolder}
+                onChange={(e) => setBankInfo({ ...bankInfo, accountHolder: e.target.value })}
+                placeholder="e.g. Hawaii Hunting Association LLC"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Routing Number (ACH 9-digit)</label>
+              <input
+                type="text"
+                required
+                maxLength={9}
+                value={bankInfo.routingNumber}
+                onChange={(e) => setBankInfo({ ...bankInfo, routingNumber: e.target.value })}
+                placeholder="121301574"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-mono font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div>
+              <label className="block font-bold text-charcoal mb-1">Account Number</label>
+              <input
+                type="text"
+                required
+                value={bankInfo.accountNumber}
+                onChange={(e) => setBankInfo({ ...bankInfo, accountNumber: e.target.value })}
+                placeholder="48291038192"
+                className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-mono font-bold text-forest-950 focus:outline-none focus:border-forest-800"
+              />
+            </div>
+            <div className="sm:col-span-2 lg:col-span-4 flex justify-end pt-2">
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow flex items-center gap-1.5 cursor-pointer"
+              >
+                <Save className="w-4 h-4" /> Save State Bank Account Info
+              </button>
+            </div>
+          </form>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs pt-1">
+            <div className="p-3 bg-surface-low rounded-xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Bank Name</span>
+              <strong className="text-sm font-extrabold text-forest-950">{bankInfo.bankName}</strong>
+            </div>
+            <div className="p-3 bg-surface-low rounded-xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Legal Account Name</span>
+              <strong className="text-sm font-extrabold text-forest-950">{bankInfo.accountHolder}</strong>
+            </div>
+            <div className="p-3 bg-surface-low rounded-xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">ACH Routing #</span>
+              <strong className="text-sm font-mono font-black text-forest-950">{bankInfo.routingNumber}</strong>
+            </div>
+            <div className="p-3 bg-surface-low rounded-xl border border-surface-border">
+              <span className="text-[10px] uppercase font-bold text-charcoal-muted block">Account Number</span>
+              <strong className="text-sm font-mono font-black text-emerald-800">{bankInfo.accountNumber}</strong>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Grid: Clubs & Events */}

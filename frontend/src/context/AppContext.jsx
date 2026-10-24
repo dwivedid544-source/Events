@@ -1,3 +1,4 @@
+import { API_BASE_URL } from '../config';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
@@ -34,7 +35,7 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('nh_currentUser');
     if (saved) {
       const parsed = JSON.parse(saved);
-      if (parsed.name === 'John Walker') {
+      if (parsed.name === 'John Walker' || parsed.email === 'pancholelalit52@gmail.com') {
         return INITIAL_USERS[0];
       }
       return parsed;
@@ -100,7 +101,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     // 1. Health check & Active API Connections
-    fetch('http://localhost:5050/api/v1/health')
+    fetch(`${API_BASE_URL}/health`)
       .then((res) => res.json())
       .then((data) => {
         if (data && data.status === 'ONLINE') {
@@ -108,7 +109,7 @@ export const AppProvider = ({ children }) => {
           console.log('✅ Express Backend API connected successfully:', data);
 
           // 2. API Call: Fetch States from MySQL database `club`
-          fetch('http://localhost:5050/api/v1/states')
+          fetch(`${API_BASE_URL}/states`)
             .then((r) => r.json())
             .then((resData) => {
               if (resData.success && Array.isArray(resData.data)) {
@@ -126,7 +127,7 @@ export const AppProvider = ({ children }) => {
             .catch((e) => console.warn('Failed fetching states API:', e));
 
           // 3. API Call: Fetch Clubs from MySQL database `club`
-          fetch('http://localhost:5050/api/v1/clubs')
+          fetch(`${API_BASE_URL}/clubs`)
             .then((r) => r.json())
             .then((resData) => {
               if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
@@ -136,7 +137,7 @@ export const AppProvider = ({ children }) => {
             .catch((e) => console.warn('Failed fetching clubs API:', e));
 
           // 4. API Call: Fetch Events from MySQL database `club`
-          fetch('http://localhost:5050/api/v1/events')
+          fetch(`${API_BASE_URL}/events`)
             .then((r) => r.json())
             .then((resData) => {
               if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
@@ -164,8 +165,41 @@ export const AppProvider = ({ children }) => {
             })
             .catch((e) => console.warn('Failed fetching events API:', e));
 
-          // 5. API Call: Fetch Financial Overview Report from MySQL database `club`
-          fetch('http://localhost:5050/api/v1/reports/financial-overview?period=monthly')
+          // 5. API Call: Fetch News from MySQL database `club`
+          fetch(`${API_BASE_URL}/news`)
+            .then((r) => r.json())
+            .then((resData) => {
+              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                setNews(resData.data);
+                localStorage.setItem('nh_news', JSON.stringify(resData.data));
+              }
+            })
+            .catch((e) => console.warn('Failed fetching news API:', e));
+
+          // 6. API Call: Fetch Members from MySQL database `club`
+          fetch(`${API_BASE_URL}/members`)
+            .then((r) => r.json())
+            .then((resData) => {
+              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                setMembers(resData.data);
+                localStorage.setItem('nh_members', JSON.stringify(resData.data));
+              }
+            })
+            .catch((e) => console.warn('Failed fetching members API:', e));
+
+          // 7. API Call: Fetch Club Claims from MySQL database `club`
+          fetch(`${API_BASE_URL}/club-claims`)
+            .then((r) => r.json())
+            .then((resData) => {
+              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                setClaims(resData.data);
+                localStorage.setItem('nh_claims', JSON.stringify(resData.data));
+              }
+            })
+            .catch((e) => console.warn('Failed fetching claims API:', e));
+
+          // 8. API Call: Fetch Financial Overview Report from MySQL database `club`
+          fetch(`${API_BASE_URL}/reports/financial-overview?period=monthly`)
             .then((r) => r.json())
             .then((resData) => {
               console.log('📊 Financial Report API response:', resData);
@@ -272,7 +306,7 @@ export const AppProvider = ({ children }) => {
     const targetEndpoint = routeApiMap[rawPath];
 
     if (targetEndpoint) {
-      fetch(`http://localhost:5050/api/v1/${targetEndpoint}`)
+      fetch(`${API_BASE_URL}/${targetEndpoint}`)
         .then((res) => res.json())
         .then((data) => {
           console.log(`📡 [Flow API Call] Path: ${location.pathname} ➔ Endpoint: ${targetEndpoint}:`, data);
@@ -288,8 +322,10 @@ export const AppProvider = ({ children }) => {
     const saved = localStorage.getItem('nh_users');
     if (saved) {
       const parsed = JSON.parse(saved);
-      const cleaned = parsed.filter((u) => !dummyNames.includes(u.name) && u.id !== 'usr-1');
-      const lalitExists = cleaned.some((u) => u.email && u.email.toLowerCase() === 'pancholelalit52@gmail.com');
+      const cleaned = parsed
+        .filter((u) => !dummyNames.includes(u.name) && u.id !== 'usr-1')
+        .map((u) => (u.email && u.email.toLowerCase() === 'pancholelalit52@gmail.com' ? { ...u, email: 'demo@example.com' } : u));
+      const lalitExists = cleaned.some((u) => u.email && u.email.toLowerCase() === 'demo@example.com');
       if (!lalitExists) {
         return [INITIAL_USERS[0], ...cleaned];
       }
@@ -308,7 +344,8 @@ export const AppProvider = ({ children }) => {
           INITIAL_MEMBERS.forEach((m) => map.set(m.id, m));
           parsed.forEach((m) => {
             const existing = map.get(m.id);
-            map.set(m.id, { ...existing, ...m });
+            const sanitized = m.email === 'pancholelalit52@gmail.com' ? { ...m, email: 'demo@example.com' } : m;
+            map.set(m.id, { ...existing, ...sanitized });
           });
           return Array.from(map.values());
         }
@@ -395,7 +432,14 @@ export const AppProvider = ({ children }) => {
   
   const [claims, setClaims] = useState(() => {
     const saved = localStorage.getItem('nh_claims');
-    const parsed = saved ? JSON.parse(saved) : INITIAL_CLAIMS;
+    let parsed = saved ? JSON.parse(saved) : INITIAL_CLAIMS;
+    // Ensure James Wadley's claims are merged into the list
+    const jamesClaims = INITIAL_CLAIMS.filter(c => c.applicant === 'James Wadley');
+    jamesClaims.forEach(jc => {
+      if (!parsed.some(p => p.id === jc.id || (p.club === jc.club && p.applicant === jc.applicant))) {
+        parsed = [jc, ...parsed];
+      }
+    });
     return parsed.map(c => ({
       ...c,
       club: c.club || c.clubName || '',
@@ -564,12 +608,12 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('nh_votes', JSON.stringify(updated));
 
     try {
-      await fetch('http://localhost:5050/api/v1/votes', {
+      await fetch(`${API_BASE_URL}/votes`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newVote)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/votes');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/votes`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -810,12 +854,12 @@ export const AppProvider = ({ children }) => {
     setCommissionSettings((prev) => ({ ...prev, ...newSettings }));
 
     try {
-      await fetch('http://localhost:5050/api/v1/settings/commissions', {
+      await fetch(`${API_BASE_URL}/settings/commissions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newSettings)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/settings/commissions');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/settings/commissions`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -876,12 +920,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/orders/${orderId}/fulfillment`, {
+      await fetch(`${API_BASE_URL}/orders/${orderId}/fulfillment`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ fulfillmentStatus, trackingNumber, carrier })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/orders/${orderId}/fulfillment`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/orders/${orderId}/fulfillment`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
@@ -894,12 +938,12 @@ export const AppProvider = ({ children }) => {
       prev.map((o) => (o.id === orderId ? { ...o, payoutStatus } : o))
     );
     try {
-      await fetch(`http://localhost:5050/api/v1/orders/${orderId}/payout`, {
+      await fetch(`${API_BASE_URL}/orders/${orderId}/payout`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payoutStatus })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/orders/${orderId}/payout`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/orders/${orderId}/payout`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
@@ -921,12 +965,12 @@ export const AppProvider = ({ children }) => {
     setUserMemberships((prev) => [newRecord, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/members', {
+      await fetch(`${API_BASE_URL}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newRecord)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/members');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/members`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
@@ -949,7 +993,7 @@ export const AppProvider = ({ children }) => {
 
     try {
       // 1. Real HTTP API Call to Backend Server (Visible in DevTools Network Tab)
-      const res = await fetch('http://localhost:5050/api/v1/auth/login', {
+      const res = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: cleanEmail, password: password || 'Password123!' })
@@ -1059,25 +1103,29 @@ export const AppProvider = ({ children }) => {
     setUsers((prev) => [newUser, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/members', {
+      await fetch(`${API_BASE_URL}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMember)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/members');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/members`);
 
-      // Record Clover Payment Settlement
-      const chargeRes = await fetch('http://localhost:5050/api/v1/payments/charge', {
+      // Record Clover Payment Settlement with Live Card Fields
+      const cardDigits = formData.cardData?.number ? formData.cardData.number.replace(/\s/g, '').slice(-4) : '3401';
+      const payerName = formData.cardData?.name || fullName;
+      const chargeRes = await fetch(`${API_BASE_URL}/payments/charge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           amount: formData.price ? formData.price + 2 : 47.00,
-          customerName: fullName,
+          customerName: payerName,
           email: cleanEmail,
           category: 'MEMBERSHIP',
           description: `Annual Membership (${newMember.type}) - ${newMember.club}`,
           stateId: newMember.state,
-          cardLast4: '8921'
+          cardLast4: cardDigits,
+          cardExpiry: formData.cardData?.expiry || '08/28',
+          billingZip: formData.cardData?.zip || '77001'
         })
       });
       const chargeJson = await chargeRes.json();
@@ -1160,12 +1208,12 @@ export const AppProvider = ({ children }) => {
     setTransactions((prev) => [newTransaction, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/members', {
+      await fetch(`${API_BASE_URL}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMember)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/members');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/members`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1245,12 +1293,12 @@ export const AppProvider = ({ children }) => {
     setTransactions((prev) => [newTransaction, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/members', {
+      await fetch(`${API_BASE_URL}/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMember)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/members');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/members`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1298,12 +1346,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/events/${eventId}/register`, {
+      await fetch(`${API_BASE_URL}/events/${eventId}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newEntry)
       });
-      console.log(`📡 API Call Success: POST http://localhost:5050/api/v1/events/${eventId}/register`);
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/events/${eventId}/register`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1338,12 +1386,12 @@ export const AppProvider = ({ children }) => {
     }
 
     try {
-      await fetch(`http://localhost:5050/api/v1/events/entries/${entryId}/check-in`, {
+      await fetch(`${API_BASE_URL}/events/entries/${entryId}/check-in`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ checkInStatus: targetStatus })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/events/entries/${entryId}/check-in -> ${targetStatus}`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/events/entries/${entryId}/check-in -> ${targetStatus}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1372,7 +1420,7 @@ export const AppProvider = ({ children }) => {
     }
 
     try {
-      await fetch(`http://localhost:5050/api/v1/events/entries/${entryId}`, {
+      await fetch(`${API_BASE_URL}/events/entries/${entryId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields)
@@ -1437,7 +1485,7 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch(`http://localhost:5050/api/v1/clubs/${clubId}`, {
+      await fetch(`${API_BASE_URL}/clubs/${clubId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedFields)
@@ -1485,7 +1533,7 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch('http://localhost:5050/api/v1/events', {
+      await fetch(`${API_BASE_URL}/events`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(created)
@@ -1507,7 +1555,7 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch(`http://localhost:5050/api/v1/events/${eventId}`, {
+      await fetch(`${API_BASE_URL}/events/${eventId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1541,12 +1589,12 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch(`http://localhost:5050/api/v1/events/${targetId}`, {
+      await fetch(`${API_BASE_URL}/events/${targetId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/events/${targetId}`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/events/${targetId}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1560,7 +1608,7 @@ export const AppProvider = ({ children }) => {
       setDogs((prev) => prev.map((d) => (d.id === dogData.id ? { ...d, ...dogData } : d)));
 
       try {
-        await fetch(`http://localhost:5050/api/v1/dogs/${dogData.id}`, {
+        await fetch(`${API_BASE_URL}/dogs/${dogData.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(dogData)
@@ -1590,7 +1638,7 @@ export const AppProvider = ({ children }) => {
       setDogs((prev) => [newDog, ...prev]);
 
       try {
-        await fetch('http://localhost:5050/api/v1/dogs', {
+        await fetch(`${API_BASE_URL}/dogs`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(newDog)
@@ -1608,7 +1656,7 @@ export const AppProvider = ({ children }) => {
     setDogs((prev) => prev.filter((d) => d.id !== id));
 
     try {
-      await fetch(`http://localhost:5050/api/v1/dogs/${id}`, {
+      await fetch(`${API_BASE_URL}/dogs/${id}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1621,12 +1669,41 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateClaimStatus = async (claimId, newStatus) => {
-    setClaims((prev) =>
-      prev.map((c) => (c.id === claimId ? { ...c, claimStatus: newStatus, status: newStatus } : c))
-    );
+    let approvedClaim = null;
+    setClaims((prev) => {
+      const next = prev.map((c) => {
+        if (c.id === claimId) {
+          approvedClaim = { ...c, claimStatus: newStatus, status: newStatus };
+          return approvedClaim;
+        }
+        return c;
+      });
+      localStorage.setItem('nh_claims', JSON.stringify(next));
+      return next;
+    });
+
+    if (newStatus === 'Approved' && approvedClaim) {
+      const stateKey = (approvedClaim.state || approvedClaim.stateId || '').toLowerCase();
+      setStates((prev) =>
+        prev.map((s) =>
+          s.id === stateKey || s.code.toLowerCase() === stateKey || s.name.toLowerCase().includes(stateKey)
+            ? { ...s, adminName: approvedClaim.applicant, status: 'Active' }
+            : s
+        )
+      );
+      if (approvedClaim.club) {
+        setClubs((prev) =>
+          prev.map((c) =>
+            c.name.toLowerCase() === approvedClaim.club.toLowerCase()
+              ? { ...c, adminName: approvedClaim.applicant, status: 'Active' }
+              : c
+          )
+        );
+      }
+    }
 
     try {
-      await fetch(`http://localhost:5050/api/v1/club-claims/${claimId}`, {
+      await fetch(`${API_BASE_URL}/club-claims/${claimId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ claimStatus: newStatus })
@@ -1648,10 +1725,14 @@ export const AppProvider = ({ children }) => {
       verificationStatus: 'Pending Review',
       ...claimData
     };
-    setClaims((prev) => [newClaim, ...prev]);
+    setClaims((prev) => {
+      const next = [newClaim, ...prev];
+      localStorage.setItem('nh_claims', JSON.stringify(next));
+      return next;
+    });
 
     try {
-      await fetch('http://localhost:5050/api/v1/club-claims', {
+      await fetch(`${API_BASE_URL}/club-claims`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newClaim)
@@ -1661,7 +1742,8 @@ export const AppProvider = ({ children }) => {
       console.warn('API Call Warning:', err.message);
     }
 
-    showToast(`Claim request for "${claimData.club || claimData.state}" submitted successfully!`, 'success');
+    showToast(`Claim request for "${claimData.club || claimData.state}" submitted successfully! Review pending in Super Admin portal.`, 'success');
+    return newClaim;
   };
 
   const addResult = async (resultData) => {
@@ -1673,7 +1755,7 @@ export const AppProvider = ({ children }) => {
     setResults((prev) => [newRes, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/results', {
+      await fetch(`${API_BASE_URL}/results`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newRes)
@@ -1747,7 +1829,7 @@ export const AppProvider = ({ children }) => {
     setNews((prev) => [newItem, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/news', {
+      await fetch(`${API_BASE_URL}/news`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem)
@@ -1783,12 +1865,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/news/${newsId}`, {
+      await fetch(`${API_BASE_URL}/news/${newsId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPromotedToState: true })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/news/${newsId}`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/news/${newsId}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1816,12 +1898,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/news/${newsId}`, {
+      await fetch(`${API_BASE_URL}/news/${newsId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ isPromotedToNational: true })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/news/${newsId}`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/news/${newsId}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1846,7 +1928,7 @@ export const AppProvider = ({ children }) => {
     setNews((prev) => [newItem, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/news', {
+      await fetch(`${API_BASE_URL}/news`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem)
@@ -1863,7 +1945,7 @@ export const AppProvider = ({ children }) => {
     setNews((prev) => prev.filter((n) => n.id !== newsId));
 
     try {
-      await fetch(`http://localhost:5050/api/v1/news/${newsId}`, {
+      await fetch(`${API_BASE_URL}/news/${newsId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
@@ -1888,12 +1970,12 @@ export const AppProvider = ({ children }) => {
     setAnnouncements((prev) => [newItem, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/announcements', {
+      await fetch(`${API_BASE_URL}/announcements`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/announcements');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/announcements`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1915,12 +1997,12 @@ export const AppProvider = ({ children }) => {
     setOfficers((prev) => [newItem, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/officers', {
+      await fetch(`${API_BASE_URL}/officers`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/officers');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/officers`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1942,12 +2024,12 @@ export const AppProvider = ({ children }) => {
     setTransactions((prev) => [newItem, ...prev]);
 
     try {
-      await fetch('http://localhost:5050/api/v1/transactions', {
+      await fetch(`${API_BASE_URL}/transactions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newItem)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/transactions');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/transactions`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1961,12 +2043,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/users/${userId}/role`, {
+      await fetch(`${API_BASE_URL}/users/${userId}/role`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: newRole })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/users/${userId}/role`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/users/${userId}/role`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -1980,12 +2062,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/members/${memberId}/status`, {
+      await fetch(`${API_BASE_URL}/members/${memberId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/members/${memberId}/status`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/members/${memberId}/status`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -2001,12 +2083,12 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch(`http://localhost:5050/api/v1/members/${memberId}`, {
+      await fetch(`${API_BASE_URL}/members/${memberId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedData)
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/members/${memberId}`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/members/${memberId}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -2022,11 +2104,11 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch(`http://localhost:5050/api/v1/members/${memberId}`, {
+      await fetch(`${API_BASE_URL}/members/${memberId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
-      console.log(`📡 API Call Success: DELETE http://localhost:5050/api/v1/members/${memberId}`);
+      console.log(`📡 API Call Success: DELETE ${API_BASE_URL}/members/${memberId}`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -2068,12 +2150,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/users/${userId}/status`, {
+      await fetch(`${API_BASE_URL}/users/${userId}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/users/${userId}/status`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/users/${userId}/status`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -2085,12 +2167,12 @@ export const AppProvider = ({ children }) => {
     setCurrentUser((prev) => ({ ...prev, ...profileData }));
 
     try {
-      await fetch(`http://localhost:5050/api/v1/users/${userId}/profile`, {
+      await fetch(`${API_BASE_URL}/users/${userId}/profile`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(profileData)
       });
-      console.log(`📡 API Call Success: PUT http://localhost:5050/api/v1/users/${userId}/profile`);
+      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/users/${userId}/profile`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -2199,12 +2281,12 @@ export const AppProvider = ({ children }) => {
     );
 
     try {
-      await fetch(`http://localhost:5050/api/v1/members/${memberId}/renew`, {
+      await fetch(`${API_BASE_URL}/members/${memberId}/renew`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(memberData || {})
       });
-      console.log(`📡 API Call Success: POST http://localhost:5050/api/v1/members/${memberId}/renew`);
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/members/${memberId}/renew`);
     } catch (err) {
       console.warn('API Warning:', err.message);
     }
@@ -2298,15 +2380,15 @@ export const AppProvider = ({ children }) => {
 
     // 2. Fire API call to backend POST /api/v1/orders & Clover Payment Charge
     try {
-      fetch('http://localhost:5050/api/v1/orders', {
+      fetch(`${API_BASE_URL}/orders`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(createdOrder)
-      }).then(() => console.log('📡 API Call Success: POST http://localhost:5050/api/v1/orders'))
+      }).then(() => console.log(`📡 API Call Success: POST ${API_BASE_URL}/orders`))
         .catch((e) => console.warn('API Call Warning:', e.message));
 
       // Record Clover settlement
-      fetch('http://localhost:5050/api/v1/payments/charge', {
+      fetch(`${API_BASE_URL}/payments/charge`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -2360,12 +2442,12 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('nh_products_v2', JSON.stringify(updated));
 
     try {
-      await fetch('http://localhost:5050/api/v1/products', {
+      await fetch(`${API_BASE_URL}/products`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(productWithId)
       });
-      console.log('📡 API Call Success: POST http://localhost:5050/api/v1/products');
+      console.log(`📡 API Call Success: POST ${API_BASE_URL}/products`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
@@ -2380,11 +2462,11 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('nh_products_v2', JSON.stringify(updated));
 
     try {
-      await fetch(`http://localhost:5050/api/v1/products/${prodId}`, {
+      await fetch(`${API_BASE_URL}/products/${prodId}`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' }
       });
-      console.log(`📡 API Call Success: DELETE http://localhost:5050/api/v1/products/${prodId}`);
+      console.log(`📡 API Call Success: DELETE ${API_BASE_URL}/products/${prodId}`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
@@ -2511,7 +2593,7 @@ export const AppProvider = ({ children }) => {
         getStateCms,
         updateStateCms,
         updateClub,
-        backendApiUrl: 'http://localhost:5050/api/v1'
+        backendApiUrl: API_BASE_URL
       }}
     >
       {children}
@@ -2526,3 +2608,5 @@ export const useApp = () => {
   }
   return context;
 };
+
+export { API_BASE_URL };

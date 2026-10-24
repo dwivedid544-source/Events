@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useApp } from '../../context/AppContext';
+import { useApp , API_BASE_URL} from '../../context/AppContext';
 import {
   Globe,
   User,
@@ -27,7 +27,7 @@ export const MemberDashboard = () => {
 
   // Dedicated Flow-Wise Page Load API Call to Express Backend & MySQL `club` Database
   useEffect(() => {
-    fetch('http://localhost:5050/api/v1/auth/profile')
+    fetch(`${API_BASE_URL}/auth/profile`)
       .then((res) => res.json())
       .then((data) => {
         console.log('📡 [Member Portal Flow API Call]:', data);
