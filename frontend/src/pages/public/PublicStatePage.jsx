@@ -21,7 +21,8 @@ import {
   UserCheck,
   Send,
   Info,
-  HeartHandshake
+  HeartHandshake,
+  CheckCircle2
 } from 'lucide-react';
 
 export const PublicStatePage = () => {
@@ -427,7 +428,13 @@ export const PublicStatePage = () => {
             <div className="flex flex-wrap gap-2 items-center">
               {(() => {
                 const activeClaim = claims.find(c => 
-                  (c.stateId === stateData.id || c.state === stateData.code || c.state === stateData.name || c.club === stateTitle) &&
+                  (
+                    (c.id === 'CLM-501' && (stateData.code === 'HI' || stateData.id === 'hi')) ||
+                    c.stateId?.toLowerCase() === stateData.id?.toLowerCase() ||
+                    (c.state && stateData.code && c.state.toUpperCase() === stateData.code.toUpperCase()) ||
+                    (c.state && stateData.name && c.state.toLowerCase() === stateData.name.toLowerCase()) ||
+                    (c.club && stateTitle && (c.club.toLowerCase() === stateTitle.toLowerCase() || (cleanStateName && c.club.toLowerCase().includes(cleanStateName.toLowerCase()))))
+                  ) &&
                   (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
                 );
 
