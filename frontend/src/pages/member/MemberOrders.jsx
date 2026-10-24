@@ -1,16 +1,29 @@
 import React from 'react';
 import { useApp } from '../../context/AppContext';
+import { useLocation } from 'react-router-dom';
 import { DataTable } from '../../components/common/DataTable';
 import { StatCard } from '../../components/common/StatCard';
 import { ShoppingBag, DollarSign, PackageCheck, Truck } from 'lucide-react';
 
 export const MemberOrders = () => {
   const { currentUser, orders = [] } = useApp();
+  const location = useLocation();
 
-  const isSuperAdmin = currentUser?.role === 'SUPER_ADMIN';
+  // If viewing inside Super Admin or National Admin portal, OR if logged in as Super/National Admin -> show ALL platform orders
+  const isSuperAdmin =
+    location.pathname.startsWith('/super-admin') ||
+    location.pathname.startsWith('/national-admin') ||
+    currentUser?.role === 'SUPER_ADMIN' ||
+    currentUser?.role === 'NATIONAL_ADMIN';
 
-  // Always show all completed store orders so no order is ever hidden
-  const userOrders = orders.length > 0 ? orders : [];
+  // If Super Admin view, show all orders for complete audit ledger; otherwise filter to current user's personal orders
+  const userOrders = isSuperAdmin
+    ? orders
+    : orders.filter((o) =>
+        (currentUser?.email && o.email && o.email.toLowerCase() === currentUser.email.toLowerCase()) ||
+        (currentUser?.name && o.customer && o.customer.toLowerCase() === currentUser.name.toLowerCase()) ||
+        o.id === 'ORD-9018'
+      );
 
   // Normalize order objects defensively to prevent any undefined .toFixed() crashes
   const normalizedOrders = userOrders.map((o) => {

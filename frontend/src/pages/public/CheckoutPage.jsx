@@ -17,20 +17,20 @@ export const CheckoutPage = () => {
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    firstName: currentUser?.name ? currentUser.name.split(' ')[0] : 'James',
-    lastName: currentUser?.name ? currentUser.name.split(' ').slice(1).join(' ') || 'Wadley' : 'Wadley',
-    email: currentUser?.email || 'Houstonroofing@yahoo.com',
-    phone: currentUser?.phone || '(713) 555-0192',
-    address1: '1420 Championship Way',
-    address2: 'Suite 200',
-    city: 'Knoxville',
-    state: 'TN',
-    zip: '37901',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    address1: '',
+    address2: '',
+    city: '',
+    state: '',
+    zip: '',
     country: 'United States',
     paymentMethod: 'credit_card',
-    cardNumber: '4532 8192 3910 8891',
-    cardExp: '12/28',
-    cardCvc: '884'
+    cardNumber: '',
+    cardExp: '',
+    cardCvc: ''
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -44,8 +44,8 @@ export const CheckoutPage = () => {
         </div>
         <h1 className="text-3xl font-black text-forest-950">No items to checkout</h1>
         <p className="text-xs text-charcoal-muted max-w-sm mx-auto">Your shopping cart is currently empty.</p>
-        <Link to="/store" className="inline-flex items-center gap-2 px-6 py-3 bg-forest-900 text-white rounded-xl text-xs font-black">
-          Return to Store
+        <Link to="/marketplace" className="inline-flex items-center gap-2 px-6 py-3 bg-forest-900 text-white rounded-xl text-xs font-black">
+          Return to Marketplace
         </Link>
       </div>
     );

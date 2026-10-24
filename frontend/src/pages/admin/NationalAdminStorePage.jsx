@@ -27,13 +27,18 @@ import {
   Calculator,
   Percent,
   Check,
-  Tag
+  Tag,
+  Upload,
+  Image as ImageIcon,
+  Trash2,
+  Link as LinkIcon
 } from 'lucide-react';
 
 export const NationalAdminStorePage = () => {
   const {
     products = [],
     setProducts,
+    addProduct,
     vendors = [],
     orders = [],
     placeOrder,
@@ -56,6 +61,9 @@ export const NationalAdminStorePage = () => {
   const [simulatedPrice, setSimulatedPrice] = useState(100);
   const [simulatedChannel, setSimulatedChannel] = useState('CLUB');
 
+  // Image Upload Mode: 'upload' | 'url'
+  const [imageUploadMode, setImageUploadMode] = useState('upload');
+
   // New Product Form State
   const [productForm, setProductForm] = useState({
     name: '',
@@ -63,11 +71,30 @@ export const NationalAdminStorePage = () => {
     price: '',
     wholesaleCost: '',
     vendorName: vendors[0]?.name || 'Garmin Outdoor',
+    source: 'Dog equipment companies',
     inStock: '50',
-    scopeChannel: 'LOCAL_CLUB',
-    image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
+    scopeChannel: 'NATIONAL',
+    image: '',
     description: ''
   });
+
+  // Handle local image file upload from device
+  const handleImageFileChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      if (showToast) showToast('Image size should be less than 5MB', 'warning');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setProductForm((prev) => ({ ...prev, image: reader.result }));
+      if (showToast) showToast('Product image uploaded successfully!', 'success');
+    };
+    reader.readAsDataURL(file);
+  };
 
   // Manual Test Order Form State
   const [orderForm, setOrderForm] = useState({
@@ -110,7 +137,7 @@ export const NationalAdminStorePage = () => {
   const totalVendorPayouts = filteredOrders.reduce((a, b) => a + (Number(b.vendorAmount || b.wholesaleCost) || 0), 0);
 
   // Handle Add Product Submit
-  const handleAddProductSubmit = (e) => {
+  const handleAddProductSubmit = async (e) => {
     e.preventDefault();
     if (!productForm.name || !productForm.price || !productForm.wholesaleCost) {
       showToast('Please fill in product name, retail price, and wholesale cost.', 'error');
@@ -121,28 +148,37 @@ export const NationalAdminStorePage = () => {
     const wholesale = parseFloat(productForm.wholesaleCost);
     const margin = Number((retail - wholesale).toFixed(2));
 
+    const finalImage = productForm.image || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80';
+
     const newProd = {
       id: `prod-custom-${Date.now()}`,
       name: productForm.name,
-      category: productForm.category,
+      category: productForm.category || 'Gear',
       price: retail,
       wholesaleCost: wholesale,
       margin: margin,
-      vendorName: productForm.vendorName,
+      vendorName: productForm.vendorName || vendors[0]?.name || 'Garmin Outdoor',
+      source: productForm.source || 'Dog equipment companies',
       inStock: parseInt(productForm.inStock) || 50,
-      scopeChannel: productForm.scopeChannel,
+      scopeChannel: productForm.scopeChannel || 'NATIONAL',
+      organizationType: productForm.scopeChannel || 'NATIONAL',
       scopeEntity:
         productForm.scopeChannel === 'LOCAL_CLUB'
           ? 'Oak Ridge Hunting Club'
           : productForm.scopeChannel === 'STATE'
           ? 'Tennessee State Association'
           : 'Ultimate Hound Club (UHC) HQ',
-      image: productForm.image,
+      image: finalImage,
       description: productForm.description || `${productForm.name} added by National Admin.`
     };
 
-    setProducts((prev) => [newProd, ...prev]);
-    showToast(`New product "${newProd.name}" added to ${productForm.scopeChannel} store successfully!`, 'success');
+    if (addProduct) {
+      await addProduct(newProd);
+    } else {
+      setProducts((prev) => [newProd, ...prev]);
+    }
+
+    showToast(`New product "${newProd.name}" added to Marketplace successfully!`, 'success');
     setShowAddProductModal(false);
     setProductForm({
       name: '',
@@ -150,9 +186,10 @@ export const NationalAdminStorePage = () => {
       price: '',
       wholesaleCost: '',
       vendorName: vendors[0]?.name || 'Garmin Outdoor',
+      source: 'Dog equipment companies',
       inStock: '50',
-      scopeChannel: 'LOCAL_CLUB',
-      image: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80',
+      scopeChannel: 'NATIONAL',
+      image: '',
       description: ''
     });
   };
@@ -1130,17 +1167,28 @@ export const NationalAdminStorePage = () => {
       {/* 8. MODAL: ADD NEW VENDOR PRODUCT */}
       {showAddProductModal && (
         <div className="fixed inset-0 z-50 bg-forest-950/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-surface-lowest rounded-2xl border border-surface-border shadow-ambient-lg max-w-lg w-full max-h-[90vh] overflow-y-auto p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+          <div className="bg-surface-lowest rounded-2xl border border-surface-border shadow-ambient-lg max-w-xl w-full max-h-[92vh] overflow-y-auto p-6 space-y-4 animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-surface-border pb-3">
-              <h3 className="text-base font-extrabold text-forest-950 flex items-center gap-2">
-                <Package className="w-5 h-5 text-tan-600" /> Add New Vendor Product
-              </h3>
-              <button onClick={() => setShowAddProductModal(false)} className="text-charcoal-muted hover:text-forest-950 font-bold text-sm">
-                ✕
+              <div>
+                <h3 className="text-base font-extrabold text-forest-950 flex items-center gap-2">
+                  <Package className="w-5 h-5 text-tan-600" /> Add New Marketplace Product
+                </h3>
+                <p className="text-[11px] text-charcoal-muted mt-0.5">
+                  Publish authorized merchandise and hunting equipment directly to the National Marketplace
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAddProductModal(false)}
+                className="text-charcoal-muted hover:text-forest-950 p-1 rounded-lg hover:bg-surface-low transition-colors"
+              >
+                <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleAddProductSubmit} className="space-y-4 text-xs font-medium">
+              {/* Product Title */}
               <div>
                 <label className="block text-xs font-bold text-forest-900 mb-1">Product Title *</label>
                 <input
@@ -1148,11 +1196,46 @@ export const NationalAdminStorePage = () => {
                   required
                   value={productForm.name}
                   onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
-                  placeholder="e.g. Oak Ridge Field Jacket"
-                  className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold"
+                  placeholder="e.g. Garmin TT 25 High-Gain Dog Tracking Collar"
+                  className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold focus:outline-none focus:border-tan-500"
                 />
               </div>
 
+              {/* Category & In-Stock Inventory */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-forest-900 mb-1">Product Category *</label>
+                  <select
+                    value={productForm.category}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold focus:outline-none focus:border-tan-500"
+                  >
+                    <option value="Gear">Gear & Field Equipment</option>
+                    <option value="Caps">Caps & Headwear</option>
+                    <option value="Hoodies">Hoodies & Sweatshirts</option>
+                    <option value="Apparel">Apparel & Outerwear</option>
+                    <option value="Tracking Collars">Tracking Collars & Antennas</option>
+                    <option value="Accessories">Accessories & Decals</option>
+                    <option value="Jackets">Hunting Jackets & Vests</option>
+                    <option value="Stickers & Patches">Stickers & Patches</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-forest-900 mb-1">In-Stock Quantity *</label>
+                  <input
+                    type="number"
+                    min="1"
+                    required
+                    value={productForm.inStock}
+                    onChange={(e) => setProductForm({ ...productForm, inStock: e.target.value })}
+                    placeholder="50"
+                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-mono font-bold focus:outline-none focus:border-tan-500"
+                  />
+                </div>
+              </div>
+
+              {/* Retail Selling Price & Wholesale Cost */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-xs font-bold text-forest-900 mb-1">Retail Selling Price ($) *</label>
@@ -1162,36 +1245,48 @@ export const NationalAdminStorePage = () => {
                     required
                     value={productForm.price}
                     onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
-                    placeholder="49.99"
-                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-mono font-bold"
+                    placeholder="79.99"
+                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-mono font-bold focus:outline-none focus:border-tan-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-forest-900 mb-1">Vendor Wholesale Cost ($) *</label>
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-xs font-bold text-forest-900">Wholesale Cost ($) *</label>
+                    {productForm.price && productForm.wholesaleCost && (
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded">
+                        Margin: ${(Number(productForm.price) - Number(productForm.wholesaleCost)).toFixed(2)}
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={productForm.wholesaleCost}
                     onChange={(e) => setProductForm({ ...productForm, wholesaleCost: e.target.value })}
-                    placeholder="34.99"
-                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-mono font-bold"
+                    placeholder="49.99"
+                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-mono font-bold focus:outline-none focus:border-tan-500"
                   />
                 </div>
               </div>
 
+              {/* Assigned Vendor & Target Store Channel */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-forest-900 mb-1">Assigned Vendor *</label>
+                  <label className="block text-xs font-bold text-forest-900 mb-1">Assigned Vendor / Brand *</label>
                   <select
                     value={productForm.vendorName}
                     onChange={(e) => setProductForm({ ...productForm, vendorName: e.target.value })}
-                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold"
+                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold focus:outline-none focus:border-tan-500"
                   >
                     {vendors.map((v) => (
                       <option key={v.id} value={v.name}>{v.name}</option>
                     ))}
+                    <option value="K9 Keep Systems">K9 Keep Systems</option>
+                    <option value="Garmin Outdoor">Garmin Outdoor</option>
+                    <option value="Browning Outdoors">Browning Outdoors</option>
+                    <option value="UHC National Organization">UHC National Organization</option>
                   </select>
                 </div>
 
@@ -1200,39 +1295,185 @@ export const NationalAdminStorePage = () => {
                   <select
                     value={productForm.scopeChannel}
                     onChange={(e) => setProductForm({ ...productForm, scopeChannel: e.target.value })}
-                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold"
+                    className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold focus:outline-none focus:border-tan-500"
                   >
-                    <option value="LOCAL_CLUB">Local Club Store (15% Club Margin)</option>
-                    <option value="STATE">State Association Store (7% State Margin)</option>
                     <option value="NATIONAL">Main National HQ Store (30% Margin)</option>
+                    <option value="STATE">State Association Store (7% State Margin)</option>
+                    <option value="LOCAL_CLUB">Local Club Store (15% Club Margin)</option>
                   </select>
                 </div>
               </div>
 
+              {/* Marketplace Source Filter Group */}
+              <div>
+                <label className="block text-xs font-bold text-forest-900 mb-1">
+                  Marketplace Source Tag (Multi-Vendor Filter) *
+                </label>
+                <select
+                  value={productForm.source}
+                  onChange={(e) => setProductForm({ ...productForm, source: e.target.value })}
+                  className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs font-bold focus:outline-none focus:border-tan-500"
+                >
+                  <option value="Dog equipment companies">Dog equipment companies</option>
+                  <option value="UHC">UHC (Ultimate Hound Championships)</option>
+                  <option value="K9 Keep">K9 Keep Systems</option>
+                  <option value="Hunting suppliers">Hunting suppliers</option>
+                  <option value="Apparel companies">Apparel companies</option>
+                  <option value="Sponsors">Sponsors</option>
+                  <option value="Outside vendors">Outside vendors</option>
+                  <option value="Drop-shipping vendors">Drop-shipping vendors</option>
+                  <option value="State Associations">State Associations</option>
+                  <option value="Local Clubs">Local Clubs</option>
+                </select>
+              </div>
+
+              {/* PRODUCT IMAGE UPLOAD SECTION (Live Preview & File / URL Support) */}
+              <div className="bg-surface p-3.5 rounded-xl border border-surface-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold text-forest-950 flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-tan-600" />
+                    <span>Product Image *</span>
+                  </label>
+
+                  {/* Mode Selector */}
+                  <div className="flex items-center gap-1 bg-surface-lowest p-1 rounded-lg border border-surface-border text-[10px] font-bold">
+                    <button
+                      type="button"
+                      onClick={() => setImageUploadMode('upload')}
+                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                        imageUploadMode === 'upload'
+                          ? 'bg-forest-900 text-tan-300 shadow-xs'
+                          : 'text-charcoal-muted hover:text-forest-950'
+                      }`}
+                    >
+                      <Upload className="w-3 h-3" />
+                      <span>Upload File</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageUploadMode('url')}
+                      className={`px-2.5 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
+                        imageUploadMode === 'url'
+                          ? 'bg-forest-900 text-tan-300 shadow-xs'
+                          : 'text-charcoal-muted hover:text-forest-950'
+                      }`}
+                    >
+                      <LinkIcon className="w-3 h-3" />
+                      <span>Paste URL</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Upload from Local Computer */}
+                {imageUploadMode === 'upload' ? (
+                  <div>
+                    <label className="border-2 border-dashed border-surface-border hover:border-tan-500 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer bg-surface-lowest hover:bg-surface-low/60 transition-all text-center space-y-1">
+                      <div className="w-10 h-10 rounded-full bg-tan-500/10 text-tan-700 flex items-center justify-center">
+                        <Upload className="w-5 h-5" />
+                      </div>
+                      <span className="font-extrabold text-xs text-forest-950">
+                        Choose photo from your device
+                      </span>
+                      <span className="text-[10px] text-charcoal-muted">
+                        Click to browse JPG, PNG, WEBP (Max 5MB)
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="url"
+                      value={productForm.image}
+                      onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                      placeholder="Paste image URL (e.g. https://images.unsplash.com/...)"
+                      className="w-full p-2.5 bg-surface-lowest border border-surface-border rounded-xl text-xs font-mono focus:outline-none focus:border-tan-500"
+                    />
+                  </div>
+                )}
+
+                {/* Live Image Preview Card */}
+                {productForm.image ? (
+                  <div className="flex items-center gap-3 bg-surface-lowest p-2.5 rounded-xl border border-surface-border">
+                    <img
+                      src={productForm.image}
+                      alt="Product Preview"
+                      className="w-14 h-14 rounded-lg object-cover border border-surface-border shadow-xs shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <span className="font-bold text-xs text-forest-950 block">Active Product Photo</span>
+                      <span className="text-[10px] text-emerald-700 font-semibold block">
+                        ✓ Ready to display in Marketplace
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setProductForm({ ...productForm, image: '' })}
+                      className="text-rose-600 hover:text-rose-700 p-1.5 rounded-lg hover:bg-rose-50 transition-colors"
+                      title="Remove image"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                ) : (
+                  /* Quick Sample Image Presets */
+                  <div className="pt-1">
+                    <span className="text-[10px] font-bold text-charcoal-muted block mb-1.5">
+                      Or select a popular sample equipment image:
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
+                      {[
+                        { label: 'GPS Collar', url: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&auto=format&fit=crop&q=80' },
+                        { label: 'Official Cap', url: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&auto=format&fit=crop&q=80' },
+                        { label: 'Fleece Hoodie', url: 'https://images.unsplash.com/photo-1556905055-8f358a7a47b2?w=400&auto=format&fit=crop&q=80' },
+                        { label: 'Hunting Jacket', url: 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=400&auto=format&fit=crop&q=80' }
+                      ].map((preset, idx) => (
+                        <button
+                          key={idx}
+                          type="button"
+                          onClick={() => setProductForm({ ...productForm, image: preset.url })}
+                          className="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-surface-lowest hover:bg-tan-500/20 text-forest-950 border border-surface-border transition-all cursor-pointer"
+                        >
+                          + {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Product Description */}
               <div>
                 <label className="block text-xs font-bold text-forest-900 mb-1">Product Description</label>
                 <textarea
-                  rows={3}
+                  rows={2}
                   value={productForm.description}
                   onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
-                  placeholder="Enter detailed description of gear..."
-                  className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs"
+                  placeholder="Enter detailed technical gear specifications, sizing, or warranty..."
+                  className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl text-xs focus:outline-none focus:border-tan-500"
                 />
               </div>
 
+              {/* Modal Actions */}
               <div className="flex items-center justify-end gap-3 pt-3 border-t border-surface-border">
                 <button
                   type="button"
                   onClick={() => setShowAddProductModal(false)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold border border-surface-border text-charcoal-muted hover:bg-surface-low"
+                  className="px-4 py-2 rounded-xl text-xs font-bold border border-surface-border text-charcoal-muted hover:bg-surface-low transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl text-xs font-black bg-forest-800 hover:bg-forest-900 text-tan-400 shadow-md"
+                  className="px-5 py-2 rounded-xl text-xs font-black bg-forest-900 hover:bg-forest-950 text-tan-300 shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
                 >
-                  Save Product
+                  <Check className="w-4 h-4 text-tan-400" />
+                  <span>Save & Publish Product</span>
                 </button>
               </div>
             </form>

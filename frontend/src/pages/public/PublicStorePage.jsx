@@ -8,8 +8,8 @@ export const PublicStorePage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // 1. Purchase Scope Selection State (NATIONAL / STATE / LOCAL_CLUB)
-  const [purchaseScope, setPurchaseScope] = useState('LOCAL_CLUB');
+  // 1. Purchase Scope Selection State (ALL / NATIONAL / STATE / LOCAL_CLUB)
+  const [purchaseScope, setPurchaseScope] = useState('ALL');
   const [selectedClubScope, setSelectedClubScope] = useState('Oak Ridge Hunting Club');
   const [selectedStateScope, setSelectedStateScope] = useState('Tennessee State Association');
 
@@ -33,7 +33,7 @@ export const PublicStorePage = () => {
     const matchesCategory = selectedCategory === 'All' || p.category === selectedCategory;
     const matchesSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                           p.description?.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesScope = !p.scopeChannel || p.scopeChannel === purchaseScope || p.scopeChannel === 'ALL';
+    const matchesScope = purchaseScope === 'ALL' || !p.scopeChannel || p.scopeChannel === purchaseScope;
     return matchesCategory && matchesSearch && matchesScope;
   });
 

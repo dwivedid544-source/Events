@@ -433,6 +433,18 @@ export const AppProvider = ({ children }) => {
       };
     });
   });
+
+  // Sync orders with localStorage whenever orders update
+  useEffect(() => {
+    if (orders && orders.length > 0) {
+      try {
+        localStorage.setItem('nh_orders_v2', JSON.stringify(orders));
+      } catch (e) {
+        // ignore
+      }
+    }
+  }, [orders]);
+
   const [cart, setCart] = useState(() => {
     const saved = localStorage.getItem('nh_cart');
     return saved ? JSON.parse(saved) : [];
@@ -2345,13 +2357,13 @@ export const AppProvider = ({ children }) => {
       id: orderId,
       customer: fullName,
       email: cleanEmail,
-      phone: checkoutData.phone || '(865) 555-0199',
+      phone: checkoutData.phone || '',
       shippingAddress: {
-        address1: checkoutData.address1 || '1420 Hunting Ridge Rd',
+        address1: checkoutData.address1 || '',
         address2: checkoutData.address2 || '',
-        city: checkoutData.city || 'Knoxville',
-        state: checkoutData.state || 'TN',
-        zip: checkoutData.zip || '37901',
+        city: checkoutData.city || '',
+        state: checkoutData.state || '',
+        zip: checkoutData.zip || '',
         country: checkoutData.country || 'United States'
       },
       product: targetCart.map((i) => i.name).join(', '),
@@ -2394,8 +2406,16 @@ export const AppProvider = ({ children }) => {
       estimatedDelivery: '3-5 Business Days'
     };
 
-    // 1. Save new order
-    setOrders((prev) => [createdOrder, ...prev]);
+    // 1. Save new order immediately to state and localStorage
+    setOrders((prev) => {
+      const updated = [createdOrder, ...prev];
+      try {
+        localStorage.setItem('nh_orders_v2', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Could not save order to localStorage:', e);
+      }
+      return updated;
+    });
 
     // 2. Fire API call to backend POST /api/v1/orders & Clover Payment Charge
     try {

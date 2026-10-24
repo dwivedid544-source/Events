@@ -42,7 +42,7 @@ export const CartPage = () => {
         </div>
         <div className="pt-4">
           <Link
-            to="/store"
+            to="/marketplace"
             className="inline-flex items-center gap-2 px-7 py-3.5 bg-forest-900 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg transition-all"
           >
             <ArrowLeft className="w-4 h-4 text-tan-400" />
@@ -75,7 +75,7 @@ export const CartPage = () => {
           </button>
 
           <Link
-            to="/store"
+            to="/marketplace"
             className="px-4 py-2 rounded-xl text-xs font-bold border border-surface-border bg-surface-lowest hover:bg-surface-low text-charcoal transition-colors flex items-center gap-1.5"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
