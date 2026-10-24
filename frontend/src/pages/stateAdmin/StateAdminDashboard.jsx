@@ -22,6 +22,8 @@ export const StateAdminDashboard = () => {
   });
 
   const myState = states.find(s => s.code === selectedStateCode || s.name.toLowerCase().includes(selectedStateCode.toLowerCase())) || states[0] || {};
+  const cleanStateName = (myState.name || 'Tennessee').replace(/\s*State\s*Association.*/gi, '').trim();
+  const stateTitle = myState.name?.includes('Association') ? myState.name : `${cleanStateName} State Association`;
 
   // Bank Account State for State Direct Deposit
   const [bankInfo, setBankInfo] = React.useState(() => {
@@ -42,7 +44,7 @@ export const StateAdminDashboard = () => {
     e.preventDefault();
     localStorage.setItem(`nh_bank_state_${myState.code || 'default'}`, JSON.stringify(bankInfo));
     setIsEditingBank(false);
-    showToast(`Bank deposit account successfully connected for ${myState.name} State Treasury!`, 'success');
+    showToast(`Bank deposit account successfully connected for ${stateTitle} Treasury!`, 'success');
   };
 
   // Calculate State Merchandise Sales & 7% Commissions
@@ -71,7 +73,7 @@ export const StateAdminDashboard = () => {
               ))}
             </select>
           </div>
-          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">{myState.name} State Association</h1>
+          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight">{stateTitle}</h1>
           <p className="text-xs text-tan-200 mt-1">State Admin: <strong>{myState.adminName || 'James Wadley'}</strong> • Governance over {myState.clubsCount || 5} Local Clubs</p>
         </div>
 
@@ -102,7 +104,7 @@ export const StateAdminDashboard = () => {
             </div>
             <div>
               <h3 className="font-extrabold text-base text-forest-950 flex items-center gap-2">
-                <span>{myState.name} State Treasury & Direct Deposit Settings</span>
+                <span>{stateTitle} Treasury & Direct Deposit Settings</span>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
                   {bankInfo.status}
                 </span>

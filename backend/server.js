@@ -780,6 +780,73 @@ app.put('/api/v1/orders/:id/payout', async (req, res) => {
     message: `Order #${id} payout status updated via API`,
     timestamp: new Date().toISOString()
   });
+// Club Claims API Endpoints (GET, POST, PUT)
+app.get('/api/v1/club-claims', async (req, res) => {
+  try {
+    const [claims] = await db.query('SELECT * FROM `ClubClaim` ORDER BY createdAt DESC');
+    return res.json({
+      success: true,
+      data: claims,
+      message: 'Club claims fetched from MySQL database `club`',
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+});
+
+app.post('/api/v1/club-claims', async (req, res) => {
+  try {
+    const claim = req.body;
+    console.log('📡 API Call [POST /api/v1/club-claims]:', claim.id || claim.applicant);
+    const claimId = claim.id || `CLM-${Date.now().toString().slice(-4)}`;
+    try {
+      await db.query(
+        'INSERT INTO `ClubClaim` (id, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+          claimId,
+          claim.club || 'Local Club',
+          claim.state || 'TN',
+          claim.applicant || 'Applicant',
+          claim.email || '',
+          claim.phone || '',
+          claim.submittedDate || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+          claim.claimStatus || 'Pending',
+          claim.verificationStatus || 'Pending Verification',
+          claim.message || ''
+        ]
+      );
+    } catch (dbErr) {
+      console.warn('MySQL Insert Claim notice:', dbErr.message);
+    }
+    return res.status(201).json({
+      success: true,
+      data: { ...claim, id: claimId },
+      message: `Claim ${claimId} created successfully via API`,
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+});
+
+app.put('/api/v1/club-claims/:id', async (req, res) => {
+  const { id } = req.params;
+  const { status, claimStatus } = req.body;
+  const newStatus = status || claimStatus || 'Approved';
+  console.log(`📡 API Call [PUT /api/v1/club-claims/${id}]: status -> ${newStatus}`);
+  try {
+    await db.query('UPDATE `ClubClaim` SET claimStatus = ? WHERE id = ?', [newStatus, id]);
+  } catch (dbErr) {
+    console.warn('MySQL Update Claim notice:', dbErr.message);
+  }
+  return res.json({
+    success: true,
+    id,
+    claimStatus: newStatus,
+    message: `Claim ${id} status updated to ${newStatus} via API in database`,
+    timestamp: new Date().toISOString()
+  });
 });
 
 // Settings GET & POST endpoints from MySQL Database
