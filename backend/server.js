@@ -733,12 +733,28 @@ app.delete('/api/v1/products/:id', async (req, res) => {
   }
 });
 
+// Orders In-Memory Store & Database Sync
+let storedOrders = [
+  { id: 'ORD-9018', customer: 'Lalit Panchole', email: 'demo@example.com', date: 'Aug 07, 2026', items: 'Garmin Alpha 300 Tracking Collar (Qty: 1)', total: 849.99, amount: 849.99, paymentStatus: 'Paid', fulfillmentStatus: 'Processing', carrier: 'Direct Vendor Drop-Ship', trackingNumber: 'Pending Dispatch' },
+  { id: 'ORD-9015', customer: 'Lalit Panchole', email: 'demo@example.com', date: 'Aug 06, 2026', items: 'Oak Ridge Hunting Club Official Cap (Qty: 1)', total: 549.99, amount: 549.99, paymentStatus: 'Paid', fulfillmentStatus: 'Shipped', carrier: 'Direct Vendor Drop-Ship', trackingNumber: '1Z9999999999999998' },
+  { id: 'ORD-9012', customer: 'Lalit Panchole', email: 'demo@example.com', date: 'Aug 04, 2026', items: 'Official UKC Tracking Collar (Qty: 1)', total: 849.99, amount: 849.99, paymentStatus: 'Paid', fulfillmentStatus: 'Delivered', carrier: 'Direct Vendor Drop-Ship', trackingNumber: '1Z9999999999999999' }
+];
+
 // Orders API Endpoints (GET, POST, PUT)
 app.get('/api/v1/orders', async (req, res) => {
   try {
+    try {
+      const [rows] = await db.query('SELECT * FROM `Order` ORDER BY createdAt DESC');
+      if (rows && rows.length > 0) {
+        return res.json({ success: true, data: rows, message: 'Orders fetched from MySQL database' });
+      }
+    } catch (dbErr) {
+      // fallback to storedOrders
+    }
+
     return res.json({
       success: true,
-      data: [],
+      data: storedOrders,
       message: 'Orders fetched via API',
       timestamp: new Date().toISOString()
     });
@@ -749,6 +765,7 @@ app.get('/api/v1/orders', async (req, res) => {
 
 app.post('/api/v1/orders', async (req, res) => {
   const orderData = req.body;
+  storedOrders.unshift(orderData);
   console.log('📡 API Call [POST /api/v1/orders]:', orderData.id || orderData.customer);
   try {
     const orderId = orderData.id || `ORD-${Date.now()}`;
