@@ -6,13 +6,27 @@ const getMembers = async (req, res) => {
     let query = 'SELECT * FROM `Member` WHERE 1=1';
     const params = [];
 
-    if (club) {
-      query += ' AND LOWER(club) LIKE ?';
-      params.push(`%${club.toLowerCase()}%`);
+    // Role-based scope enforcement
+    let effectiveState = state;
+    let effectiveClub = club;
+
+    if (req.user) {
+      if (req.user.role === 'STATE_ADMIN') {
+        // State Admin is restricted strictly to their assigned state
+        effectiveState = req.user.stateCode || req.user.state;
+      } else if (req.user.role === 'CLUB_ADMIN') {
+        // Club Admin is restricted strictly to their assigned club
+        effectiveClub = req.user.club || req.user.clubId;
+      }
     }
-    if (state) {
+
+    if (effectiveClub) {
+      query += ' AND LOWER(club) LIKE ?';
+      params.push(`%${effectiveClub.toLowerCase()}%`);
+    }
+    if (effectiveState) {
       query += ' AND (LOWER(state) LIKE ? OR LOWER(state) = ?)';
-      params.push(`%${state.toLowerCase()}%`, state.toLowerCase());
+      params.push(`%${effectiveState.toLowerCase()}%`, effectiveState.toLowerCase());
     }
 
     const [rows] = await db.query(query, params);
@@ -25,6 +39,68 @@ const getMembers = async (req, res) => {
     });
   } catch (err) {
     console.error('[Members Controller Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+};
+
+const createMember = async (req, res) => {
+  try {
+    const {
+      name,
+      email,
+      phone,
+      state,
+      club,
+      duesAmount = 35.0,
+      joinDate
+    } = req.body;
+
+    if (!name || !email) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'Name and email are required' }
+      });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const [existing] = await db.query('SELECT id FROM `Member` WHERE LOWER(email) = ?', [cleanEmail]);
+    if (existing && existing.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'MEMBER_EXISTS', message: 'A membership with this email already exists' }
+      });
+    }
+
+    const memberId = req.body.id || `mem-${Date.now()}`;
+    const dateStr = joinDate || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    // Honest status: Pending Payment Verification until real payment confirmed
+    const status = 'Pending Payment Verification';
+
+    await db.query(
+      `INSERT INTO \`Member\` (id, name, email, phone, state, club, status, duesAmount, joinDate)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [memberId, name, cleanEmail, phone || '', state || 'Tennessee', club || 'Oak Ridge Hunting Club', status, duesAmount, dateStr]
+    );
+
+    const createdMember = {
+      id: memberId,
+      name,
+      email: cleanEmail,
+      phone: phone || '',
+      state: state || 'Tennessee',
+      club: club || 'Oak Ridge Hunting Club',
+      status,
+      duesAmount,
+      joinDate: dateStr
+    };
+
+    return res.status(201).json({
+      success: true,
+      data: createdMember,
+      message: 'Membership registered in database. Status: Pending Payment Verification.'
+    });
+  } catch (err) {
+    console.error('[Create Member Error]:', err.message);
     return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
   }
 };
@@ -55,5 +131,6 @@ const updateMemberStatus = async (req, res) => {
 
 module.exports = {
   getMembers,
+  createMember,
   updateMemberStatus
 };

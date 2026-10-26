@@ -21,17 +21,20 @@ const register = async (req, res) => {
       });
     }
 
+    // Security: Self-registration strictly creates MEMBER accounts. Privilege escalation prohibited.
+    const assignedRole = 'MEMBER';
+
     const passwordHash = await bcrypt.hash(password, 10);
     const userId = `usr-${Date.now()}`;
 
     await db.query(
       `INSERT INTO \`User\` (id, email, passwordHash, name, role, phone, stateCode, clubId)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, email, passwordHash, name, role || 'MEMBER', phone || '', stateCode || 'TX', clubId || 'club-1']
+      [userId, email, passwordHash, name, assignedRole, phone || '', stateCode || 'TX', clubId || 'club-1']
     );
 
     const token = jwt.sign(
-      { id: userId, name, email, role: role || 'MEMBER' },
+      { id: userId, name, email, role: assignedRole },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -39,7 +42,7 @@ const register = async (req, res) => {
     return res.status(201).json({
       success: true,
       data: {
-        user: { id: userId, name, email, role: role || 'MEMBER' },
+        user: { id: userId, name, email, role: assignedRole },
         token
       },
       message: 'Account created successfully in MySQL database `club`'
@@ -61,25 +64,19 @@ const login = async (req, res) => {
     }
 
     const [rows] = await db.query('SELECT * FROM `User` WHERE LOWER(email) = ?', [email.toLowerCase()]);
-    let user = rows[0];
+    const user = rows[0];
 
-    // Fallback default admin user if DB query doesn't match
+    // Real DB check: Non-existent users are rejected
     if (!user) {
-      const passwordHash = await bcrypt.hash('Password123!', 10);
-      user = {
-        id: 'usr-lalit',
-        name: 'Lalit Panchole',
-        email: email.toLowerCase(),
-        passwordHash,
-        role: 'SUPER_ADMIN',
-        phone: '(800) 555-0192',
-        stateCode: 'TX',
-        clubId: 'club-1'
-      };
+      return res.status(401).json({
+        success: false,
+        error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
+      });
     }
 
+    // Real Bcrypt comparison: Master password bypasses removed
     const isMatch = await bcrypt.compare(password, user.passwordHash);
-    if (!isMatch && password !== 'Password123!' && password !== '123') {
+    if (!isMatch) {
       return res.status(401).json({
         success: false,
         error: { code: 'INVALID_CREDENTIALS', message: 'Invalid email or password' }
@@ -116,25 +113,26 @@ const login = async (req, res) => {
 
 const getProfile = async (req, res) => {
   try {
-    const userEmail = req.user ? req.user.email : 'demo@example.com';
+    if (!req.user || !req.user.email) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required' }
+      });
+    }
+
+    const userEmail = req.user.email;
     const [rows] = await db.query('SELECT id, email, name, role, phone, stateCode, clubId, createdAt FROM `User` WHERE LOWER(email) = ?', [userEmail.toLowerCase()]);
 
-    const profileData = rows[0] || {
-      id: 'usr-lalit',
-      name: 'Lalit Panchole',
-      email: 'demo@example.com',
-      role: 'SUPER_ADMIN',
-      phone: '(800) 555-0192',
-      stateCode: 'TX',
-      clubId: 'club-1',
-      membershipId: 'TN-ORHC-2026-94812',
-      club: 'Oak Ridge Hunting Club',
-      state: 'Tennessee'
-    };
+    if (!rows || rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'USER_NOT_FOUND', message: 'User profile not found in database' }
+      });
+    }
 
     return res.json({
       success: true,
-      data: profileData,
+      data: rows[0],
       message: 'Member profile fetched from MySQL database `club`'
     });
   } catch (err) {

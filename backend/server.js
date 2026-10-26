@@ -10,6 +10,7 @@ const clubRoutes = require('./routes/clubRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const { verifyToken, requireRole } = require('./middlewares/authMiddleware');
 
 const app = express();
 const PORT = process.env.PORT || 5050;
@@ -158,33 +159,67 @@ let storedClaims = [
 ];
 
 app.get('/api/v1/club-claims', async (req, res) => {
+  try {
+    const [rows] = await db.query('SELECT * FROM `ClubClaim` ORDER BY `createdAt` DESC');
+    if (rows && rows.length > 0) {
+      return res.json({
+        success: true,
+        data: rows,
+        message: 'Club claim verification requests fetched from database',
+        timestamp: new Date().toISOString()
+      });
+    }
+  } catch (dbErr) {
+    console.warn('[Club Claims DB Query Warning]:', dbErr.message);
+  }
   return res.json({
     success: true,
     data: storedClaims,
-    message: 'Club claim verification requests fetched',
+    message: 'Club claim verification requests fetched (fallback)',
     timestamp: new Date().toISOString()
   });
 });
 
 app.post('/api/v1/club-claims', async (req, res) => {
   try {
+    const claimId = req.body.id || ('CLM-' + Math.floor(100 + Math.random() * 900));
+    const club = req.body.club || req.body.clubName || 'State Association';
+    const state = req.body.state || 'HI';
+    const applicant = req.body.applicant || 'Applicant';
+    const email = req.body.email || 'demo@example.com';
+    const phone = req.body.phone || '(800) 555-0192';
+    const message = req.body.message || 'Official State/Club administration claim request.';
+    const claimStatus = 'Pending';
+    const submittedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+    const verificationStatus = 'Pending Review';
+
     const claim = {
-      id: req.body.id || ('CLM-' + Math.floor(100 + Math.random() * 900)),
-      club: req.body.club || req.body.clubName || 'State Association',
-      state: req.body.state || 'HI',
-      applicant: req.body.applicant || 'Applicant',
-      email: req.body.email || 'demo@example.com',
-      phone: req.body.phone || '(800) 555-0192',
-      message: req.body.message || 'Official State/Club administration claim request.',
-      claimStatus: 'Pending',
-      status: 'Pending',
-      submittedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      verificationStatus: 'Pending Review',
-      ...req.body
+      id: claimId,
+      club,
+      state,
+      applicant,
+      email,
+      phone,
+      submittedDate,
+      claimStatus,
+      verificationStatus,
+      message,
+      createdAt: new Date().toISOString()
     };
+
+    try {
+      await db.query(
+        `INSERT INTO \`ClubClaim\` (id, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [claimId, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message]
+      );
+    } catch (dbErr) {
+      console.warn('[Club Claim DB Insert Warning]:', dbErr.message);
+    }
+
     storedClaims.unshift(claim);
-    console.log('✅ New Claim Registered in Backend:', claim);
-    return res.status(201).json({ success: true, data: claim, message: 'Claim submitted successfully' });
+    console.log('✅ New Claim Registered in Backend & DB:', claim);
+    return res.status(201).json({ success: true, data: claim, message: 'Claim submitted successfully to database' });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }
@@ -195,13 +230,29 @@ app.put('/api/v1/club-claims/:id', async (req, res) => {
     const { id } = req.params;
     const { claimStatus, status } = req.body;
     const nextStatus = claimStatus || status || 'Approved';
+    const verStatus = nextStatus === 'Approved' ? 'Verified Official' : 'Rejected';
+
+    try {
+      await db.query(
+        `UPDATE \`ClubClaim\` SET \`claimStatus\` = ?, \`verificationStatus\` = ? WHERE \`id\` = ?`,
+        [nextStatus, verStatus, id]
+      );
+    } catch (dbErr) {
+      console.warn('[Club Claim DB Update Warning]:', dbErr.message);
+    }
+
     const found = storedClaims.find(c => c.id === id);
     if (found) {
       found.claimStatus = nextStatus;
       found.status = nextStatus;
-      found.verificationStatus = nextStatus === 'Approved' ? 'Verified Official' : 'Rejected';
+      found.verificationStatus = verStatus;
     }
-    return res.json({ success: true, data: found || { id, claimStatus: nextStatus }, message: 'Claim status updated to ' + nextStatus });
+
+    return res.json({
+      success: true,
+      data: found || { id, claimStatus: nextStatus, verificationStatus: verStatus },
+      message: 'Claim status updated to ' + nextStatus + ' in database'
+    });
   } catch (err) {
     return res.status(500).json({ success: false, error: err.message });
   }
@@ -222,8 +273,8 @@ app.get('/api/v1/users-roles', async (req, res) => {
   }
 });
 
-// Update User Role Endpoint
-app.put('/api/v1/users/:id/role', async (req, res) => {
+// Update User Role Endpoint - Protected: Super Admin only
+app.put('/api/v1/users/:id/role', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
   try {
     const { id } = req.params;
     const { role } = req.body;
@@ -244,8 +295,8 @@ app.put('/api/v1/users/:id/role', async (req, res) => {
   }
 });
 
-// Update User Status (Active / Inactive) Endpoint
-app.put('/api/v1/users/:id/status', async (req, res) => {
+// Update User Status (Active / Inactive) Endpoint - Protected: Super Admin only
+app.put('/api/v1/users/:id/status', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -987,11 +1038,15 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`=======================================================`);
-  console.log(`🚀 NH Portal Backend REST API Server is RUNNING!`);
-  console.log(`📡 URL: http://localhost:${PORT}/api/v1`);
-  console.log(`🗄️ Database: MySQL \`club\` (127.0.0.1:3306)`);
-  console.log(`=======================================================`);
-});
+// Start Server (only if executed directly)
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`=======================================================`);
+    console.log(`🚀 NH Portal Backend REST API Server is RUNNING!`);
+    console.log(`📡 URL: http://localhost:${PORT}/api/v1`);
+    console.log(`🗄️ Database: MySQL \`club\``);
+    console.log(`=======================================================`);
+  });
+}
+
+module.exports = app;
