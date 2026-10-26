@@ -25,8 +25,20 @@ const getMembers = async (req, res) => {
       params.push(`%${effectiveClub.toLowerCase()}%`);
     }
     if (effectiveState) {
-      query += ' AND (LOWER(state) LIKE ? OR LOWER(state) = ?)';
-      params.push(`%${effectiveState.toLowerCase()}%`, effectiveState.toLowerCase());
+      const stateMap = {
+        TX: 'Texas',
+        TN: 'Tennessee',
+        KY: 'Kentucky',
+        AL: 'Alabama',
+        AK: 'Alaska',
+        AZ: 'Arizona',
+        AR: 'Arkansas',
+        CA: 'California',
+        HI: 'Hawaii'
+      };
+      const altState = stateMap[effectiveState.toUpperCase()] || '';
+      query += ' AND (LOWER(state) = ? OR LOWER(state) = ? OR LOWER(state) LIKE ?)';
+      params.push(effectiveState.toLowerCase(), altState.toLowerCase(), `%${effectiveState.toLowerCase()}%`);
     }
 
     const [rows] = await db.query(query, params);
@@ -178,6 +190,7 @@ const updateMemberStatus = async (req, res) => {
       success: true,
       memberId: id,
       status,
+      data: { id, status },
       message: `Member ${id} status updated to ${status} successfully`
     });
   } catch (err) {

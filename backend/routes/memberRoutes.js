@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const memberController = require('../controllers/memberController');
 const jwt = require('jsonwebtoken');
-const { JWT_SECRET } = require('../middlewares/authMiddleware');
+const { verifyToken, JWT_SECRET } = require('../middlewares/authMiddleware');
+
 
 // Optional auth helper: attaches user if token provided without rejecting public queries
 const optionalAuth = (req, res, next) => {

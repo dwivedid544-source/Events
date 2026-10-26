@@ -158,7 +158,7 @@ let storedClaims = [
   { id: 'clm-1', club: 'Lone Star Hound Club', clubName: 'Lone Star Hound Club', applicant: 'Jake Miller', email: 'jake@lonestar.org', phone: '(512) 555-0199', claimStatus: 'Pending', status: 'Pending Review', submittedDate: 'Aug 14, 2026', verificationStatus: 'Pending Review', message: 'Official Texas charter registration.' }
 ];
 
-app.get('/api/v1/club-claims', async (req, res) => {
+app.get('/api/v1/club-claims', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM `ClubClaim` ORDER BY `createdAt` DESC');
     if (rows && rows.length > 0) {
@@ -182,13 +182,21 @@ app.get('/api/v1/club-claims', async (req, res) => {
 
 app.post('/api/v1/club-claims', async (req, res) => {
   try {
-    const claimId = req.body.id || ('CLM-' + Math.floor(100 + Math.random() * 900));
-    const club = req.body.club || req.body.clubName || 'State Association';
+    const club = req.body.club || req.body.clubName;
+    const applicant = req.body.applicant;
+    const email = req.body.email;
     const state = req.body.state || 'HI';
-    const applicant = req.body.applicant || 'Applicant';
-    const email = req.body.email || 'demo@example.com';
-    const phone = req.body.phone || '(800) 555-0192';
+    const phone = req.body.phone || '';
     const message = req.body.message || 'Official State/Club administration claim request.';
+
+    if (!club || !applicant || !email) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'Club name, applicant name, and email are required' }
+      });
+    }
+
+    const claimId = req.body.id || ('CLM-' + Math.floor(100 + Math.random() * 900));
     const claimStatus = 'Pending';
     const submittedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
     const verificationStatus = 'Pending Review';
@@ -225,12 +233,21 @@ app.post('/api/v1/club-claims', async (req, res) => {
   }
 });
 
-app.put('/api/v1/club-claims/:id', async (req, res) => {
+app.put('/api/v1/club-claims/:id', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
   try {
     const { id } = req.params;
     const { claimStatus, status } = req.body;
     const nextStatus = claimStatus || status || 'Approved';
-    const verStatus = nextStatus === 'Approved' ? 'Verified Official' : 'Rejected';
+
+    const allowedStatuses = ['Pending', 'Approved', 'Rejected'];
+    if (!allowedStatuses.includes(nextStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_STATUS', message: 'Claim status must be Pending, Approved, or Rejected' }
+      });
+    }
+
+    const verStatus = nextStatus === 'Approved' ? 'Verified Official' : (nextStatus === 'Rejected' ? 'Rejected' : 'Pending Review');
 
     try {
       await db.query(
@@ -258,8 +275,8 @@ app.put('/api/v1/club-claims/:id', async (req, res) => {
   }
 });
 
-// Users & Roles API Endpoint from MySQL Database
-app.get('/api/v1/users-roles', async (req, res) => {
+// Users & Roles API Endpoint - Protected: Super Admin only
+app.get('/api/v1/users-roles', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
   try {
     const [users] = await db.query('SELECT id, email, name, role, phone, stateCode, clubId FROM `User`');
     return res.json({
@@ -317,26 +334,7 @@ app.put('/api/v1/users/:id/status', verifyToken, requireRole('SUPER_ADMIN'), asy
   }
 });
 
-// Authenticated Member Profile API Endpoint
-app.get('/api/v1/auth/profile', async (req, res) => {
-  try {
-    return res.json({
-      success: true,
-      user: {
-        id: 'usr-1',
-        name: 'Robert Miller',
-        email: 'robert.miller@example.com',
-        role: 'MEMBER',
-        membershipId: 'UHC-2026-9901',
-        status: 'Active'
-      },
-      message: 'Authenticated member profile synced from backend database',
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
+
 
 // Dogs API Endpoint from MySQL Database
 app.get('/api/v1/dogs', async (req, res) => {
@@ -546,118 +544,54 @@ app.put('/api/v1/orders/:id/fulfillment', async (req, res) => {
   }
 });
 
-// Update Event Details API Endpoint
-app.put('/api/v1/events/:id', async (req, res) => {
+// Update User Profile API Endpoint - Protected: Self or Super Admin only
+app.put('/api/v1/users/:id/profile', verifyToken, async (req, res) => {
   try {
     const { id } = req.params;
-    const updateData = req.body;
-    console.log(`📡 API Call [PUT /api/v1/events/${id}]:`, updateData.name || id);
+    const isSelf = req.user.id === id;
+    const isSuper = req.user.role === 'SUPER_ADMIN';
 
-    return res.json({
-      success: true,
-      id,
-      data: updateData,
-      message: `Event "${updateData.name || id}" configuration updated successfully in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
+    if (!isSelf && !isSuper) {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'You are not authorized to edit another user profile' }
+      });
+    }
 
-// Register/Enter Event API Endpoint
-app.post('/api/v1/events/:id/register', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const entryData = req.body;
-    console.log(`📡 API Call [POST /api/v1/events/${id}/register]: Participant -> ${entryData.participant || 'Member'}, Dog -> ${entryData.dog || 'Canine'}`);
-
-    return res.status(201).json({
-      success: true,
-      eventId: id,
-      entryId: entryData.id || `E${Math.floor(1000 + Math.random() * 9000)}`,
-      data: entryData,
-      message: `Event entry registered successfully in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
-
-// User Role Update API Endpoint
-app.put('/api/v1/users/:id/role', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { role } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/users/${id}/role]: New Role -> ${role}`);
+    // Whitelist: Mass-assignment protection (role, password, passwordHash are strictly disallowed)
+    const { name, phone, stateCode, clubId } = req.body;
+    if (!name && !phone && !stateCode && !clubId) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_INPUT', message: 'At least one valid field (name, phone, stateCode, clubId) is required' }
+      });
+    }
 
     try {
-      await db.query('UPDATE `User` SET role = ? WHERE id = ?', [role, id]);
+      await db.query(
+        'UPDATE `User` SET name = COALESCE(?, name), phone = COALESCE(?, phone), stateCode = COALESCE(?, stateCode), clubId = COALESCE(?, clubId) WHERE id = ?',
+        [name || null, phone || null, stateCode || null, clubId || null, id]
+      );
     } catch (dbErr) {
-      console.warn('MySQL Update User Role notice (fallback active):', dbErr.message);
+      console.warn('MySQL Update User Profile notice:', dbErr.message);
     }
+
+    const [updatedRows] = await db.query(
+      'SELECT id, email, name, role, phone, stateCode, clubId FROM `User` WHERE id = ?',
+      [id]
+    );
 
     return res.json({
       success: true,
       userId: id,
-      role,
-      message: `User ${id} role updated to ${role} in database`,
-      timestamp: new Date().toISOString()
+      data: updatedRows[0] || { id, name, phone },
+      message: 'User profile updated successfully'
     });
   } catch (err) {
     return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
   }
 });
 
-// Update User Profile API Endpoint
-app.put('/api/v1/users/:id/profile', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const profileData = req.body;
-    console.log(`📡 API Call [PUT /api/v1/users/${id}/profile]:`, profileData.name || id);
-
-    try {
-      if (profileData.name || profileData.email) {
-        await db.query(
-          'UPDATE `User` SET name = COALESCE(?, name), email = COALESCE(?, email) WHERE id = ?',
-          [profileData.name, profileData.email, id]
-        );
-      }
-    } catch (dbErr) {
-      console.warn('MySQL Update User Profile notice (fallback active):', dbErr.message);
-    }
-
-    return res.json({
-      success: true,
-      userId: id,
-      data: profileData,
-      message: `User ${id} profile updated successfully in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
-
-// Register/Add New Member API Endpoint
-app.post('/api/v1/members', async (req, res) => {
-  try {
-    const memberData = req.body;
-    console.log(`📡 API Call [POST /api/v1/members]: Name -> ${memberData.name || memberData.firstName || 'Member'}, Club -> ${memberData.club || 'Oak Ridge Hunting Club'}`);
-
-    return res.status(201).json({
-      success: true,
-      data: memberData,
-      memberId: memberData.id || `mem-${Date.now()}`,
-      membershipId: memberData.membershipId || `TN-ORHC-2026-${Math.floor(10000 + Math.random() * 90000)}`,
-      message: `Member "${memberData.name || memberData.firstName || 'Member'}" registered successfully in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
 
 // Record Manual Financial Transaction API Endpoint
 app.post('/api/v1/transactions', async (req, res) => {
@@ -850,74 +784,7 @@ app.put('/api/v1/orders/:id/payout', async (req, res) => {
   });
 });
 
-// Club Claims API Endpoints (GET, POST, PUT)
-app.get('/api/v1/club-claims', async (req, res) => {
-  try {
-    const [claims] = await db.query('SELECT * FROM `ClubClaim` ORDER BY createdAt DESC');
-    return res.json({
-      success: true,
-      data: claims,
-      message: 'Club claims fetched from MySQL database `club`',
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-  }
-});
 
-app.post('/api/v1/club-claims', async (req, res) => {
-  try {
-    const claim = req.body;
-    console.log('📡 API Call [POST /api/v1/club-claims]:', claim.id || claim.applicant);
-    const claimId = claim.id || `CLM-${Date.now().toString().slice(-4)}`;
-    try {
-      await db.query(
-        'INSERT INTO `ClubClaim` (id, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [
-          claimId,
-          claim.club || 'Local Club',
-          claim.state || 'TN',
-          claim.applicant || 'Applicant',
-          claim.email || '',
-          claim.phone || '',
-          claim.submittedDate || new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-          claim.claimStatus || 'Pending',
-          claim.verificationStatus || 'Pending Verification',
-          claim.message || ''
-        ]
-      );
-    } catch (dbErr) {
-      console.warn('MySQL Insert Claim notice:', dbErr.message);
-    }
-    return res.status(201).json({
-      success: true,
-      data: { ...claim, id: claimId },
-      message: `Claim ${claimId} created successfully via API`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
-
-app.put('/api/v1/club-claims/:id', async (req, res) => {
-  const { id } = req.params;
-  const { status, claimStatus } = req.body;
-  const newStatus = status || claimStatus || 'Approved';
-  console.log(`📡 API Call [PUT /api/v1/club-claims/${id}]: status -> ${newStatus}`);
-  try {
-    await db.query('UPDATE `ClubClaim` SET claimStatus = ? WHERE id = ?', [newStatus, id]);
-  } catch (dbErr) {
-    console.warn('MySQL Update Claim notice:', dbErr.message);
-  }
-  return res.json({
-    success: true,
-    id,
-    claimStatus: newStatus,
-    message: `Claim ${id} status updated to ${newStatus} via API in database`,
-    timestamp: new Date().toISOString()
-  });
-});
 
 // Settings GET & POST endpoints from MySQL Database
 app.get('/api/v1/settings', async (req, res) => {
@@ -973,56 +840,14 @@ app.post('/api/v1/settings/commissions', async (req, res) => {
   }
 });
 
-// Generic Fallback Handlers for GET, POST, PUT, DELETE on ANY module
-app.get('/api/v1/:module', async (req, res) => {
-  const { module } = req.params;
-  try {
-    return res.json({
-      success: true,
-      module,
-      data: [],
-      message: `API Response for GET /api/v1/${module}`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-  }
-});
-
-app.post('/api/v1/:module', async (req, res) => {
-  const { module } = req.params;
-  console.log(`📡 API Call [POST /api/v1/${module}]:`, req.body);
-  return res.status(201).json({
-    success: true,
-    module,
-    data: req.body,
-    message: `Record created in ${module} via API`,
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.put('/api/v1/:module/:id', async (req, res) => {
-  const { module, id } = req.params;
-  console.log(`📡 API Call [PUT /api/v1/${module}/${id}]:`, req.body);
-  return res.json({
-    success: true,
-    module,
-    id,
-    data: req.body,
-    message: `Record ${id} in ${module} updated via API`,
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.delete('/api/v1/:module/:id', async (req, res) => {
-  const { module, id } = req.params;
-  console.log(`📡 API Call [DELETE /api/v1/${module}/${id}]`);
-  return res.json({
-    success: true,
-    module,
-    id,
-    message: `Record ${id} in ${module} deleted via API`,
-    timestamp: new Date().toISOString()
+// 404 Handler for undefined API routes
+app.all('/api/v1/*', (req, res) => {
+  return res.status(404).json({
+    success: false,
+    error: {
+      code: 'ROUTE_NOT_FOUND',
+      message: `API endpoint ${req.method} ${req.path} not found`
+    }
   });
 });
 
