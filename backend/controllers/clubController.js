@@ -132,9 +132,10 @@ const updateClub = async (req, res) => {
          SET name = COALESCE(?, name),
              city = COALESCE(?, city),
              state = COALESCE(?, state),
-             zip = COALESCE(?, zip)
+             zip = COALESCE(?, zip),
+             adminName = COALESCE(?, adminName)
          WHERE id = ?`,
-        [name, city, state, zip, id]
+        [name, city, state, zip, adminName, id]
       );
     } catch (dbErr) {
       console.warn('MySQL LocalClub update fallback warning:', dbErr.message);

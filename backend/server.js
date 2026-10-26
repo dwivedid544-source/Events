@@ -797,6 +797,8 @@ app.put('/api/v1/orders/:id/payout', async (req, res) => {
     message: `Order #${id} payout status updated via API`,
     timestamp: new Date().toISOString()
   });
+});
+
 // Club Claims API Endpoints (GET, POST, PUT)
 app.get('/api/v1/club-claims', async (req, res) => {
   try {

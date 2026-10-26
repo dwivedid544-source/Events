@@ -1,5 +1,6 @@
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, Outlet } from 'react-router-dom';
+import { ProtectedRoute } from '../components/common/ProtectedRoute';
 
 // Layouts
 import { PublicLayout } from '../layouts/PublicLayout';
@@ -140,94 +141,106 @@ export const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
       </Route>
 
-      {/* Authenticated Dashboard Experience (6 Roles, 70 Sidebar Entries) */}
-      <Route element={<DashboardLayout />}>
-        {/* Role 1: Member Portal (7 entries) */}
-        <Route path="/member" element={<MemberDashboard />} />
-        <Route path="/member/memberships" element={<MemberMemberships />} />
-        <Route path="/member/events" element={<MemberEvents />} />
-        <Route path="/member/entries" element={<MemberEntries />} />
-        <Route path="/member/orders" element={<MemberOrders />} />
-        <Route path="/member/dogs" element={<MemberDogs />} />
-        <Route path="/member/profile" element={<MemberProfile />} />
+      {/* Authenticated Dashboard Experience (Guarded by ProtectedRoute) */}
+      <Route element={<ProtectedRoute><DashboardLayout /></ProtectedRoute>}>
+        {/* Role 1: Member Portal (Accessible to all authenticated members) */}
+        <Route element={<ProtectedRoute allowedRoles={['MEMBER', 'CLUB_ADMIN', 'STATE_ADMIN', 'EVENT_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/member" element={<MemberDashboard />} />
+          <Route path="/member/memberships" element={<MemberMemberships />} />
+          <Route path="/member/events" element={<MemberEvents />} />
+          <Route path="/member/entries" element={<MemberEntries />} />
+          <Route path="/member/orders" element={<MemberOrders />} />
+          <Route path="/member/dogs" element={<MemberDogs />} />
+          <Route path="/member/profile" element={<MemberProfile />} />
+        </Route>
 
-        {/* Role 2: Club Admin Portal (13 entries) */}
-        <Route path="/club-admin" element={<ClubAdminDashboard />} />
-        <Route path="/club-admin/members" element={<ClubAdminMembers />} />
-        <Route path="/club-admin/events" element={<ClubAdminEvents />} />
-        <Route path="/club-admin/entries" element={<ClubAdminEntries />} />
-        <Route path="/club-admin/results" element={<ClubAdminResults />} />
-        <Route path="/club-admin/news" element={<NewsManagementPage />} />
-        <Route path="/club-admin/store" element={<ClubAdminStorePage />} />
-        <Route path="/club-admin/finance" element={<ClubAdminFinance />} />
-        <Route path="/club-admin/announcements" element={<AnnouncementsPage defaultScope="Club" />} />
-        <Route path="/club-admin/club-page" element={<ClubAdminClubPage />} />
-        <Route path="/club-admin/officers" element={<OfficersPage />} />
-        <Route path="/club-admin/sponsors" element={<PublicSponsorsPage />} />
-        <Route path="/club-admin/settings" element={<SettingsPage scopeTitle="Club Administration Settings" />} />
+        {/* Role 2: Club Admin Portal (Restricted to CLUB_ADMIN, NATIONAL_ADMIN, SUPER_ADMIN) */}
+        <Route element={<ProtectedRoute allowedRoles={['CLUB_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/club-admin" element={<ClubAdminDashboard />} />
+          <Route path="/club-admin/members" element={<ClubAdminMembers />} />
+          <Route path="/club-admin/events" element={<ClubAdminEvents />} />
+          <Route path="/club-admin/entries" element={<ClubAdminEntries />} />
+          <Route path="/club-admin/results" element={<ClubAdminResults />} />
+          <Route path="/club-admin/news" element={<NewsManagementPage />} />
+          <Route path="/club-admin/store" element={<ClubAdminStorePage />} />
+          <Route path="/club-admin/finance" element={<ClubAdminFinance />} />
+          <Route path="/club-admin/announcements" element={<AnnouncementsPage defaultScope="Club" />} />
+          <Route path="/club-admin/club-page" element={<ClubAdminClubPage />} />
+          <Route path="/club-admin/officers" element={<OfficersPage />} />
+          <Route path="/club-admin/sponsors" element={<PublicSponsorsPage />} />
+          <Route path="/club-admin/settings" element={<SettingsPage scopeTitle="Club Administration Settings" />} />
+        </Route>
 
-        {/* Role 3: State Admin Portal (12 entries) */}
-        <Route path="/state-admin" element={<StateAdminDashboard />} />
-        <Route path="/state-admin/membership" element={<StateMembershipPage />} />
-        <Route path="/state-admin/clubs" element={<StateAdminClubs />} />
-        <Route path="/state-admin/events" element={<ClubAdminEvents />} />
-        <Route path="/state-admin/entries" element={<ClubAdminEntries />} />
-        <Route path="/state-admin/results" element={<PublicResultsPage />} />
-        <Route path="/state-admin/news" element={<NewsManagementPage />} />
-        <Route path="/state-admin/store" element={<StateAdminStorePage />} />
-        <Route path="/state-admin/revenue" element={<ClubAdminFinance />} />
-        <Route path="/state-admin/reports" element={<ReportsAnalyticsPage scopeTitle="State Association Performance Reports" />} />
-        <Route path="/state-admin/state-page" element={<CmsEditorPage pageTitle="Public State Association Page CMS" />} />
-        <Route path="/state-admin/settings" element={<SettingsPage scopeTitle="State Association Charter Settings" />} />
+        {/* Role 3: State Admin Portal (Restricted to STATE_ADMIN, NATIONAL_ADMIN, SUPER_ADMIN) */}
+        <Route element={<ProtectedRoute allowedRoles={['STATE_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/state-admin" element={<StateAdminDashboard />} />
+          <Route path="/state-admin/membership" element={<StateMembershipPage />} />
+          <Route path="/state-admin/clubs" element={<StateAdminClubs />} />
+          <Route path="/state-admin/events" element={<ClubAdminEvents />} />
+          <Route path="/state-admin/entries" element={<ClubAdminEntries />} />
+          <Route path="/state-admin/results" element={<PublicResultsPage />} />
+          <Route path="/state-admin/news" element={<NewsManagementPage />} />
+          <Route path="/state-admin/store" element={<StateAdminStorePage />} />
+          <Route path="/state-admin/revenue" element={<ClubAdminFinance />} />
+          <Route path="/state-admin/reports" element={<ReportsAnalyticsPage scopeTitle="State Association Performance Reports" />} />
+          <Route path="/state-admin/state-page" element={<CmsEditorPage pageTitle="Public State Association Page CMS" />} />
+          <Route path="/state-admin/settings" element={<SettingsPage scopeTitle="State Association Charter Settings" />} />
+        </Route>
 
-        {/* Role 4: Event Admin Portal (8 entries) */}
-        <Route path="/event-admin" element={<EventAdminDashboard />} />
-        <Route path="/event-admin/details" element={<EventDetailsConfigPage />} />
-        <Route path="/event-admin/entries" element={<EventAdminEntries />} />
-        <Route path="/event-admin/participants" element={<EventAdminParticipants />} />
-        <Route path="/event-admin/attendance" element={<EventAdminAttendance />} />
-        <Route path="/event-admin/results" element={<ClubAdminResults />} />
-        <Route path="/event-admin/payments" element={<EventPaymentsPage />} />
-        <Route path="/event-admin/announcements" element={<AnnouncementsPage defaultScope="Event" />} />
+        {/* Role 4: Event Admin Portal (Restricted to EVENT_ADMIN, CLUB_ADMIN, STATE_ADMIN, NATIONAL_ADMIN, SUPER_ADMIN) */}
+        <Route element={<ProtectedRoute allowedRoles={['EVENT_ADMIN', 'CLUB_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/event-admin" element={<EventAdminDashboard />} />
+          <Route path="/event-admin/details" element={<EventDetailsConfigPage />} />
+          <Route path="/event-admin/entries" element={<EventAdminEntries />} />
+          <Route path="/event-admin/participants" element={<EventAdminParticipants />} />
+          <Route path="/event-admin/attendance" element={<EventAdminAttendance />} />
+          <Route path="/event-admin/results" element={<ClubAdminResults />} />
+          <Route path="/event-admin/payments" element={<EventPaymentsPage />} />
+          <Route path="/event-admin/announcements" element={<AnnouncementsPage defaultScope="Event" />} />
+        </Route>
 
-        {/* Role 5: National Admin Portal (13 entries) */}
-        <Route path="/national-admin" element={<NationalAdminDashboard />} />
-        <Route path="/national-admin/events" element={<ClubAdminEvents />} />
-        <Route path="/national-admin/states" element={<NationalAdminStates />} />
-        <Route path="/national-admin/clubs" element={<NationalAdminClubs />} />
-        <Route path="/national-admin/members" element={<ClubAdminMembers />} />
-        <Route path="/national-admin/news" element={<NewsManagementPage />} />
-        <Route path="/national-admin/results" element={<PublicResultsPage />} />
-        <Route path="/national-admin/store" element={<NationalAdminStorePage />} />
-        <Route path="/national-admin/sponsors" element={<PublicSponsorsPage />} />
-        <Route path="/national-admin/revenue" element={<ClubAdminFinance />} />
-        <Route path="/national-admin/commissions" element={<CommissionsGovernancePage />} />
-        <Route path="/national-admin/vendors" element={<VendorManagementPage />} />
-        <Route path="/national-admin/analytics" element={<AnalyticsReportsPage />} />
-        <Route path="/national-admin/reports" element={<AnalyticsReportsPage />} />
-        <Route path="/national-admin/website" element={<CmsEditorPage pageTitle="National Network Website CMS" />} />
-        <Route path="/national-admin/settings" element={<SettingsPage scopeTitle="National Association Settings" />} />
+        {/* Role 5: National Admin Portal (Restricted to NATIONAL_ADMIN, SUPER_ADMIN) */}
+        <Route element={<ProtectedRoute allowedRoles={['NATIONAL_ADMIN', 'SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/national-admin" element={<NationalAdminDashboard />} />
+          <Route path="/national-admin/events" element={<ClubAdminEvents />} />
+          <Route path="/national-admin/states" element={<NationalAdminStates />} />
+          <Route path="/national-admin/clubs" element={<NationalAdminClubs />} />
+          <Route path="/national-admin/members" element={<ClubAdminMembers />} />
+          <Route path="/national-admin/news" element={<NewsManagementPage />} />
+          <Route path="/national-admin/results" element={<PublicResultsPage />} />
+          <Route path="/national-admin/store" element={<NationalAdminStorePage />} />
+          <Route path="/national-admin/sponsors" element={<PublicSponsorsPage />} />
+          <Route path="/national-admin/revenue" element={<ClubAdminFinance />} />
+          <Route path="/national-admin/commissions" element={<CommissionsGovernancePage />} />
+          <Route path="/national-admin/vendors" element={<VendorManagementPage />} />
+          <Route path="/national-admin/analytics" element={<AnalyticsReportsPage />} />
+          <Route path="/national-admin/reports" element={<AnalyticsReportsPage />} />
+          <Route path="/national-admin/website" element={<CmsEditorPage pageTitle="National Network Website CMS" />} />
+          <Route path="/national-admin/settings" element={<SettingsPage scopeTitle="National Association Settings" />} />
+        </Route>
 
-        {/* Role 6: Super Admin Portal (17 entries) */}
-        <Route path="/super-admin" element={<SuperAdminDashboard />} />
-        <Route path="/super-admin/national" element={<NationalHeadquartersSettings />} />
-        <Route path="/super-admin/states" element={<PublicStatePage />} />
-        <Route path="/super-admin/clubs" element={<StateAdminClubs />} />
-        <Route path="/super-admin/club-claims" element={<SuperAdminClubClaims />} />
-        <Route path="/super-admin/events" element={<ClubAdminEvents />} />
-        <Route path="/super-admin/members" element={<ClubAdminMembers />} />
-        <Route path="/super-admin/store" element={<NationalAdminStorePage />} />
-        <Route path="/super-admin/orders" element={<MemberOrders />} />
-        <Route path="/super-admin/transactions" element={<TransactionsLedgerPage />} />
-        <Route path="/super-admin/revenue" element={<ClubAdminFinance />} />
-        <Route path="/super-admin/commissions" element={<CommissionsGovernancePage />} />
-        <Route path="/super-admin/vendors" element={<VendorManagementPage />} />
-        <Route path="/super-admin/analytics" element={<AnalyticsReportsPage />} />
-        <Route path="/super-admin/sponsors" element={<PublicSponsorsPage />} />
-        <Route path="/super-admin/reports" element={<AnalyticsReportsPage />} />
-        <Route path="/super-admin/users-roles" element={<UsersRolesPage />} />
-        <Route path="/super-admin/permissions" element={<SuperAdminPermissions />} />
-        <Route path="/super-admin/settings" element={<SettingsPage scopeTitle="Super Admin Platform Infrastructure Settings" />} />
+        {/* Role 6: Super Admin Portal (Restricted exclusively to SUPER_ADMIN) */}
+        <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
+          <Route path="/super-admin" element={<SuperAdminDashboard />} />
+          <Route path="/super-admin/national" element={<NationalHeadquartersSettings />} />
+          <Route path="/super-admin/states" element={<PublicStatePage />} />
+          <Route path="/super-admin/clubs" element={<StateAdminClubs />} />
+          <Route path="/super-admin/club-claims" element={<SuperAdminClubClaims />} />
+          <Route path="/super-admin/events" element={<ClubAdminEvents />} />
+          <Route path="/super-admin/members" element={<ClubAdminMembers />} />
+          <Route path="/super-admin/store" element={<NationalAdminStorePage />} />
+          <Route path="/super-admin/orders" element={<MemberOrders />} />
+          <Route path="/super-admin/transactions" element={<TransactionsLedgerPage />} />
+          <Route path="/super-admin/revenue" element={<ClubAdminFinance />} />
+          <Route path="/super-admin/commissions" element={<CommissionsGovernancePage />} />
+          <Route path="/super-admin/vendors" element={<VendorManagementPage />} />
+          <Route path="/super-admin/analytics" element={<AnalyticsReportsPage />} />
+          <Route path="/super-admin/sponsors" element={<PublicSponsorsPage />} />
+          <Route path="/super-admin/reports" element={<AnalyticsReportsPage />} />
+          <Route path="/super-admin/users-roles" element={<UsersRolesPage />} />
+          <Route path="/super-admin/permissions" element={<SuperAdminPermissions />} />
+          <Route path="/super-admin/settings" element={<SettingsPage scopeTitle="Super Admin Platform Infrastructure Settings" />} />
+        </Route>
       </Route>
 
       {/* Catch-all Fallback */}

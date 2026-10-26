@@ -2,6 +2,13 @@ import { API_BASE_URL } from '../config';
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
+  apiClient,
+  getAuthToken,
+  setAuthToken,
+  clearAuthSession,
+  AUTH_EXPIRED_EVENT
+} from '../utils/apiClient';
+import {
   INITIAL_USERS,
   INITIAL_MEMBERS,
   INITIAL_STATES,
@@ -30,29 +37,63 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const location = useLocation();
-  // Current user & role state
-  const [currentUser, setCurrentUser] = useState(() => {
-    const saved = localStorage.getItem('nh_currentUser');
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      if (parsed.name === 'John Walker' || parsed.email === 'pancholelalit52@gmail.com') {
-        return INITIAL_USERS[0];
-      }
-      return parsed;
-    }
-    return INITIAL_USERS[0];
-  });
 
-  // Sync currentUser with localStorage
+  // Current user & verified session state
+  const [currentUser, setCurrentUser] = useState(null);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Validate existing token with real backend on mount
   useEffect(() => {
-    if (currentUser) {
-      try {
-        localStorage.setItem('nh_currentUser', JSON.stringify(currentUser));
-      } catch (e) {
-        // ignore
+    let isMounted = true;
+    const verifySession = async () => {
+      const token = getAuthToken();
+      if (!token) {
+        if (isMounted) {
+          setCurrentUser(null);
+          setAuthLoading(false);
+        }
+        return;
       }
-    }
-  }, [currentUser]);
+      try {
+        const res = await apiClient.get('/auth/me');
+        if (isMounted) {
+          if (res?.success && (res.data || res.user)) {
+            const userData = res.data || res.user;
+            setCurrentUser(userData);
+          } else {
+            clearAuthSession();
+            setCurrentUser(null);
+          }
+        }
+      } catch (err) {
+        console.warn('Session verification notice:', err.message);
+        if (isMounted) {
+          clearAuthSession();
+          setCurrentUser(null);
+        }
+      } finally {
+        if (isMounted) {
+          setAuthLoading(false);
+        }
+      }
+    };
+
+    verifySession();
+
+    // Listen for auth expiration events dispatched by apiClient
+    const handleAuthExpired = () => {
+      if (isMounted) {
+        clearAuthSession();
+        setCurrentUser(null);
+      }
+    };
+    window.addEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener(AUTH_EXPIRED_EVENT, handleAuthExpired);
+    };
+  }, []);
 
   const [backendConnected, setBackendConnected] = useState(false);
   const [states, setStates] = useState(INITIAL_STATES);
@@ -1009,95 +1050,51 @@ export const AppProvider = ({ children }) => {
     showToast(`Activated ${newRecord.tier}: ${newRecord.scopeName}`, 'success');
   };
 
-  // Role Switcher
+  // Role Switcher - disabled in production flow to prevent unauthorized impersonation
   const switchRole = (roleKey) => {
-    const foundUser = users.find((u) => u.role === roleKey);
-    if (foundUser) {
-      setCurrentUser(foundUser);
-      showToast(`Switched role to ${foundUser.role.replace('_', ' ')} (${foundUser.scope})`, 'info');
-    }
+    console.warn(`[Security Notice] Client-side role switching is disabled. Access is determined by authenticated credentials (${currentUser?.role || 'Unauthenticated'}).`);
+    showToast('Role switching is disabled. User access is determined by verified authentication.', 'warning');
   };
 
-  // REAL AUTH LOGIN ACTION USING EXPRESS BACKEND REST API & MYSQL DATABASE `club`
+  // Real authentication login action using backend REST API & JWT
   const loginUser = async (email, password) => {
     const cleanEmail = String(email || '').trim().toLowerCase();
 
     try {
-      // 1. Real HTTP API Call to Backend Server (Visible in DevTools Network Tab)
-      const res = await fetch(`${API_BASE_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: cleanEmail, password: password || 'Password123!' })
+      const res = await apiClient.post('/auth/login', {
+        email: cleanEmail,
+        password: password || ''
       });
 
-      const data = await res.json();
-      if (data.success && data.data && data.data.token) {
-        localStorage.setItem('nh_token', data.data.token);
-        console.log('✅ Real Auth Login API Success (DevTools Network):', data);
+      if (res?.success && res.data?.token) {
+        setAuthToken(res.data.token);
+        const authedUser = res.data.user;
+        setCurrentUser(authedUser);
+        showToast(`Welcome back, ${authedUser.name || authedUser.email}!`, 'success');
+        return { success: true, user: authedUser };
+      } else {
+        const errorMsg = res?.error?.message || 'Login failed. Please verify your credentials.';
+        showToast(errorMsg, 'error');
+        throw new Error(errorMsg);
       }
     } catch (err) {
-      console.warn('Backend Login API Call failed or fallback:', err.message);
+      console.error('Backend Login API error:', err.message);
+      showToast(err.message || 'Login failed', 'error');
+      throw err;
     }
-
-    // Find existing user in state or create session
-    let found = users.find((u) => u.email && u.email.toLowerCase() === cleanEmail);
-
-    if (!found) {
-      const member = members.find((m) => m.email && m.email.toLowerCase() === cleanEmail);
-
-      let displayName = 'Lalit Panchole';
-      if (cleanEmail.includes('lalit') || cleanEmail.includes('panchole')) {
-        displayName = 'Lalit Panchole';
-      } else if (cleanEmail.includes('@')) {
-        const parts = cleanEmail.split('@')[0].split('.');
-        displayName = parts.map((p) => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
-      }
-
-      found = {
-        id: member ? member.id : `usr-${Date.now()}`,
-        name: member ? member.name : displayName,
-        email: cleanEmail,
-        role: 'MEMBER',
-        scope: member ? `${member.club} (${member.state})` : 'Oak Ridge Hunting Club (Tennessee)',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-        membershipId: member ? member.membershipId : `TN-ORHC-2026-${Math.floor(10000 + Math.random() * 90000)}`,
-        club: member ? member.club : 'Oak Ridge Hunting Club',
-        state: member ? member.state : 'Tennessee'
-      };
-
-      setUsers((prev) => [found, ...prev]);
-
-      if (!member) {
-        const newMemberRecord = {
-          id: found.id,
-          name: found.name,
-          membershipId: found.membershipId,
-          club: found.club,
-          state: found.state,
-          type: 'Individual Membership',
-          status: 'Active',
-          joined: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-          expires: 'Sep 18, 2027',
-          phone: '(865) 555-0192',
-          email: cleanEmail
-        };
-        setMembers((prev) => [newMemberRecord, ...prev]);
-      }
-    }
-
-    setCurrentUser(found);
-    showToast(`Welcome back, ${found.name}! Logged in via Backend API.`, 'success');
-    return found;
   };
 
-  // 1. Membership Join Flow Action
+  const logoutUser = () => {
+    clearAuthSession();
+    setCurrentUser(null);
+    showToast('Signed out successfully.', 'info');
+  };
+
+  // 1. Membership Join Flow Action - Honest states, no false simulation
   const registerMembership = async (formData) => {
-    const newId = `TN-ORHC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
     const fullName = formData.name || `${formData.firstName || 'Member'} ${formData.lastName || 'Customer'}`.trim();
     const cleanEmail = String(formData.email || '').trim().toLowerCase();
-
-    const txnId = `TXN-CLV-${Date.now().toString().slice(-8)}`;
-    const merchantId = '526695041883';
+    const newId = `TN-ORHC-2026-${Math.floor(10000 + Math.random() * 90000)}`;
 
     const newMember = {
       id: `mem-${Date.now()}`,
@@ -1106,72 +1103,29 @@ export const AppProvider = ({ children }) => {
       club: formData.selectedClub || formData.clubName || formData.club || 'Oak Ridge Hunting Club',
       state: formData.selectedState || formData.stateName || formData.state || 'Tennessee',
       type: formData.membershipType || 'Individual Membership',
-      status: 'Active',
+      status: 'Pending Payment Verification',
       joined: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
       expires: 'Sep 18, 2027',
-      phone: formData.phone || '(865) 555-0192',
+      phone: formData.phone || '',
       email: cleanEmail,
-      merchantId,
-      cloverMerchantId: merchantId,
-      transactionId: txnId,
-      paymentStatus: 'Paid',
+      paymentStatus: 'Pending Gateway Processing',
       paymentGateway: 'Clover'
     };
 
-    const newUser = {
-      id: newMember.id,
-      name: fullName,
-      email: cleanEmail,
-      role: 'MEMBER',
-      scope: `${newMember.club} (${newMember.state})`,
-      avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
-      membershipId: newId,
-      club: newMember.club,
-      state: newMember.state
-    };
-
-    setMembers((prev) => [newMember, ...prev]);
-    setUsers((prev) => [newUser, ...prev]);
-
     try {
-      await fetch(`${API_BASE_URL}/members`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newMember)
-      });
-      console.log(`📡 API Call Success: POST ${API_BASE_URL}/members`);
-
-      // Record Clover Payment Settlement with Live Card Fields
-      const cardDigits = formData.cardData?.number ? formData.cardData.number.replace(/\s/g, '').slice(-4) : '3401';
-      const payerName = formData.cardData?.name || fullName;
-      const chargeRes = await fetch(`${API_BASE_URL}/payments/charge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: formData.price ? formData.price + 2 : 47.00,
-          customerName: payerName,
-          email: cleanEmail,
-          category: 'MEMBERSHIP',
-          description: `Annual Membership (${newMember.type}) - ${newMember.club}`,
-          stateId: newMember.state,
-          cardLast4: cardDigits,
-          cardExpiry: formData.cardData?.expiry || '08/28',
-          billingZip: formData.cardData?.zip || '77001'
-        })
-      });
-      const chargeJson = await chargeRes.json();
-      if (chargeJson?.success && chargeJson.transactionId) {
-        newMember.transactionId = chargeJson.transactionId;
-        newMember.merchantId = chargeJson.merchantId || merchantId;
-        newMember.cloverMerchantId = chargeJson.merchantId || merchantId;
+      const memberRes = await apiClient.post('/members', newMember);
+      if (memberRes?.success) {
+        setMembers((prev) => [newMember, ...prev]);
+        showToast(`Membership application registered for ${fullName}! Note: Payment verification pending with payment processor.`, 'info');
+        return newMember;
+      } else {
+        throw new Error(memberRes?.error?.message || 'Server rejected membership registration');
       }
-      console.log('💳 Clover Settlement Success for Membership');
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('Membership registration error:', err);
+      showToast(`Membership registration error: ${err.message}`, 'error');
+      throw err;
     }
-
-    showToast(`Membership activated for ${fullName}! ID: ${newId}`, 'success');
-    return newMember;
   };
 
   // State Membership Sign-Up Flow Action
@@ -1734,47 +1688,56 @@ export const AppProvider = ({ children }) => {
     }
 
     try {
-      await fetch(`${API_BASE_URL}/club-claims/${claimId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ claimStatus: newStatus })
-      });
-      console.log(`📡 API Call Success: PUT /api/v1/club-claims/${claimId}`);
+      const res = await apiClient.put(`/club-claims/${claimId}`, { claimStatus: newStatus });
+      if (res?.success) {
+        setClaims((prev) =>
+          prev.map((c) =>
+            c.id === claimId
+              ? {
+                  ...c,
+                  claimStatus: newStatus,
+                  status: newStatus,
+                  verificationStatus: newStatus === 'Approved' ? 'Verified Official' : 'Rejected'
+                }
+              : c
+          )
+        );
+        showToast(`Claim #${claimId} status updated to: ${newStatus}`, 'success');
+        return { success: true };
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected claim status change');
+      }
     } catch (err) {
-      console.warn('API Call Warning:', err.message);
+      console.error(`Failed updating claim #${claimId}:`, err);
+      showToast(`Could not update claim status: ${err.message}`, 'error');
+      throw err;
     }
-
-    showToast(`Claim #${claimId} status updated to: ${newStatus}`, 'success');
   };
 
   const submitClaimRequest = async (claimData) => {
-    const newClaim = {
-      id: `CLM-${Math.floor(100 + Math.random() * 900)}`,
-      claimStatus: 'Pending',
-      status: 'Pending',
-      submittedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-      verificationStatus: 'Pending Review',
-      ...claimData
-    };
-    setClaims((prev) => {
-      const next = [newClaim, ...prev];
-      localStorage.setItem('nh_claims', JSON.stringify(next));
-      return next;
-    });
-
     try {
-      await fetch(`${API_BASE_URL}/club-claims`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newClaim)
-      });
-      console.log('📡 API Call Success: POST /api/v1/club-claims');
-    } catch (err) {
-      console.warn('API Call Warning:', err.message);
-    }
+      const payload = {
+        claimStatus: 'Pending',
+        status: 'Pending',
+        submittedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
+        verificationStatus: 'Pending Review',
+        ...claimData
+      };
 
-    showToast(`Claim request for "${claimData.club || claimData.state}" submitted successfully! Review pending in Super Admin portal.`, 'success');
-    return newClaim;
+      const res = await apiClient.post('/club-claims', payload);
+      if (res?.success && res.data) {
+        const confirmedClaim = res.data;
+        setClaims((prev) => [confirmedClaim, ...prev.filter((c) => c.id !== confirmedClaim.id)]);
+        showToast(`Claim request for "${claimData.club || claimData.state}" submitted successfully! Review pending in Super Admin portal.`, 'success');
+        return confirmedClaim;
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected claim submission');
+      }
+    } catch (err) {
+      console.error('Claim submission error:', err);
+      showToast(`Claim submission failed: ${err.message}`, 'error');
+      throw err;
+    }
   };
 
   const addResult = async (resultData) => {
@@ -2518,6 +2481,8 @@ export const AppProvider = ({ children }) => {
       value={{
         currentUser,
         setCurrentUser,
+        authLoading,
+        logoutUser,
         users,
         setUsers,
         members,
