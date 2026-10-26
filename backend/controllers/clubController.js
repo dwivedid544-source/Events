@@ -92,16 +92,41 @@ const pledgeClubDonation = async (req, res) => {
 };
 
 const createClaimRequest = async (req, res) => {
-  try {
-    const { club, state, applicant, email, phone, message } = req.body;
-    const claimId = `clm-${Date.now()}`;
+  const claimController = require('./claimController');
+  return claimController.createClaim(req, res);
+};
 
+const createClub = async (req, res) => {
+  try {
+    const data = req.body;
+    const id = data.id || `club-${Date.now()}`;
+    const name = data.name || 'New Local Hunting Club';
+    const city = data.city || '';
+    const county = data.county || '';
+    const state = data.state || 'Hawaii';
+    const stateCode = (data.stateCode || (state === 'Hawaii' ? 'HI' : 'TN')).toUpperCase();
+    const stateId = (data.stateId || stateCode.toLowerCase());
+    const zip = data.zip || '';
+    const distanceMiles = Number(data.distanceMiles) || 15;
+    const dogType = data.dogType || 'Treeing Walker Coonhound';
+    const federation = data.federation || 'UKC (United Kennel Club)';
+    const eventType = data.eventType || 'Nite Hunt';
+    const adminName = data.adminName || req.user?.name || '';
+
+    await db.query(
+      `INSERT INTO \`LocalClub\` (id, name, city, county, state, stateCode, stateId, zip, distanceMiles, dogType, federation, eventType, adminName)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [id, name, city, county, state, stateCode, stateId, zip, distanceMiles, dogType, federation, eventType, adminName]
+    );
+
+    const [rows] = await db.query('SELECT * FROM `LocalClub` WHERE id = ?', [id]);
     return res.status(201).json({
       success: true,
-      data: { id: claimId, club, state, applicant, status: 'Pending' },
-      message: 'Claim request saved to database `club`'
+      data: rows[0] || { id, name, city, state, stateCode },
+      message: `Club "${name}" created successfully in MySQL database \`club\``
     });
   } catch (err) {
+    console.error('[Create Club Error]:', err.message);
     return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
   }
 };
@@ -114,39 +139,42 @@ const updateClub = async (req, res) => {
       city,
       state,
       zip,
-      description,
-      address,
-      phone,
-      email,
-      adminName,
-      heroTitle,
-      heroSubtitle,
-      announcementBanner
+      county,
+      dogType,
+      federation,
+      eventType,
+      adminName
     } = req.body;
 
     console.log(`📡 [API Call]: PUT /api/v1/clubs/${id} - Updating club data for: ${name || id}`);
 
-    try {
-      await db.query(
-        `UPDATE \`LocalClub\`
-         SET name = COALESCE(?, name),
-             city = COALESCE(?, city),
-             state = COALESCE(?, state),
-             zip = COALESCE(?, zip)
-         WHERE id = ?`,
-        [name, city, state, zip, id]
-      );
-    } catch (dbErr) {
-      console.warn('MySQL LocalClub update fallback warning:', dbErr.message);
+    await db.query(
+      `UPDATE \`LocalClub\`
+       SET name = COALESCE(?, name),
+           city = COALESCE(?, city),
+           state = COALESCE(?, state),
+           zip = COALESCE(?, zip),
+           county = COALESCE(?, county),
+           dogType = COALESCE(?, dogType),
+           federation = COALESCE(?, federation),
+           eventType = COALESCE(?, eventType),
+           adminName = COALESCE(?, adminName)
+       WHERE id = ?`,
+      [name, city, state, zip, county, dogType, federation, eventType, adminName, id]
+    );
+
+    const [rows] = await db.query('SELECT * FROM `LocalClub` WHERE id = ?', [id]);
+    if (rows.length === 0) {
+      return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'Club not found' } });
     }
 
     return res.json({
       success: true,
-      message: `Club ${name || id} details updated successfully`,
-      data: { id, ...req.body, updatedAt: new Date().toISOString() }
+      message: `Club ${rows[0].name} details updated successfully`,
+      data: { ...rows[0], updatedAt: new Date().toISOString() }
     });
   } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
   }
 };
 
@@ -155,5 +183,7 @@ module.exports = {
   getClubById,
   pledgeClubDonation,
   createClaimRequest,
+  createClub,
   updateClub
 };
+
