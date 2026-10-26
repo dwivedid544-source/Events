@@ -20,6 +20,6 @@ const optionalAuth = (req, res, next) => {
 
 router.get('/', optionalAuth, memberController.getMembers);
 router.post('/', memberController.createMember);
-router.put('/:id/status', memberController.updateMemberStatus);
+router.put('/:id/status', verifyToken, memberController.updateMemberStatus);
 
 module.exports = router;

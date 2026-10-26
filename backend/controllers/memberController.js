@@ -109,7 +109,64 @@ const updateMemberStatus = async (req, res) => {
   try {
     const { id } = req.params;
     const { status } = req.body;
-    console.log(`📡 [Member Controller] Updating member ${id} status to ${status}`);
+
+    // 1. Authentication check
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required to update member status' }
+      });
+    }
+
+    // 2. Privilege check: Members cannot activate or update memberships
+    if (req.user.role === 'MEMBER') {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'Members are not permitted to manage or activate memberships' }
+      });
+    }
+
+    // 3. Status validation
+    const allowedStatuses = ['Active', 'Pending Payment Verification', 'Suspended', 'Expired'];
+    if (!status || !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_STATUS', message: `Status must be one of: ${allowedStatuses.join(', ')}` }
+      });
+    }
+
+    // 4. Fetch target member to enforce scope
+    const [existingRows] = await db.query('SELECT * FROM `Member` WHERE id = ?', [id]);
+    const targetMember = existingRows[0];
+    if (!targetMember) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'MEMBER_NOT_FOUND', message: 'Member not found' }
+      });
+    }
+
+    // 5. Scope enforcement
+    if (req.user.role === 'STATE_ADMIN') {
+      const userState = (req.user.stateCode || req.user.state || '').toLowerCase();
+      const memberState = (targetMember.state || '').toLowerCase();
+      if (!userState || (!memberState.includes(userState) && !userState.includes(memberState))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to manage members outside your state charter' }
+        });
+      }
+    } else if (req.user.role === 'CLUB_ADMIN') {
+      const userClub = (req.user.club || req.user.clubId || '').toLowerCase();
+      const memberClub = (targetMember.club || '').toLowerCase();
+      if (!userClub || (!memberClub.includes(userClub) && !userClub.includes(memberClub))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to manage members outside your assigned club' }
+        });
+      }
+    }
+
+    console.log(`📡 [Member Controller] Updating member ${id} status to ${status} by ${req.user.role} (${req.user.email})`);
 
     try {
       await db.query('UPDATE `Member` SET `status` = ? WHERE `id` = ?', [status, id]);

@@ -2,12 +2,16 @@ const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/eventController');
 
+const { verifyToken, requireRole } = require('../middlewares/authMiddleware');
+
+const ADMIN_ROLES = ['SUPER_ADMIN', 'NATIONAL_ADMIN', 'EVENT_ADMIN', 'CLUB_ADMIN'];
+
 router.get('/', eventController.getEvents);
 router.get('/entries', eventController.getEntries);
 router.get('/:id', eventController.getEventById);
-router.post('/', eventController.createEvent);
-router.put('/:id', eventController.updateEvent);
-router.delete('/:id', eventController.deleteEvent);
+router.post('/', verifyToken, requireRole(...ADMIN_ROLES), eventController.createEvent);
+router.put('/:id', verifyToken, requireRole(...ADMIN_ROLES), eventController.updateEvent);
+router.delete('/:id', verifyToken, requireRole(...ADMIN_ROLES), eventController.deleteEvent);
 router.post('/:id/pre-signup', eventController.preSignUpEntry);
 
 module.exports = router;
