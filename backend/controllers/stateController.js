@@ -54,8 +54,8 @@ const getStateById = async (req, res) => {
     }
 
     const state = {
-      ...rows[0],
-      organizations: typeof rows[0].organizations === 'string' ? rows[0].organizations.split(',') : (rows[0].organizations || ['UKC', 'PKC'])
+      ...stateRecord,
+      organizations: typeof stateRecord.organizations === 'string' ? stateRecord.organizations.split(',') : (stateRecord.organizations || ['UKC', 'PKC'])
     };
 
     return res.json({ success: true, data: state, message: 'State details fetched from database `club`' });
