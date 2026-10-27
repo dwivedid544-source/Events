@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useApp , API_BASE_URL} from '../../context/AppContext';
+import { useApp } from '../../context/AppContext';
+import { apiClient } from '../../utils/apiClient';
 import {
   Globe,
   User,
@@ -27,12 +28,16 @@ export const MemberDashboard = () => {
 
   // Dedicated Flow-Wise Page Load API Call to Express Backend & MySQL `club` Database
   useEffect(() => {
-    fetch(`${API_BASE_URL}/auth/profile`)
-      .then((res) => res.json())
+    apiClient
+      .get('/auth/profile')
       .then((data) => {
         console.log('📡 [Member Portal Flow API Call]:', data);
       })
-      .catch((err) => console.warn('Failed fetching member profile API:', err.message));
+      .catch((err) => {
+        if (err.status !== 401 && err.status !== 403) {
+          console.warn('Failed fetching member profile API:', err.message);
+        }
+      });
   }, []);
 
   // Active Tab state for the 12 required sections

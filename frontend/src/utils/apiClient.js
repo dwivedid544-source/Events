@@ -13,7 +13,11 @@ export const AUTH_EXPIRED_EVENT = 'uhc_auth_session_expired';
 
 export const getAuthToken = () => {
   try {
-    return localStorage.getItem('nh_token') || null;
+    const token = localStorage.getItem('nh_token');
+    if (!token || token === 'null' || token === 'undefined' || token.trim() === '') {
+      return null;
+    }
+    return token.trim();
   } catch (e) {
     return null;
   }
@@ -83,7 +87,7 @@ async function request(endpoint, options = {}) {
 
   // Handle 401 Unauthorized
   if (response.status === 401) {
-    if (isInternalApi && token && !isOffline) {
+    if (isInternalApi) {
       // Discard expired/invalid token
       clearAuthSession();
       if (typeof window !== 'undefined') {

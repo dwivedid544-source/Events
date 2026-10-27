@@ -1,7 +1,7 @@
 import React from 'react';
-import { Navigate, useLocation, Link } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
-import { ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
+import { ShieldAlert, ArrowLeft, Loader2, LogOut } from 'lucide-react';
 
 /**
  * ProtectedRoute Component
@@ -11,8 +11,9 @@ import { ShieldAlert, ArrowLeft, Loader2 } from 'lucide-react';
  * - Provides clean fallback navigation for unauthorized roles.
  */
 export const ProtectedRoute = ({ allowedRoles = [], children }) => {
-  const { currentUser, authLoading } = useApp();
+  const { currentUser, authLoading, logoutUser } = useApp();
   const location = useLocation();
+  const navigate = useNavigate();
 
   // 1. Session initialization / token verification state
   if (authLoading) {
@@ -49,6 +50,13 @@ export const ProtectedRoute = ({ allowedRoles = [], children }) => {
     };
     const userHomePath = roleHomeMap[currentUser.role] || '/member';
 
+    const handleSwitchAccount = () => {
+      if (logoutUser) {
+        logoutUser();
+      }
+      navigate('/login');
+    };
+
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-surface-lowest border border-surface-border rounded-2xl p-6 lg:p-8 shadow-ambient space-y-5 text-center">
@@ -65,6 +73,9 @@ export const ProtectedRoute = ({ allowedRoles = [], children }) => {
               </span>
               , which does not have permission to access this administrative portal.
             </p>
+            <p className="text-[11px] text-charcoal-light">
+              This section is reserved for administrative roles ({allowedRoles.join(', ')}).
+            </p>
           </div>
 
           <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
@@ -75,6 +86,15 @@ export const ProtectedRoute = ({ allowedRoles = [], children }) => {
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Return to My Dashboard</span>
             </Link>
+
+            <button
+              type="button"
+              onClick={handleSwitchAccount}
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-tan-500 hover:bg-tan-400 text-forest-950 text-xs font-bold transition-all shadow-sm cursor-pointer"
+            >
+              <LogOut className="w-3.5 h-3.5" />
+              <span>Switch Account</span>
+            </button>
           </div>
         </div>
       </div>

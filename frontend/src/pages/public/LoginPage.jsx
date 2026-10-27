@@ -38,6 +38,30 @@ export const LoginPage = () => {
     }
   }, [urlEmail]);
 
+  const isRouteAllowedForRole = (path, role) => {
+    if (!path || typeof path !== 'string') return false;
+    const cleanPath = path.toLowerCase();
+    if (cleanPath.startsWith('/super-admin')) {
+      return role === 'SUPER_ADMIN';
+    }
+    if (cleanPath.startsWith('/national-admin')) {
+      return ['NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
+    }
+    if (cleanPath.startsWith('/state-admin')) {
+      return ['STATE_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
+    }
+    if (cleanPath.startsWith('/club-admin')) {
+      return ['CLUB_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
+    }
+    if (cleanPath.startsWith('/event-admin')) {
+      return ['EVENT_ADMIN', 'CLUB_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
+    }
+    if (cleanPath.startsWith('/member')) {
+      return true;
+    }
+    return true;
+  };
+
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -46,13 +70,7 @@ export const LoginPage = () => {
     try {
       const result = await loginUser(email, password);
       if (result?.success && result.user) {
-        // If arrived via redirect, return to intended destination
-        if (targetRedirect) {
-          navigate(targetRedirect, { replace: true });
-          return;
-        }
-
-        // Navigate based on verified authenticated role
+        const userRole = result.user.role || 'MEMBER';
         const roleHomeMap = {
           SUPER_ADMIN: '/super-admin',
           NATIONAL_ADMIN: '/national-admin',
@@ -61,8 +79,16 @@ export const LoginPage = () => {
           EVENT_ADMIN: '/event-admin',
           MEMBER: '/member'
         };
-        const dest = roleHomeMap[result.user.role] || '/member';
-        navigate(dest, { replace: true });
+        const defaultDest = roleHomeMap[userRole] || '/member';
+
+        // If arrived via redirect, verify the authenticated user role has permission to access that route
+        if (targetRedirect && isRouteAllowedForRole(targetRedirect, userRole)) {
+          navigate(targetRedirect, { replace: true });
+          return;
+        }
+
+        // Navigate based on verified authenticated role
+        navigate(defaultDest, { replace: true });
       }
     } catch (err) {
       setErrorMessage(err.message || 'Authentication failed. Please verify your email and password.');

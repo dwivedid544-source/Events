@@ -6,6 +6,7 @@ import {
   getAuthToken,
   setAuthToken,
   clearAuthSession,
+  isOfflineToken,
   AUTH_EXPIRED_EVENT
 } from '../utils/apiClient';
 import {
@@ -56,7 +57,7 @@ export const AppProvider = ({ children }) => {
       }
 
       // 1. Offline Demo Session handling
-      if (token.startsWith('nh_offline_token_') || token.startsWith('nh_mock_token_')) {
+      if (isOfflineToken(token)) {
         try {
           const cached = localStorage.getItem('nh_currentUser');
           if (cached) {
@@ -70,6 +71,12 @@ export const AppProvider = ({ children }) => {
             }
           }
         } catch (_) {}
+        clearAuthSession();
+        if (isMounted) {
+          setCurrentUser(null);
+          setAuthLoading(false);
+        }
+        return;
       }
 
       // 2. Real Backend Token validation
@@ -289,7 +296,7 @@ export const AppProvider = ({ children }) => {
     const routeApiMap = {
       '/member': 'auth/profile',
       '/member/profile': 'auth/profile',
-      '/member/memberships': 'members',
+      '/member/memberships': 'auth/profile',
       '/member/events': 'events',
       '/member/entries': 'events/entries',
       '/member/orders': 'products',
@@ -606,6 +613,10 @@ export const AppProvider = ({ children }) => {
 
   // Re-synchronize orders from live backend database and merge with demo fixtures
   const refreshOrders = async () => {
+    const token = getAuthToken();
+    if (!token || isOfflineToken(token)) {
+      return orders;
+    }
     try {
       const resData = await apiClient.get('/orders');
       if (resData?.success && Array.isArray(resData.data)) {
@@ -639,7 +650,8 @@ export const AppProvider = ({ children }) => {
 
   // Synchronize role-scoped authenticated data only after user session is verified
   useEffect(() => {
-    if (!currentUser || !getAuthToken()) return;
+    const token = getAuthToken();
+    if (!currentUser || !token || isOfflineToken(token)) return;
 
     const isAdmin = ['SUPER_ADMIN', 'NATIONAL_ADMIN', 'STATE_ADMIN', 'CLUB_ADMIN', 'EVENT_ADMIN'].includes(currentUser.role);
 
@@ -666,9 +678,7 @@ export const AppProvider = ({ children }) => {
       }
     }
 
-    if (getAuthToken()) {
-      refreshOrders();
-    }
+    refreshOrders();
   }, [currentUser]);
 
   const [news, setNews] = useState(() => {
