@@ -28,7 +28,7 @@ import {
 export const PublicStatePage = () => {
   const { stateId } = useParams();
   const location = useLocation();
-  const { states, clubs, events, products, news, results, addToCart, showToast, submitClaimRequest, getStateCms, claims = [], updateClaimStatus, setCurrentUser, switchRole } = useApp();
+  const { states, clubs, events, products, news, results, addToCart, showToast, submitClaimRequest, getStateCms, claims = [], updateClaimStatus, setCurrentUser, switchRole, currentUser } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [organizationFilter, setOrganizationFilter] = useState('All');
