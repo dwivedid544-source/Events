@@ -520,10 +520,10 @@ const getRevenueCommissionsReport = async (req, res) => {
     const payoutStatus = ledgerEntriesCount === 0
       ? 'No Activity'
       : anyPending
-      ? 'Pending'
-      : allSettled
-      ? 'Completed'
-      : 'Processing';
+        ? 'Pending'
+        : allSettled
+          ? 'Completed'
+          : 'Processing';
 
     return res.json({
       success: true,
