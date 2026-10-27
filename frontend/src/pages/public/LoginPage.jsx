@@ -38,30 +38,6 @@ export const LoginPage = () => {
     }
   }, [urlEmail]);
 
-  const isRouteAllowedForRole = (path, role) => {
-    if (!path || typeof path !== 'string') return false;
-    const cleanPath = path.toLowerCase();
-    if (cleanPath.startsWith('/super-admin')) {
-      return role === 'SUPER_ADMIN';
-    }
-    if (cleanPath.startsWith('/national-admin')) {
-      return ['NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
-    }
-    if (cleanPath.startsWith('/state-admin')) {
-      return ['STATE_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
-    }
-    if (cleanPath.startsWith('/club-admin')) {
-      return ['CLUB_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
-    }
-    if (cleanPath.startsWith('/event-admin')) {
-      return ['EVENT_ADMIN', 'CLUB_ADMIN', 'STATE_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'].includes(role);
-    }
-    if (cleanPath.startsWith('/member')) {
-      return true;
-    }
-    return true;
-  };
-
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -70,7 +46,7 @@ export const LoginPage = () => {
     try {
       const result = await loginUser(email, password);
       if (result?.success && result.user) {
-        const userRole = result.user.role || 'MEMBER';
+        // Navigate based on verified authenticated role
         const roleHomeMap = {
           SUPER_ADMIN: '/super-admin',
           NATIONAL_ADMIN: '/national-admin',
@@ -79,16 +55,23 @@ export const LoginPage = () => {
           EVENT_ADMIN: '/event-admin',
           MEMBER: '/member'
         };
-        const defaultDest = roleHomeMap[userRole] || '/member';
+        const dest = roleHomeMap[result.user.role] || '/member';
 
-        // If arrived via redirect, verify the authenticated user role has permission to access that route
-        if (targetRedirect && isRouteAllowedForRole(targetRedirect, userRole)) {
-          navigate(targetRedirect, { replace: true });
-          return;
+        // Check if targetRedirect is valid for this user's role
+        let finalRedirect = dest;
+        if (targetRedirect) {
+          const userPortal = dest; // e.g. /club-admin
+          const isForeignAdminPortal = /^\/(super-admin|national-admin|state-admin|club-admin|event-admin|member)/.test(targetRedirect) &&
+            !targetRedirect.startsWith(userPortal);
+
+          if (!isForeignAdminPortal) {
+            finalRedirect = targetRedirect;
+          } else if (targetRedirect.endsWith('/settings')) {
+            finalRedirect = `${userPortal}/settings`;
+          }
         }
 
-        // Navigate based on verified authenticated role
-        navigate(defaultDest, { replace: true });
+        navigate(finalRedirect, { replace: true });
       }
     } catch (err) {
       setErrorMessage(err.message || 'Authentication failed. Please verify your email and password.');

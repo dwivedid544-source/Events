@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp , API_BASE_URL} from '../../context/AppContext';
+import { apiClient } from '../../utils/apiClient';
 import { StatCard } from '../../components/common/StatCard';
 import { Users, Building2, Calendar, DollarSign, MapPin, Trophy, Landmark, CheckCircle2, ShieldCheck, Save } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -9,8 +10,8 @@ export const StateAdminDashboard = () => {
 
   // Dedicated Flow-Wise Page Load API Call to Express Backend & MySQL `club` Database
   React.useEffect(() => {
-    fetch(`${API_BASE_URL}/states/tn`)
-      .then((res) => res.json())
+    apiClient
+      .get('/states/tn')
       .then((data) => {
         console.log('📡 [State Admin Flow API Call]:', data);
       })

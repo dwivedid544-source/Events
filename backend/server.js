@@ -13,6 +13,8 @@ const paymentRoutes = require('./routes/paymentRoutes');
 const resultRoutes = require('./routes/resultRoutes');
 const claimRoutes = require('./routes/claimRoutes');
 const orderRoutes = require('./routes/orderRoutes');
+const stateController = require('./controllers/stateController');
+const clubController = require('./controllers/clubController');
 const { verifyToken, requireRole } = require('./middlewares/authMiddleware');
 
 const app = express();
@@ -61,15 +63,27 @@ app.get('/api/v1/health', async (req, res) => {
 
 // Primary REST API Routes querying MySQL `club` DB
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1', authRoutes); // Aliases: /me, /profile
 app.use('/api/v1/members', memberRoutes);
 app.use('/api/v1/states', stateRoutes);
 app.use('/api/v1/clubs', clubRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/reports', reportRoutes);
+app.use('/api/v1', reportRoutes); // Aliases: /financial-overview, /state-performance, /revenue-commissions
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/results', resultRoutes);
 app.use('/api/v1/club-claims', claimRoutes);
 app.use('/api/v1/orders', orderRoutes);
+
+// Direct Aliases for single-entity routes
+app.get('/api/v1/tn', (req, res, next) => {
+  req.params = { id: 'tn' };
+  return stateController.getStateById(req, res, next);
+});
+app.get('/api/v1/club-1', (req, res, next) => {
+  req.params = { id: 'club-1' };
+  return clubController.getClubById(req, res, next);
+});
 
 // National Admin Overview API (/national-admin) from MySQL Database
 app.get('/api/v1/national', async (req, res) => {

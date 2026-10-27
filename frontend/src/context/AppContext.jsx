@@ -335,7 +335,7 @@ export const AppProvider = ({ children }) => {
       '/event-admin/participants': 'members',
       '/event-admin/attendance': 'events/entries',
       '/event-admin/results': 'results',
-      '/event-admin/payments': 'reports/financial-overview',
+      '/event-admin/payments': 'events/entries',
       '/event-admin/announcements': 'announcements',
 
       '/national-admin': 'national',
@@ -383,7 +383,7 @@ export const AppProvider = ({ children }) => {
     const targetEndpoint = routeApiMap[rawPath];
 
     if (targetEndpoint) {
-      const publicPrefixes = ['states', 'clubs', 'events', 'news', 'products', 'health'];
+      const publicPrefixes = ['states', 'clubs', 'events', 'news', 'products', 'health', 'results'];
       const isPublic = publicPrefixes.some((p) => targetEndpoint.startsWith(p));
       const hasToken = Boolean(getAuthToken());
 
@@ -392,6 +392,10 @@ export const AppProvider = ({ children }) => {
           .get(`/${targetEndpoint.replace(/^\//, '')}`)
           .then((data) => {
             console.log(`📡 [Flow API Call] Path: ${location.pathname} ➔ Endpoint: ${targetEndpoint}:`, data);
+            if (targetEndpoint === 'results' && data?.success && Array.isArray(data.data) && data.data.length > 0) {
+              setResults(data.data);
+              try { localStorage.setItem('nh_results', JSON.stringify(data.data)); } catch (e) {}
+            }
           })
           .catch((err) => {
             if (err.status !== 401 && err.status !== 403) {
