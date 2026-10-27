@@ -217,70 +217,77 @@ export const AppProvider = ({ children }) => {
             })
             .catch((e) => console.warn('Failed fetching news API:', e));
 
-          // 6. API Call: Fetch Members from MySQL database `club`
-          fetch(`${API_BASE_URL}/members`)
-            .then((r) => r.json())
-            .then((resData) => {
-              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                setMembers(resData.data);
-                localStorage.setItem('nh_members', JSON.stringify(resData.data));
-              }
-            })
-            .catch((e) => console.warn('Failed fetching members API:', e));
-
-          // 7. API Call: Fetch Club Claims from MySQL database `club` (Protected Super Admin endpoint)
-          if (currentUser?.role === 'SUPER_ADMIN') {
-            apiClient.get('/club-claims')
+          // 6. Authenticated Endpoints Sync (Only executed when an active session token is present)
+          if (getAuthToken()) {
+            apiClient.get('/members')
               .then((resData) => {
-                if (resData.success && Array.isArray(resData.data)) {
-                  setClaims(resData.data);
+                if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                  setMembers(resData.data);
+                  localStorage.setItem('nh_members', JSON.stringify(resData.data));
                 }
               })
-              .catch((e) => console.warn('Failed fetching claims API:', e));
+              .catch((e) => console.warn('Failed fetching members API:', e.message));
+
+            if (currentUser?.role === 'SUPER_ADMIN') {
+              apiClient.get('/club-claims')
+                .then((resData) => {
+                  if (resData?.success && Array.isArray(resData.data)) {
+                    setClaims(resData.data);
+                  }
+                })
+                .catch((e) => console.warn('Failed fetching claims API:', e.message));
+            }
+
+            apiClient.get('/orders')
+              .then((resData) => {
+                if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                  const normalized = resData.data.map((o) => {
+                    let itemsSummary = o.items || o.item;
+                    if (!itemsSummary && o.itemsJson) {
+                      try {
+                        const parsed = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
+                        if (Array.isArray(parsed) && parsed.length > 0) {
+                          itemsSummary = parsed.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
+                        }
+                      } catch (e) {
+                        // ignore
+                      }
+                    }
+                    const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
+                    return {
+                      ...o,
+                      customer: o.customer || o.customerName || 'Customer',
+                      customerName: o.customerName || o.customer || 'Customer',
+                      email: o.email || o.customerEmail || '',
+                      customerEmail: o.customerEmail || o.email || '',
+                      items: itemsSummary || 'Sanctioned Gear / Equipment',
+                      item: itemsSummary || 'Sanctioned Gear / Equipment',
+                      product: o.product || itemsSummary || 'Sanctioned Gear / Equipment',
+                      total: orderAmount,
+                      sellingPrice: orderAmount,
+                      amount: orderAmount,
+                      status: o.fulfillmentStatus || o.status || 'Processing',
+                      fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
+                      payoutStatus: o.payoutStatus || 'Pending',
+                      carrier: o.carrier || 'UPS Ground',
+                      trackingNumber: o.trackingNumber || 'Pending Dispatch'
+                    };
+                  });
+                  setOrders(normalized);
+                }
+              })
+              .catch((e) => console.warn('Failed fetching live orders API:', e.message));
+
+            apiClient.get('/reports/financial-overview?period=monthly')
+              .then((resData) => {
+                if (resData?.success) {
+                  console.log('📊 Financial Report API response:', resData);
+                }
+              })
+              .catch((e) => console.warn('Failed fetching report API:', e.message));
           }
 
-          // Fetch Live Orders from database via authenticated endpoint
-          apiClient.get('/orders')
-            .then((resData) => {
-              if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                const normalized = resData.data.map((o) => {
-                  let itemsSummary = o.items || o.item;
-                  if (!itemsSummary && o.itemsJson) {
-                    try {
-                      const parsed = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
-                      if (Array.isArray(parsed) && parsed.length > 0) {
-                        itemsSummary = parsed.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
-                      }
-                    } catch (e) {
-                      // ignore
-                    }
-                  }
-                  const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
-                  return {
-                    ...o,
-                    customer: o.customer || o.customerName || 'Customer',
-                    customerName: o.customerName || o.customer || 'Customer',
-                    email: o.email || o.customerEmail || '',
-                    customerEmail: o.customerEmail || o.email || '',
-                    items: itemsSummary || 'Sanctioned Gear / Equipment',
-                    item: itemsSummary || 'Sanctioned Gear / Equipment',
-                    product: o.product || itemsSummary || 'Sanctioned Gear / Equipment',
-                    total: orderAmount,
-                    sellingPrice: orderAmount,
-                    amount: orderAmount,
-                    status: o.fulfillmentStatus || o.status || 'Processing',
-                    fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
-                    payoutStatus: o.payoutStatus || 'Pending',
-                    carrier: o.carrier || 'UPS Ground',
-                    trackingNumber: o.trackingNumber || 'Pending Dispatch'
-                  };
-                });
-                setOrders(normalized);
-              }
-            })
-            .catch((e) => console.warn('Failed fetching live orders API:', e.message));
-
-          // 8. API Call: Fetch Products from MySQL database `club`
+          // 7. API Call: Fetch Products from MySQL database `club` (Public catalog)
           fetch(`${API_BASE_URL}/products`)
             .then((r) => r.json())
             .then((resData) => {
@@ -301,14 +308,6 @@ export const AppProvider = ({ children }) => {
               }
             })
             .catch((e) => console.warn('Failed fetching products API:', e));
-
-          // 9. API Call: Fetch Financial Overview Report from MySQL database `club`
-          fetch(`${API_BASE_URL}/reports/financial-overview?period=monthly`)
-            .then((r) => r.json())
-            .then((resData) => {
-              console.log('📊 Financial Report API response:', resData);
-            })
-            .catch((e) => console.warn('Failed fetching report API:', e));
         }
       })
       .catch((err) => {

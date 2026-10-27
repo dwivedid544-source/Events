@@ -33,6 +33,7 @@ export const PublicStatePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [organizationFilter, setOrganizationFilter] = useState('All');
   const [selectedEventForPreSignUp, setSelectedEventForPreSignUp] = useState(null);
+  const [activeTab, setActiveTab] = useState('HOME');
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [claimForm, setClaimForm] = useState(() => ({
