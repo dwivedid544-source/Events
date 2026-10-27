@@ -20,6 +20,8 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
+import { apiClient, getAuthToken } from '../../utils/apiClient';
+
 export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performance Reports' }) => {
   const { members = [], events = [], entries = [], orders = [], transactions = [], showToast, currentUser } = useApp();
 
@@ -36,22 +38,20 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
   // Flow-Wise Page Load & Filter API Call to Express REST Backend & MySQL `club` Database
   React.useEffect(() => {
     let isCancelled = false;
+    const token = getAuthToken();
+    if (!token) {
+      setReportLoading(false);
+      return;
+    }
+
     setReportLoading(true);
     setReportError(null);
 
     const customParams = periodFilter === 'Custom' ? `&startDate=${startDate}&endDate=${endDate}` : '';
-    const token = localStorage.getItem('nh_token') || sessionStorage.getItem('nh_token');
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
+    const endpoint = `/reports/financial-overview?period=${periodFilter.toLowerCase()}${customParams}`;
 
-    const apiUrl = `${API_BASE_URL}/reports/financial-overview?period=${periodFilter.toLowerCase()}${customParams}`;
-    fetch(apiUrl, { headers })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
+    apiClient
+      .get(endpoint)
       .then((data) => {
         if (!isCancelled && data?.success && data?.data?.summary) {
           setBackendSummary(data.data.summary);
@@ -59,7 +59,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
         }
       })
       .catch((err) => {
-        if (!isCancelled) {
+        if (!isCancelled && err.status !== 401 && err.status !== 403) {
           console.warn('Failed fetching reports API:', err.message);
           setReportError(err.message);
         }
