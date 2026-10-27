@@ -70,14 +70,19 @@ const getFinancialOverview = (req, res) => {
 // 2. Dedicated State Performance Analytics Report (/state-admin/reports)
 const getStatePerformanceReport = async (req, res) => {
   try {
-    const [states] = await db.query('SELECT * FROM `StateAssociation` WHERE code = "TN"');
-    const state = states[0] || { name: 'Tennessee State Association', clubsCount: 42, membersCount: 2890, revenue: 185000 };
+    const targetState = req.query.state || (req.user && (req.user.stateCode || req.user.state)) || 'TN';
+    const [states] = await db.query(
+      'SELECT * FROM `StateAssociation` WHERE code = ? OR LOWER(name) LIKE ?',
+      [targetState.toUpperCase(), `%${targetState.toLowerCase()}%`]
+    );
+    const state = states[0] || { name: `${targetState.toUpperCase()} State Association`, clubsCount: 42, membersCount: 2890, revenue: 185000 };
 
     return res.json({
       success: true,
       reportType: 'State Performance & Analytics Report',
       data: {
         stateName: state.name,
+        stateCode: state.code || targetState.toUpperCase(),
         clubsCount: state.clubsCount,
         activeMembers: state.membersCount,
         totalStateRevenue: state.revenue,

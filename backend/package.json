@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "test": "node tests/integration.test.js",
     "prisma:generate": "npx --no-install prisma generate",
     "prisma:push": "npx --no-install prisma db push",
     "prisma:seed": "node prisma/seed.js"

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { ConnectedNetworkBanner } from '../../components/common/ConnectedNetworkBanner';
+import { PreSignUpModal } from '../../components/events/PreSignUpModal';
 import {
   Search,
   MapPin,
@@ -42,6 +43,7 @@ export const HomePage = () => {
   const [selectedState, setSelectedState] = useState('');
   const [selectedEventType, setSelectedEventType] = useState('');
   const [selectedDate, setSelectedDate] = useState('');
+  const [selectedEventForPreSignUp, setSelectedEventForPreSignUp] = useState(null);
 
   // Custom Modern Sport Dropdown state
   const [isSportDropdownOpen, setIsSportDropdownOpen] = useState(false);
@@ -1087,11 +1089,20 @@ export const HomePage = () => {
               </div>
 
               <div className="p-4 bg-surface-low/80 border-t border-surface-border flex items-center justify-between gap-3">
+                <button
+                  type="button"
+                  onClick={() => setSelectedEventForPreSignUp(evt)}
+                  className="flex-1 text-center py-2.5 px-3 rounded-xl text-xs font-black bg-forest-900 hover:bg-forest-950 text-white shadow-md transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  <Trophy className="w-3.5 h-3.5 text-tan-400" />
+                  <span>Register for Hunt</span>
+                </button>
                 <Link
                   to={`/find-hunt?event=${evt.id}`}
-                  className="w-full text-center py-2.5 rounded-xl text-xs font-black bg-forest-900 hover:bg-forest-950 text-white shadow-md transition-all active:scale-95"
+                  className="p-2.5 rounded-xl border border-surface-border hover:border-forest-800 text-charcoal hover:text-forest-900 transition-colors"
+                  title="View Event Details"
                 >
-                  Register Button
+                  <ArrowUpRight className="w-4 h-4" />
                 </Link>
               </div>
             </div>
@@ -1613,6 +1624,14 @@ export const HomePage = () => {
           </form>
         </div>
       </section>
+
+      {/* Online Event Registration Modal */}
+      {selectedEventForPreSignUp && (
+        <PreSignUpModal
+          event={selectedEventForPreSignUp}
+          onClose={() => setSelectedEventForPreSignUp(null)}
+        />
+      )}
     </div>
   );
 };

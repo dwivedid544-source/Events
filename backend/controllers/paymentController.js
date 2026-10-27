@@ -5,21 +5,21 @@ require('dotenv').config();
 // Get active Clover Payment Gateway configuration
 const getPaymentConfig = (req, res) => {
   const merchantId = process.env.CLOVER_MERCHANT_ID || '526695041883';
-  const hasApiKey = Boolean(process.env.CLOVER_API_KEY);
 
   return res.json({
     success: true,
     gateway: 'Clover',
     merchantId,
-    status: 'ACTIVE',
+    status: 'SANDBOX_PENDING_GATEWAY',
     currency: 'USD',
-    isConfigured: hasApiKey && Boolean(merchantId),
-    supportedMethods: ['Credit Card', 'Debit Card', 'Apple Pay', 'Google Pay'],
-    message: 'Clover Payment Gateway is active and connected'
+    isConfigured: false,
+    isLiveGateway: false,
+    supportedMethods: ['Credit Card (Sandbox)', 'Debit Card (Sandbox)'],
+    message: 'Clover Payment Gateway is in sandbox/testing mode. Live payment settlement is not connected.'
   });
 };
 
-// Process / Charge a payment through Clover Gateway
+// Process / Charge a payment through Clover Gateway (Honest simulation, no false live claims)
 const processCharge = async (req, res) => {
   try {
     const {
@@ -43,10 +43,10 @@ const processCharge = async (req, res) => {
     }
 
     const merchantId = process.env.CLOVER_MERCHANT_ID || '526695041883';
-    const txnId = `TXN-CLV-${Date.now().toString().slice(-8)}`;
-    const authCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const txnId = `TXN-SIM-${Date.now().toString().slice(-8)}`;
+    const authCode = `SIM-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    // 1. Record transaction in FinancialTransaction table
+    // 1. Record simulated transaction in FinancialTransaction table with clear test indicator
     try {
       await db.query(
         `INSERT INTO \`FinancialTransaction\` (\`id\`, \`type\`, \`category\`, \`amount\`, \`period\`, \`stateId\`, \`clubId\`, \`description\`)
@@ -59,7 +59,7 @@ const processCharge = async (req, res) => {
           new Date().toISOString().slice(0, 7), // YYYY-MM
           stateId || 'TN',
           clubId || 'club-1',
-          description || `Clover Payment for ${customerName || 'Customer'} (MID: ${merchantId}) | Auth: ${authCode} | Status: PAID | Ref: ${txnId}`
+          description || `[SIMULATED] Payment for ${customerName || 'Customer'} | Ref: ${txnId} | Live Clover Not Integrated`
         ]
       );
     } catch (dbErr) {
@@ -70,19 +70,19 @@ const processCharge = async (req, res) => {
       success: true,
       transactionId: txnId,
       authCode,
-      gateway: 'Clover',
+      gateway: 'Clover (Sandbox Simulation)',
       merchantId,
       amount: Number(amount),
       currency,
-      status: 'PAID',
-      paymentStatus: 'Paid',
-      receiptUrl: `https://www.clover.com/p/${txnId}`,
+      status: 'SIMULATED_TEST',
+      paymentStatus: 'Pending Verification',
+      isLiveCharge: false,
       cardSummary: `•••• ${cardLast4}`,
       customerName: customerName || 'Valued Member',
       email: email || '',
       orderId: orderId || null,
       timestamp: new Date().toISOString(),
-      message: `Payment of $${Number(amount).toFixed(2)} successfully settled via Clover (MID: ${merchantId})`
+      message: `Simulated transaction of $${Number(amount).toFixed(2)} recorded for testing. Live Clover payment integration pending.`
     });
   } catch (err) {
     console.error('[Payment Controller Error]:', err);

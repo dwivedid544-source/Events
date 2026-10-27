@@ -35,12 +35,18 @@ export const FindHuntPage = () => {
     const urlQuery = searchParams.get('query');
     const urlState = searchParams.get('state');
     const urlType = searchParams.get('type');
+    const urlEventId = searchParams.get('event');
 
     if (urlSport) setSelectedSport(urlSport);
     if (urlQuery) setSearchTerm(urlQuery);
     if (urlState) setSelectedState(urlState);
     if (urlType) setSelectedType(urlType);
-  }, [searchParams]);
+
+    if (urlEventId && events.length > 0) {
+      const match = events.find((e) => e.id === urlEventId);
+      if (match) setSelectedEventForPreSignUp(match);
+    }
+  }, [searchParams, events]);
 
   const sportsOptions = [
     { key: 'ALL', label: 'All Sports', icon: '🐾', desc: 'Show events across all sporting categories' },

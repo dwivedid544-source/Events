@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
@@ -20,17 +20,38 @@ import {
   Megaphone,
   User,
   Dog,
-  Award
+  Award,
+  Database
 } from 'lucide-react';
 
 export const ClubAdminClubPage = () => {
-  const { clubs = [], updateClub, showToast } = useApp();
+  const { clubs = [], updateClub, showToast, currentUser, backendConnected } = useApp();
   
-  // Find Oak Ridge Hunting Club or first club
-  const myClub = clubs.find((c) => c.name?.toLowerCase().includes('oak ridge') || c.id === 'club-1') || clubs[0] || {};
+  // Dynamically resolve club from logged-in user scope or fallback to matching club
+  const userScope = currentUser?.scope?.split('(')[0]?.trim()?.toLowerCase() || '';
+  const initialClub = clubs.find((c) => 
+    (userScope && (c.name?.toLowerCase().includes(userScope) || userScope.includes(c.name?.toLowerCase()))) ||
+    (currentUser?.clubId && c.id === currentUser.clubId)
+  ) || clubs.find((c) => c.name?.toLowerCase().includes('oak ridge') || c.id === 'club-1') || clubs[0] || {};
+
+  const [selectedClubId, setSelectedClubId] = useState(initialClub.id || 'club-1');
+
+  useEffect(() => {
+    if (clubs.length > 0) {
+      const match = clubs.find((c) => 
+        (userScope && (c.name?.toLowerCase().includes(userScope) || userScope.includes(c.name?.toLowerCase()))) ||
+        (currentUser?.clubId && c.id === currentUser.clubId)
+      );
+      if (match) {
+        setSelectedClubId(match.id);
+      }
+    }
+  }, [clubs, userScope, currentUser?.clubId]);
+
+  const myClub = clubs.find((c) => c.id === selectedClubId) || initialClub;
   const clubId = myClub.id || 'club-1';
 
-  // Load persisted CMS state or initialize from club data
+  // Load persisted CMS state or initialize from database club data
   const [clubInfo, setClubInfo] = useState(() => {
     const saved = localStorage.getItem(`nh_club_cms_${clubId}`);
     if (saved) {
@@ -65,9 +86,38 @@ export const ClubAdminClubPage = () => {
       email: myClub.email || 'robert.miller@oakridgehc.org',
       meetingSchedule: 'First Tuesday of every month at 7:00 PM (CT)',
       groundsDescription: 'Over 6,500 contiguous timbered acres with lighted cast stations, covered bench pavilions, and GPS telemetry antenna.',
-      lastPublished: 'Oct 17, 2026, 6:30 PM'
+      lastPublished: myClub.createdAt ? new Date(myClub.createdAt).toLocaleDateString() : 'Active in DB'
     };
   });
+
+  // Keep clubInfo synced when selecting another club or when real DB data arrives
+  useEffect(() => {
+    if (myClub && myClub.id) {
+      const saved = localStorage.getItem(`nh_club_cms_${myClub.id}`);
+      if (saved) {
+        try {
+          setClubInfo(JSON.parse(saved));
+          return;
+        } catch (e) {}
+      }
+      setClubInfo((prev) => ({
+        ...prev,
+        name: myClub.name || prev.name,
+        city: myClub.city || prev.city,
+        state: myClub.state || prev.state,
+        stateCode: myClub.stateCode || prev.stateCode,
+        zip: myClub.zip || prev.zip,
+        address: myClub.address || prev.address,
+        dogType: myClub.dogType || prev.dogType,
+        federation: myClub.federation || prev.federation,
+        description: myClub.description || prev.description,
+        president: myClub.adminName || prev.president,
+        phone: myClub.phone || prev.phone,
+        email: myClub.email || prev.email,
+        logo: myClub.logo || prev.logo
+      }));
+    }
+  }, [myClub.id, myClub.name, myClub.city, myClub.adminName]);
 
   const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -158,9 +208,33 @@ export const ClubAdminClubPage = () => {
           <p className="text-xs text-tan-200 opacity-90 max-w-2xl font-medium leading-relaxed">
             Manage public branding, hero announcements, clubhouse grounds address, and trial contact details for {clubInfo.name}.
           </p>
-          <div className="flex items-center gap-2 text-[11px] text-tan-400 font-bold pt-1">
-            <Clock className="w-3.5 h-3.5" />
-            <span>Last Published: {clubInfo.lastPublished}</span>
+
+          <div className="flex flex-wrap items-center gap-3 pt-2">
+            <div className="flex items-center gap-1.5 bg-forest-900 border border-forest-700 rounded-lg px-2.5 py-1 text-xs">
+              <Building2 className="w-3.5 h-3.5 text-tan-400" />
+              <label className="text-tan-300 font-bold text-[11px]">Select Club:</label>
+              <select
+                value={selectedClubId}
+                onChange={(e) => setSelectedClubId(e.target.value)}
+                className="bg-transparent text-white font-bold text-xs focus:outline-none cursor-pointer"
+              >
+                {clubs.map((c) => (
+                  <option key={c.id} value={c.id} className="bg-forest-950 text-white">
+                    {c.name} ({c.city}, {c.stateCode || c.state})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/50 text-[11px] font-bold text-emerald-300">
+              <Database className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Live MySQL Connected: {myClub.name}</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 text-[11px] text-tan-400 font-bold">
+              <Clock className="w-3.5 h-3.5" />
+              <span>Last Published: {clubInfo.lastPublished}</span>
+            </div>
           </div>
         </div>
 

@@ -169,6 +169,27 @@ const updateEvent = async (req, res) => {
     const { id } = req.params;
     const data = req.body;
 
+    const [existing] = await db.query('SELECT * FROM `Event` WHERE id = ?', [id]);
+    const eventItem = existing[0];
+    if (!eventItem) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Event not found' }
+      });
+    }
+
+    // Scope check: Club Admin can only update events belonging to their assigned club
+    if (req.user && req.user.role === 'CLUB_ADMIN') {
+      const userClub = (req.user.club || req.user.clubId || '').toLowerCase();
+      const eventClub = (eventItem.club || eventItem.clubId || '').toLowerCase();
+      if (!userClub || (!eventClub.includes(userClub) && !userClub.includes(eventClub))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to modify events outside your assigned club' }
+        });
+      }
+    }
+
     const fields = [];
     const params = [];
 
@@ -221,6 +242,28 @@ const updateEvent = async (req, res) => {
 const deleteEvent = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const [existing] = await db.query('SELECT * FROM `Event` WHERE id = ?', [id]);
+    const eventItem = existing[0];
+    if (!eventItem) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Event not found' }
+      });
+    }
+
+    // Scope check: Club Admin can only delete events belonging to their assigned club
+    if (req.user && req.user.role === 'CLUB_ADMIN') {
+      const userClub = (req.user.club || req.user.clubId || '').toLowerCase();
+      const eventClub = (eventItem.club || eventItem.clubId || '').toLowerCase();
+      if (!userClub || (!eventClub.includes(userClub) && !userClub.includes(eventClub))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to delete events outside your assigned club' }
+        });
+      }
+    }
+
     await db.query('DELETE FROM `EventEntry` WHERE eventId = ?', [id]);
     await db.query('DELETE FROM `Event` WHERE id = ?', [id]);
 

@@ -124,6 +124,19 @@ const updateClub = async (req, res) => {
       announcementBanner
     } = req.body;
 
+    // Scope validation: Club Admin can only update their assigned club; Super/National Admin can update any club
+    if (req.user) {
+      const isSuper = req.user.role === 'SUPER_ADMIN' || req.user.role === 'NATIONAL_ADMIN';
+      const isClubAdmin = req.user.role === 'CLUB_ADMIN';
+      const isAssignedClub = req.user.clubId === id || (req.user.club && req.user.club.toLowerCase().includes((name || '').toLowerCase()));
+      if (!isSuper && (!isClubAdmin || !isAssignedClub)) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You do not have administrative permission to modify this club' }
+        });
+      }
+    }
+
     console.log(`📡 [API Call]: PUT /api/v1/clubs/${id} - Updating club data for: ${name || id}`);
 
     try {
@@ -132,9 +145,10 @@ const updateClub = async (req, res) => {
          SET name = COALESCE(?, name),
              city = COALESCE(?, city),
              state = COALESCE(?, state),
-             zip = COALESCE(?, zip)
+             zip = COALESCE(?, zip),
+             adminName = COALESCE(?, adminName)
          WHERE id = ?`,
-        [name, city, state, zip, id]
+        [name, city, state, zip, adminName, id]
       );
     } catch (dbErr) {
       console.warn('MySQL LocalClub update fallback warning:', dbErr.message);

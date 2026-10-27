@@ -35,15 +35,14 @@ export const JoinPage = () => {
   const handleNext = async (e) => {
     if (e) e.preventDefault();
     if (step === 5) {
-      // Live Clover Gateway Charge Trigger
       setIsCharging(true);
       try {
         const member = await registerMembership({ ...formData, cardData });
         setCreatedMember(member);
         setStep(6);
-        showToast('Payment settled via Clover & Membership activated!', 'success');
+        showToast('Membership application registered! Gateway verification pending.', 'info');
       } catch (err) {
-        showToast('Payment processing error: ' + err.message, 'error');
+        showToast('Registration error: ' + err.message, 'error');
       } finally {
         setIsCharging(false);
       }
@@ -390,10 +389,10 @@ export const JoinPage = () => {
                 {isCharging ? (
                   <>
                     <span className="w-3.5 h-3.5 border-2 border-forest-900 border-t-transparent rounded-full animate-spin"></span>
-                    <span>Processing with Clover...</span>
+                    <span>Submitting Application...</span>
                   </>
                 ) : (
-                  <span>Pay ${formData.price + 2}.00 & Activate</span>
+                  <span>Submit Application (${formData.price + 2}.00)</span>
                 )}
               </button>
             </div>
@@ -402,28 +401,30 @@ export const JoinPage = () => {
 
         {step === 6 && createdMember && (
           <div className="text-center space-y-6 max-w-md mx-auto py-4">
-            <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 mx-auto flex items-center justify-center shadow border border-emerald-300">
-              <CheckCircle2 className="w-10 h-10" />
+            <div className="w-16 h-16 rounded-full bg-forest-100 text-forest-800 mx-auto flex items-center justify-center shadow border border-forest-300">
+              <CheckCircle2 className="w-10 h-10 text-forest-800" />
             </div>
 
             <div className="space-y-1">
-              <span className="text-[10px] font-black uppercase text-emerald-800 tracking-wider">
-                Registration Complete
+              <span className="text-[10px] font-black uppercase text-tan-700 tracking-wider">
+                Registration Recorded
               </span>
-              <h2 className="text-2xl font-black text-forest-800">Membership Activated Successfully!</h2>
-              <p className="text-xs text-charcoal-muted">Your account has been created. Please sign in with your email & password to access your dashboard.</p>
+              <h2 className="text-2xl font-black text-forest-900">Application Submitted</h2>
+              <p className="text-xs text-charcoal-muted">
+                Your member account has been registered in the platform registry. Please sign in to view your dashboard.
+              </p>
             </div>
 
             <div className="bg-surface-low p-6 rounded-2xl border border-surface-border text-xs text-left space-y-3.5 shadow-sm">
               <div className="flex items-center justify-between border-b border-surface-border pb-2.5">
-                <span className="text-[11px] uppercase font-black text-tan-800 tracking-wider">Official Membership Credentials</span>
-                <span className="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300 flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3 text-emerald-700" /> Settled via Clover
+                <span className="text-[11px] uppercase font-black text-tan-800 tracking-wider">Membership Application Details</span>
+                <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-300 flex items-center gap-1">
+                  Payment Verification Pending
                 </span>
               </div>
 
               <div className="text-base font-extrabold text-forest-900">
-                {createdMember?.name || formData.name || formData.firstName || 'Diya'}
+                {createdMember?.name || formData.name || formData.firstName || 'Member'}
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -434,10 +435,10 @@ export const JoinPage = () => {
                   </strong>
                 </div>
 
-                <div className="p-2.5 bg-emerald-50/70 rounded-xl border border-emerald-200">
-                  <span className="text-emerald-800 block text-[10px] uppercase font-bold">Clover Merchant ID (MID)</span>
-                  <strong className="font-mono text-emerald-900 text-sm">
-                    {createdMember?.merchantId || createdMember?.cloverMerchantId || '526695041883'}
+                <div className="p-2.5 bg-amber-50/70 rounded-xl border border-amber-200">
+                  <span className="text-amber-800 block text-[10px] uppercase font-bold">Account Status</span>
+                  <strong className="font-mono text-amber-900 text-sm">
+                    Pending Verification
                   </strong>
                 </div>
 
@@ -457,20 +458,19 @@ export const JoinPage = () => {
 
                 <div>
                   <span className="text-charcoal-muted block text-[10px] uppercase font-bold">Registered Email</span>
-                  <strong className="text-forest-900">{formData.email || 'diya@gmail.com'}</strong>
+                  <strong className="text-forest-900">{formData.email}</strong>
                 </div>
 
                 <div>
-                  <span className="text-charcoal-muted block text-[10px] uppercase font-bold">Payment Transaction Reference</span>
-                  <strong className="font-mono text-emerald-800">
-                    {createdMember?.transactionId || 'TXN-CLV-88291043'}
+                  <span className="text-charcoal-muted block text-[10px] uppercase font-bold">Dues Annual Amount</span>
+                  <strong className="font-mono text-forest-900">
+                    ${formData.price ? formData.price + 2 : 47}.00 / year
                   </strong>
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-surface-border flex items-center justify-between text-[11px] text-charcoal-muted font-medium">
-                <span>Payment Amount Settled: <strong className="text-forest-900">${formData.price ? formData.price + 2 : 47}.00</strong></span>
-                <span className="text-emerald-700 font-bold">Gateway: Clover Live MID</span>
+              <div className="pt-2 border-t border-surface-border text-[11px] text-charcoal-muted leading-relaxed">
+                <strong>Gateway Notice:</strong> Card details have been registered with the application. Live payment verification via Clover Payment Gateway will settle once backend payment processor integration is confirmed.
               </div>
             </div>
 

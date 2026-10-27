@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import {
@@ -25,45 +25,21 @@ import {
   Tag,
   Key,
   Shield,
-  Layers,
   ArrowRightLeft,
   Store,
-  Compass,
   FileCheck,
   TrendingUp,
   Truck,
   BarChart3,
-  ChevronDown,
   X
 } from 'lucide-react';
 
 export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
-  const { currentUser, switchRole } = useApp();
+  const { currentUser } = useApp();
   const location = useLocation();
-  const navigate = useNavigate();
-  const [portalDropdownOpen, setPortalDropdownOpen] = useState(false);
 
-  // Route-aware portal detection: automatically aligns navigation menu with current URL
-  const getRoleFromPath = (pathname) => {
-    if (pathname.startsWith('/state-admin')) return 'STATE_ADMIN';
-    if (pathname.startsWith('/club-admin')) return 'CLUB_ADMIN';
-    if (pathname.startsWith('/event-admin')) return 'EVENT_ADMIN';
-    if (pathname.startsWith('/national-admin')) return 'NATIONAL_ADMIN';
-    if (pathname.startsWith('/super-admin')) return 'SUPER_ADMIN';
-    if (pathname.startsWith('/member')) return 'MEMBER';
-    return null;
-  };
-
-  const effectiveRole = getRoleFromPath(location.pathname) || currentUser?.role || 'MEMBER';
-
-  const PORTALS = [
-    { role: 'MEMBER', label: 'Member Portal', path: '/member', modules: 7 },
-    { role: 'CLUB_ADMIN', label: 'Club Admin', path: '/club-admin', modules: 13 },
-    { role: 'STATE_ADMIN', label: 'State Admin', path: '/state-admin', modules: 12 },
-    { role: 'EVENT_ADMIN', label: 'Event Admin', path: '/event-admin', modules: 8 },
-    { role: 'NATIONAL_ADMIN', label: 'National Admin', path: '/national-admin', modules: 15 },
-    { role: 'SUPER_ADMIN', label: 'Super Admin', path: '/super-admin', modules: 18 }
-  ];
+  // Navigation menu is strictly derived from verified authenticated user profile
+  const authenticatedRole = currentUser?.role || 'MEMBER';
 
   const getMenuForRole = (role) => {
     switch (role) {
@@ -167,7 +143,7 @@ export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
     }
   };
 
-  const menuItems = getMenuForRole(effectiveRole);
+  const menuItems = getMenuForRole(authenticatedRole);
 
   return (
     <>
@@ -193,53 +169,21 @@ export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
           <button
             onClick={closeMobileSidebar}
             className="lg:hidden text-white/70 hover:text-white"
+            aria-label="Close menu"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Role Badge Indicator with Portal Quick Switcher */}
-        <div className="relative px-4 py-2.5 bg-forest-900/60 border-b border-forest-700/60 flex items-center justify-between text-xs text-tan-200">
-          <button
-            id="sidebar-portal-toggle-btn"
-            onClick={() => setPortalDropdownOpen(!portalDropdownOpen)}
-            className="flex items-center gap-1.5 font-bold hover:text-white transition-colors focus:outline-none group text-left"
-            title="Click to switch portal"
-          >
-            <span className="uppercase tracking-wide text-xs">{effectiveRole.replace('_', ' ')}</span>
-            <ChevronDown className="w-3.5 h-3.5 text-tan-400 group-hover:text-white transition-transform duration-200" />
-          </button>
+        {/* Authenticated Role Status Badge (Read-only, strictly derived from authenticated account) */}
+        <div className="px-4 py-2.5 bg-forest-900/60 border-b border-forest-700/60 flex items-center justify-between text-xs text-tan-200">
+          <div className="flex items-center gap-1.5 font-bold">
+            <Shield className="w-3.5 h-3.5 text-tan-400" />
+            <span className="uppercase tracking-wide text-xs">{authenticatedRole.replace('_', ' ')}</span>
+          </div>
           <span className="text-[10px] bg-tan-500/20 text-tan-300 px-2 py-0.5 rounded border border-tan-500/30 font-bold">
             {menuItems.length} Modules
           </span>
-
-          {portalDropdownOpen && (
-            <div className="absolute left-3 right-3 top-full mt-1.5 bg-forest-900 border border-forest-700 rounded-lg shadow-xl py-1.5 z-50 animate-fade-in text-xs">
-              <div className="px-3 py-1 text-[9px] font-black uppercase text-tan-400 tracking-wider border-b border-forest-800">
-                Switch Portal View
-              </div>
-              {PORTALS.map((p) => {
-                const isCurrent = p.role === effectiveRole;
-                return (
-                  <button
-                    key={p.role}
-                    onClick={() => {
-                      setPortalDropdownOpen(false);
-                      if (switchRole) switchRole(p.role);
-                      navigate(p.path);
-                      if (closeMobileSidebar) closeMobileSidebar();
-                    }}
-                    className={`w-full text-left px-3 py-2 flex items-center justify-between transition-colors ${
-                      isCurrent ? 'bg-forest-800 text-tan-400 font-bold' : 'text-white/80 hover:bg-forest-800 hover:text-white'
-                    }`}
-                  >
-                    <span>{p.label}</span>
-                    <span className="text-[10px] text-white/50">{p.modules} mod</span>
-                  </button>
-                );
-              })}
-            </div>
-          )}
         </div>
 
         {/* Navigation Menu */}
@@ -270,23 +214,23 @@ export const Sidebar = ({ mobileOpen, closeMobileSidebar }) => {
         {/* Sidebar Footer */}
         <div className="p-4 border-t border-forest-700 bg-forest-900/80 text-xs">
           <div className="flex items-center gap-3">
-            <img
-              src={currentUser?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'}
-              alt={currentUser?.name || 'User'}
-              className="w-9 h-9 rounded-full object-cover border border-tan-500"
-            />
+            <div className="w-9 h-9 rounded-full bg-forest-800 border border-tan-500 text-tan-300 font-extrabold flex items-center justify-center shrink-0 text-xs">
+              {currentUser?.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
+            </div>
             <div className="flex flex-col truncate">
-              <span className="font-bold text-white truncate">{currentUser?.name || 'User'}</span>
-              <span className="text-[10px] text-tan-300 truncate">
-                {currentUser?.scope || effectiveRole.replace('_', ' ')}
+              <span className="font-bold text-white truncate">{currentUser?.name || currentUser?.email || 'Authenticated User'}</span>
+              <span className="text-[10px] text-tan-300 truncate font-mono">
+                {currentUser?.email || authenticatedRole}
               </span>
             </div>
           </div>
           <div className="mt-3 pt-2 border-t border-forest-800 text-[10px] text-white/50 text-center">
-            Heritage Field & Forest Design v1.0
+            Ultimate Hound Club Portal
           </div>
         </div>
       </aside>
     </>
   );
 };
+
+export default Sidebar;
