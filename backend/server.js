@@ -66,6 +66,7 @@ app.use('/api/v1/states', stateRoutes);
 app.use('/api/v1/clubs', clubRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/reports', reportRoutes);
+app.use('/api/v1', reportRoutes); // Aliases: /financial-overview, /state-performance, /revenue-commissions
 app.use('/api/v1/payments', paymentRoutes);
 app.use('/api/v1/results', resultRoutes);
 app.use('/api/v1/club-claims', claimRoutes);

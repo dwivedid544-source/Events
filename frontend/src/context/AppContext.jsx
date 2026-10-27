@@ -254,7 +254,7 @@ export const AppProvider = ({ children }) => {
     const routeApiMap = {
       '/member': 'auth/profile',
       '/member/profile': 'auth/profile',
-      '/member/memberships': 'members',
+      '/member/memberships': 'auth/profile',
       '/member/events': 'events',
       '/member/entries': 'events/entries',
       '/member/orders': 'products',
