@@ -85,14 +85,14 @@ export const ClubAdminEvents = () => {
     clubId: 'club-1',
     state: stateName,
     stateCode: stateName === 'Tennessee' ? 'TN' : 'US',
-    city: 'Knoxville',
-    date: 'October 24, 2026',
-    startTime: '7:00 PM',
-    fee: 35,
-    maxCapacity: 50,
+    city: '',
+    date: '',
+    startTime: '',
+    fee: '',
+    maxCapacity: '',
     status: 'Registration Open',
-    address: '1420 Hunting Ridge Rd, Knoxville, TN',
-    description: 'Official sanctioned hound trial featuring night tracking and treeing accuracy.'
+    address: '',
+    description: ''
   });
 
   // Helper to calculate entries count for an event

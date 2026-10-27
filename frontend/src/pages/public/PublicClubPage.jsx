@@ -43,10 +43,10 @@ export const PublicClubPage = () => {
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [claimForm, setClaimForm] = useState(() => ({
-    applicant: currentUser?.name || 'James Wadley',
-    email: currentUser?.email || 'Houstonroofing@yahoo.com',
-    phone: currentUser?.phone || '(713) 555-0192',
-    message: 'Official club officer application & management registration.',
+    applicant: currentUser?.name || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    message: '',
     autoVerify: true
   }));
 
@@ -446,7 +446,7 @@ export const PublicClubPage = () => {
             }
 
             return null;
-          })()}/div>
+          })()}
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-forest-800 text-center text-xs">
             <div className="p-3 rounded-xl bg-forest-900/80 border border-forest-800">

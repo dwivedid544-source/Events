@@ -12,8 +12,8 @@ export const MemberDogs = () => {
     registeredName: '',
     breed: 'Treeing Walker Coonhound',
     gender: 'Male',
-    age: '3 Years',
-    dob: 'May 2023',
+    age: '',
+    dob: '',
     regNo: '',
     photo: ''
   });

@@ -32,22 +32,22 @@ export const StateMembershipSignUpPage = () => {
 
   // Form State containing EXACT 9 CLIENT REQUESTED FIELDS
   const [formData, setFormData] = useState({
-    name: 'Robert Miller',
-    address: '402 Hunt Club Road',
-    city: 'Austin',
-    state: resolvedState.name,
-    phone: '(512) 555-0184',
-    email: 'robert.miller@example.com',
+    name: '',
+    address: '',
+    city: '',
+    state: resolvedState.name || '',
+    phone: '',
+    email: '',
     membershipType: 'Individual Membership',
-    clubAffiliation: clubOptions[0] || 'Lone Star Hound Club',
-    dogSportInterests: ['Coonhound Nite Hunts', 'Treeing Trials']
+    clubAffiliation: clubOptions[0] || '',
+    dogSportInterests: []
   });
 
   // Payment Form State
   const [paymentData, setPaymentData] = useState({
-    cardNumber: '4532 8921 7741 9023',
-    cardExpiry: '12/28',
-    cardCvc: '482',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvc: '',
     amount: 35.00
   });
 

@@ -36,13 +36,13 @@ export const PublicStatePage = () => {
   const [activeTab, setActiveTab] = useState('HOME');
   
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
-  const [claimForm, setClaimForm] = useState({
-    applicant: 'James Wadley',
-    email: 'Houstonroofing@yahoo.com',
-    phone: '(800) 555-0192',
-    message: 'Official State Association leadership application & registration.',
+  const [claimForm, setClaimForm] = useState(() => ({
+    applicant: currentUser?.name || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    message: '',
     autoVerify: true
-  });
+  }));
 
   const handleClaimSubmit = async (e) => {
     e.preventDefault();

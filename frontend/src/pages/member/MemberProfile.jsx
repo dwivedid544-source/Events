@@ -5,13 +5,13 @@ import { User, Mail, Phone, MapPin, Lock, Save } from 'lucide-react';
 export const MemberProfile = () => {
   const { currentUser = {}, updateUserProfile, showToast } = useApp();
   const [profile, setProfile] = useState({
-    name: currentUser.name || 'Robert Miller',
-    email: currentUser.email || 'robert.miller@example.com',
-    phone: currentUser.phone || '(865) 555-0192',
-    address: currentUser.address || '1420 Hunting Ridge Rd',
-    city: currentUser.city || 'Knoxville',
-    state: currentUser.state || 'Tennessee',
-    zip: currentUser.zip || '37901'
+    name: currentUser.name || '',
+    email: currentUser.email || '',
+    phone: currentUser.phone || '',
+    address: currentUser.address || '',
+    city: currentUser.city || '',
+    state: currentUser.state || '',
+    zip: currentUser.zip || ''
   });
 
   const handleSave = (e) => {

@@ -19,11 +19,11 @@ export const PublicStorePage = () => {
   const [formData, setFormData] = useState({
     name: '',
     category: 'Gear',
-    price: 35.00,
-    wholesaleCost: 15.00,
-    vendorName: 'Garmin Outdoor',
-    inStock: 50,
-    image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&auto=format&fit=crop&q=80',
+    price: '',
+    wholesaleCost: '',
+    vendorName: '',
+    inStock: '',
+    image: '',
     description: ''
   });
 

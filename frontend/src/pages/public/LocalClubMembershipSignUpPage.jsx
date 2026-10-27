@@ -23,9 +23,9 @@ export const LocalClubMembershipSignUpPage = () => {
     membershipType: 'Individual Local Membership ($25.00/year)', // 6. Membership type
     clubAffiliation: selectedClub.name, // 7. Club affiliation
     amount: 25.00,
-    cardNumber: '4242 •••• •••• 4242',
-    cardExpiry: '12/28',
-    cardCvc: '888',
+    cardNumber: '',
+    cardExpiry: '',
+    cardCvc: '',
     cardHolder: ''
   });
 

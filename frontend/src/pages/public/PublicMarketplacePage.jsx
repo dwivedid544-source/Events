@@ -171,21 +171,25 @@ export const PublicMarketplacePage = () => {
             {/* Image Header */}
             <div className="relative overflow-hidden h-52 bg-surface-low">
               <img
-                src={p.image}
+                src={p.image || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=80'}
                 alt={p.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=80';
+                }}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <span className="absolute top-3 left-3 text-[9px] uppercase font-black px-2.5 py-1 rounded-full bg-forest-950/90 text-tan-300 backdrop-blur-md border border-forest-800">
-                {p.category}
+                {p.category || 'Gear'}
               </span>
 
               {/* Vendor Source Badge */}
               <span
                 className={`absolute bottom-3 left-3 text-[9px] font-black px-2.5 py-1 rounded-lg border shadow-sm ${getSourceBadgeStyle(
-                  p.source
+                  p.source || 'UHC'
                 )}`}
               >
-                Source: {p.source}
+                Source: {p.source || p.scopeChannel || 'UHC'}
               </span>
             </div>
 
@@ -193,7 +197,7 @@ export const PublicMarketplacePage = () => {
             <div className="p-5 space-y-3">
               <div>
                 <span className="text-[10px] text-charcoal-muted font-bold block">
-                  Vendor: {p.vendorName}
+                  Vendor: {p.vendorName || p.club || 'Authorized Vendor'}
                 </span>
                 <h3 className="font-black text-sm text-forest-950 group-hover:text-tan-700 transition-colors mt-0.5">
                   {p.name}

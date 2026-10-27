@@ -22,8 +22,8 @@ export const LoginPage = () => {
   const urlEmail = searchParams.get('email');
   const isNewAccount = searchParams.get('newAccount') === 'true';
 
-  const [email, setEmail] = useState(urlEmail || 'superadmin@gmail.com');
-  const [password, setPassword] = useState('12345678');
+  const [email, setEmail] = useState(urlEmail || '');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
