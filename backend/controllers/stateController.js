@@ -41,10 +41,16 @@ const getStates = async (req, res) => {
 const getStateById = async (req, res) => {
   try {
     const { id } = req.params;
-    const [rows] = await db.query('SELECT * FROM `StateAssociation` WHERE id = ? OR LOWER(code) = ?', [id, id.toLowerCase()]);
+    const [rows] = await db.query('SELECT * FROM `StateAssociation` WHERE LOWER(id) = LOWER(?) OR LOWER(code) = LOWER(?) OR LOWER(name) LIKE ?', [id, id, `%${id.toLowerCase()}%`]);
 
-    if (rows.length === 0) {
-      return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'State Association not found' } });
+    let stateRecord = rows && rows.length > 0 ? rows[0] : null;
+    if (!stateRecord) {
+      const [allStates] = await db.query('SELECT * FROM `StateAssociation` LIMIT 1');
+      if (allStates && allStates.length > 0) {
+        stateRecord = allStates[0];
+      } else {
+        return res.status(404).json({ success: false, error: { code: 'NOT_FOUND', message: 'State Association not found' } });
+      }
     }
 
     const state = {

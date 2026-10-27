@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useApp , API_BASE_URL} from '../../context/AppContext';
+import { apiClient } from '../../utils/apiClient';
 import {
   Users,
   Calendar,
@@ -29,8 +30,8 @@ export const ClubAdminDashboard = () => {
 
   // Dedicated Flow-Wise Page Load API Call to Express Backend & MySQL `club` Database
   React.useEffect(() => {
-    fetch(`${API_BASE_URL}/clubs/club-1`)
-      .then((res) => res.json())
+    apiClient
+      .get('/clubs/club-1')
       .then((data) => {
         console.log('📡 [Club Admin Flow API Call]:', data);
       })
