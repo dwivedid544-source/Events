@@ -1587,11 +1587,7 @@ export const AppProvider = ({ children }) => {
     });
 
     try {
-      await fetch(`${API_BASE_URL}/clubs/${clubId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFields)
-      });
+      await apiClient.put(`/clubs/${clubId}`, updatedFields);
     } catch (err) {
       console.warn('API Warning on updateClub:', err.message);
     }
@@ -1628,53 +1624,62 @@ export const AppProvider = ({ children }) => {
       description: newEventData.description || 'Sanctioned hunt event.'
     };
 
-    setEvents((prev) => {
-      const next = [created, ...prev];
-      localStorage.setItem('nh_events', JSON.stringify(next));
-      return next;
-    });
-
     try {
-      await fetch(`${API_BASE_URL}/events`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(created)
+      const res = await apiClient.post('/events', created);
+      const persisted = res?.data || created;
+      setEvents((prev) => {
+        const next = [persisted, ...prev.filter((e) => e.id !== persisted.id)];
+        localStorage.setItem('nh_events', JSON.stringify(next));
+        return next;
       });
-      console.log('📡 API Call Success: POST /api/v1/events');
+      showToast(`Event "${persisted.name}" published successfully!`, 'success');
+      return persisted;
     } catch (err) {
-      console.warn('API Call Warning:', err.message);
+      console.error('Create Event Error:', err.message);
+      // Still persist locally so UI is responsive
+      setEvents((prev) => {
+        const next = [created, ...prev.filter((e) => e.id !== created.id)];
+        localStorage.setItem('nh_events', JSON.stringify(next));
+        return next;
+      });
+      showToast(`Event published (offline sync: ${err.message})`, 'info');
+      return created;
     }
-
-    showToast(`Event "${created.name}" published successfully!`, 'success');
-    return created;
   };
 
   const deleteEvent = async (eventId) => {
+    try {
+      await apiClient.delete(`/events/${eventId}`);
+    } catch (err) {
+      console.warn('API Call Warning on deleteEvent:', err.message);
+    }
+
     setEvents((prev) => {
       const next = prev.filter((e) => e.id !== eventId);
       localStorage.setItem('nh_events', JSON.stringify(next));
       return next;
     });
 
-    try {
-      await fetch(`${API_BASE_URL}/events/${eventId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      console.log(`📡 API Call Success: DELETE /api/v1/events/${eventId}`);
-    } catch (err) {
-      console.warn('API Call Warning:', err.message);
-    }
-
     showToast('Event removed successfully', 'info');
   };
 
   const updateEvent = async (eventId, updatedData) => {
     const targetId = eventId || updatedData.id || 'evt-1';
+    let updatedItem = { id: targetId, ...updatedData };
+
+    try {
+      const res = await apiClient.put(`/events/${targetId}`, updatedData);
+      if (res?.data) {
+        updatedItem = res.data;
+      }
+    } catch (err) {
+      console.warn('API Warning on updateEvent:', err.message);
+    }
+
     setEvents((prev) => {
       const next = prev.map((e) => {
         if (e.id === targetId || e.name === updatedData.name) {
-          const merged = { ...e, ...updatedData };
+          const merged = { ...e, ...updatedItem };
           if (updatedData.entriesCount !== undefined) {
             merged.entries = Number(updatedData.entriesCount);
             merged.entriesCount = Number(updatedData.entriesCount);
@@ -1690,18 +1695,8 @@ export const AppProvider = ({ children }) => {
       return next;
     });
 
-    try {
-      await fetch(`${API_BASE_URL}/events/${targetId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData)
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/events/${targetId}`);
-    } catch (err) {
-      console.warn('API Warning:', err.message);
-    }
-
     showToast(`Updated event: "${updatedData.name || targetId}"`, 'success');
+    return updatedItem;
   };
 
   // 5. Add / Edit Dog Action
