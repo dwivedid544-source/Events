@@ -119,7 +119,7 @@ export const HomePage = () => {
         <div
           className="absolute inset-0 bg-cover bg-center opacity-30 mix-blend-overlay"
           style={{
-            backgroundImage: `url('https://images.unsplash.com/photo-1511497584788-876761c11969?w=1600&auto=format&fit=crop&q=80')`
+            backgroundImage: `url('https://images.unsplash.com/photo-1544816155-12df9643f363?w=1600&auto=format&fit=crop&q=80')`
           }}
         ></div>
         <div className="absolute inset-0 bg-gradient-to-b from-forest-950/80 via-forest-900/90 to-forest-950 pointer-events-none"></div>
@@ -1267,7 +1267,7 @@ export const HomePage = () => {
             >
               <div className="relative h-48 overflow-hidden bg-forest-950">
                 <img
-                  src={item.image || 'https://images.unsplash.com/photo-1511497584788-876761c11969?w=600&auto=format&fit=crop&q=80'}
+                  src={item.image || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=600&auto=format&fit=crop&q=80'}
                   alt={item.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
