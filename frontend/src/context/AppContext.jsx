@@ -245,76 +245,7 @@ export const AppProvider = ({ children }) => {
       });
   }, []);
 
-  // Synchronize role-scoped authenticated data only after user session is verified
-  useEffect(() => {
-    if (!currentUser || !getAuthToken()) return;
 
-    const isAdmin = ['SUPER_ADMIN', 'NATIONAL_ADMIN', 'STATE_ADMIN', 'CLUB_ADMIN', 'EVENT_ADMIN'].includes(currentUser.role);
-
-    if (isAdmin) {
-      apiClient
-        .get('/members')
-        .then((resData) => {
-          if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
-            setMembers(resData.data);
-            localStorage.setItem('nh_members', JSON.stringify(resData.data));
-          }
-        })
-        .catch(() => {});
-
-      if (currentUser.role === 'SUPER_ADMIN') {
-        apiClient
-          .get('/club-claims')
-          .then((resData) => {
-            if (resData?.success && Array.isArray(resData.data)) {
-              setClaims(resData.data);
-            }
-          })
-          .catch(() => {});
-      }
-    }
-
-    apiClient
-      .get('/orders')
-      .then((resData) => {
-        if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
-          const normalized = resData.data.map((o) => {
-            let itemsSummary = o.items || o.item;
-            if (!itemsSummary && o.itemsJson) {
-              try {
-                const parsed = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
-                if (Array.isArray(parsed) && parsed.length > 0) {
-                  itemsSummary = parsed.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
-                }
-              } catch (e) {
-                // ignore
-              }
-            }
-            const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
-            return {
-              ...o,
-              customer: o.customer || o.customerName || 'Customer',
-              customerName: o.customerName || o.customer || 'Customer',
-              email: o.email || o.customerEmail || '',
-              customerEmail: o.customerEmail || o.email || '',
-              items: itemsSummary || 'Sanctioned Gear / Equipment',
-              item: itemsSummary || 'Sanctioned Gear / Equipment',
-              product: o.product || itemsSummary || 'Sanctioned Gear / Equipment',
-              total: orderAmount,
-              sellingPrice: orderAmount,
-              amount: orderAmount,
-              status: o.fulfillmentStatus || o.status || 'Processing',
-              fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
-              payoutStatus: o.payoutStatus || 'Pending',
-              carrier: o.carrier || 'UPS Ground',
-              trackingNumber: o.trackingNumber || 'Pending Dispatch'
-            };
-          });
-          setOrders(normalized);
-        }
-      })
-      .catch(() => {});
-  }, [currentUser]);
 
   // Flow-Wise Route API Dispatcher: Fires exact API endpoint for EVERY single route in the app
   useEffect(() => {
@@ -557,6 +488,153 @@ export const AppProvider = ({ children }) => {
   });
   
   const [claims, setClaims] = useState([]);
+
+  // Robust Order Normalization: parses itemsJson and guarantees all display & governance fields
+  const normalizeOrder = (o) => {
+    if (!o) return null;
+    const orderId = o.id || o.orderNumber || `ORD-${Date.now()}`;
+    const totalAmount = Number(o.total || o.sellingPrice || o.amount || 0);
+
+    let itemsSummary = o.items || o.item;
+    let parsedItems = [];
+    if (o.itemsJson) {
+      try {
+        parsedItems = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
+        if (Array.isArray(parsedItems) && parsedItems.length > 0 && !itemsSummary) {
+          itemsSummary = parsedItems.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
+        }
+      } catch (e) {}
+    }
+
+    const primaryItem = (Array.isArray(parsedItems) ? parsedItems[0] : null) || {};
+    const originType = o.originType || (o.clubId ? 'CLUB' : 'NATIONAL');
+    const orderSource = o.orderSource || (originType === 'CLUB' ? (o.club || 'Oak Ridge Hunting Club') : (originType === 'STATE' ? (o.state || 'Tennessee State Store') : 'National HQ Store'));
+    const vendorName = o.vendorName || primaryItem.vendorName || 'Garmin Outdoor';
+
+    // Accurate split calculations
+    const wholesaleCost = Number(o.wholesaleCost || o.vendorAmount || (totalAmount * 0.7).toFixed(2));
+    const vendorAmount = wholesaleCost;
+    const margin = Number((totalAmount - wholesaleCost).toFixed(2));
+
+    let clubShare = 0;
+    let stateShare = 0;
+    let nationalShare = 0;
+
+    if (originType === 'CLUB') {
+      clubShare = Number((o.clubShare !== undefined ? o.clubShare : totalAmount * 0.15).toFixed(2));
+      stateShare = Number((o.stateShare !== undefined ? o.stateShare : totalAmount * 0.07).toFixed(2));
+      nationalShare = Number((o.nationalShare !== undefined ? o.nationalShare : (margin - clubShare - stateShare)).toFixed(2));
+    } else if (originType === 'STATE') {
+      clubShare = 0;
+      stateShare = Number((o.stateShare !== undefined ? o.stateShare : totalAmount * 0.07).toFixed(2));
+      nationalShare = Number((o.nationalShare !== undefined ? o.nationalShare : (margin - stateShare)).toFixed(2));
+    } else {
+      clubShare = 0;
+      stateShare = 0;
+      nationalShare = Number((o.nationalShare !== undefined ? o.nationalShare : margin).toFixed(2));
+    }
+
+    const formattedDate = o.date || (o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }) : new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }));
+
+    return {
+      ...o,
+      id: orderId,
+      orderNumber: o.orderNumber || orderId,
+      customer: o.customer || o.customerName || 'Customer',
+      customerName: o.customerName || o.customer || 'Customer',
+      email: o.email || o.customerEmail || '',
+      customerEmail: o.customerEmail || o.email || '',
+      items: itemsSummary || 'Sanctioned Gear / Equipment',
+      item: itemsSummary || 'Sanctioned Gear / Equipment',
+      product: o.product || primaryItem.name || itemsSummary || 'Sanctioned Gear / Equipment',
+      total: totalAmount,
+      sellingPrice: totalAmount,
+      amount: totalAmount,
+      wholesaleCost,
+      vendorAmount,
+      profitMargin: margin,
+      profitMarginPct: 30,
+      nationalShare,
+      stateShare,
+      clubShare,
+      originType,
+      orderSource,
+      vendorName,
+      date: formattedDate,
+      status: o.fulfillmentStatus || o.status || 'Processing',
+      fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
+      payoutStatus: o.payoutStatus || 'Pending',
+      carrier: o.carrier || 'UPS Ground',
+      trackingNumber: o.trackingNumber || 'Pending Dispatch'
+    };
+  };
+
+  // Re-synchronize orders from live backend database and merge with demo fixtures
+  const refreshOrders = async () => {
+    try {
+      const resData = await apiClient.get('/orders');
+      if (resData?.success && Array.isArray(resData.data)) {
+        const orderMap = new Map();
+        // 1. Initial demo fixtures
+        INITIAL_ORDERS.forEach((o) => {
+          const norm = normalizeOrder(o);
+          orderMap.set(norm.id, norm);
+        });
+        // 2. Overlay live backend database rows
+        resData.data.forEach((o) => {
+          const norm = normalizeOrder(o);
+          orderMap.set(norm.id, norm);
+        });
+        const merged = Array.from(orderMap.values()).sort((a, b) => {
+          const dateA = new Date(a.createdAt || a.date || 0).getTime();
+          const dateB = new Date(b.createdAt || b.date || 0).getTime();
+          return dateB - dateA;
+        });
+        setOrders(merged);
+        try {
+          localStorage.setItem('nh_orders_v2', JSON.stringify(merged));
+        } catch (e) {}
+        return merged;
+      }
+    } catch (err) {
+      console.warn('Orders refresh note:', err.message);
+    }
+    return orders;
+  };
+
+  // Synchronize role-scoped authenticated data only after user session is verified
+  useEffect(() => {
+    if (!currentUser || !getAuthToken()) return;
+
+    const isAdmin = ['SUPER_ADMIN', 'NATIONAL_ADMIN', 'STATE_ADMIN', 'CLUB_ADMIN', 'EVENT_ADMIN'].includes(currentUser.role);
+
+    if (isAdmin) {
+      apiClient
+        .get('/members')
+        .then((resData) => {
+          if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
+            setMembers(resData.data);
+            localStorage.setItem('nh_members', JSON.stringify(resData.data));
+          }
+        })
+        .catch(() => {});
+
+      if (currentUser.role === 'SUPER_ADMIN') {
+        apiClient
+          .get('/club-claims')
+          .then((resData) => {
+            if (resData?.success && Array.isArray(resData.data)) {
+              setClaims(resData.data);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    if (getAuthToken()) {
+      refreshOrders();
+    }
+  }, [currentUser]);
 
   const [news, setNews] = useState(() => {
     const saved = localStorage.getItem('nh_news');
@@ -2409,6 +2487,11 @@ export const AppProvider = ({ children }) => {
           cardLast4: checkoutData.cardNumber ? checkoutData.cardNumber.slice(-4) : '4242'
         });
         console.log('💳 Clover Order Settlement Success:', chargeRes);
+
+        // Re-sync all orders from database immediately if user is authenticated
+        if (getAuthToken()) {
+          await refreshOrders();
+        }
       } catch (err) {
         console.warn('Order backend sync / charge warning:', err.message || err);
       }
@@ -2520,6 +2603,8 @@ export const AppProvider = ({ children }) => {
         removeFromCart,
         clearCart,
         placeOrder,
+        refreshOrders,
+        normalizeOrder,
         vendors,
         setVendors,
         commissionSettings,

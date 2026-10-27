@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
 import {
@@ -21,8 +21,14 @@ import {
 } from 'lucide-react';
 
 export const ClubAdminStorePage = () => {
-  const { clubs, orders = [], updatePayoutStatus, addProduct, products = [], showToast } = useApp();
+  const { clubs, orders = [], updatePayoutStatus, addProduct, products = [], showToast, refreshOrders } = useApp();
   const myClub = clubs[0] || { name: 'Oak Ridge Hunting Club' };
+
+  useEffect(() => {
+    if (typeof refreshOrders === 'function') {
+      refreshOrders();
+    }
+  }, []);
 
   const [dateFilter, setDateFilter] = useState('All Time');
   const [searchQuery, setSearchQuery] = useState('');

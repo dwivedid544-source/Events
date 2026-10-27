@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
 import {
@@ -41,10 +41,35 @@ export const NationalAdminStorePage = () => {
     addProduct,
     vendors = [],
     orders = [],
+    refreshOrders,
     placeOrder,
     updatePayoutStatus,
     showToast
   } = useApp();
+
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Sync latest orders from live backend database on mount
+  useEffect(() => {
+    if (typeof refreshOrders === 'function') {
+      refreshOrders();
+    }
+  }, []);
+
+  const handleManualRefresh = async () => {
+    if (typeof refreshOrders !== 'function') return;
+    setIsRefreshing(true);
+    try {
+      const res = await refreshOrders();
+      if (showToast) {
+        showToast(`Synced ${res?.length || orders.length} store orders from database!`, 'success');
+      }
+    } catch (e) {
+      if (showToast) showToast('Failed to refresh orders: ' + e.message, 'error');
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   const [activeTab, setActiveTab] = useState('orders'); // 'orders' | 'catalog' | 'governance'
   const [dateFilter, setDateFilter] = useState('All Time'); // 'All Time' | 'Today' | 'This Month' | 'This Year'
@@ -442,24 +467,36 @@ export const NationalAdminStorePage = () => {
             </button>
           </div>
 
-          {/* Search Box */}
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-muted" />
-            <input
-              type="text"
-              placeholder="Search customer, order ID, product, vendor, channel..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-9 py-2 bg-surface-low border border-surface-border rounded-xl text-xs font-medium text-forest-900 placeholder:text-charcoal-muted/70 focus:outline-none focus:ring-2 focus:ring-forest-800/20 focus:border-forest-800 transition-all"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-forest-900"
-              >
-                <X className="w-3.5 h-3.5" />
-              </button>
-            )}
+          {/* Search Box & Live Sync Button */}
+          <div className="flex items-center gap-2 flex-1 max-w-lg">
+            <div className="relative flex-1">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-muted" />
+              <input
+                type="text"
+                placeholder="Search customer, order ID, product, vendor, channel..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-9 py-2 bg-surface-low border border-surface-border rounded-xl text-xs font-medium text-forest-900 placeholder:text-charcoal-muted/70 focus:outline-none focus:ring-2 focus:ring-forest-800/20 focus:border-forest-800 transition-all"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-charcoal-muted hover:text-forest-900"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <button
+              onClick={handleManualRefresh}
+              disabled={isRefreshing}
+              className="px-3 py-2 bg-surface-low hover:bg-surface-border text-forest-900 border border-surface-border rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-2xs hover:shadow-xs active:scale-95 disabled:opacity-50"
+              title="Sync live orders from database"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 text-forest-800 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <span className="hidden sm:inline">Refresh</span>
+            </button>
           </div>
         </div>
 

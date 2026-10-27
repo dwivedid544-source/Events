@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { StatCard } from '../../components/common/StatCard';
 import {
@@ -21,7 +21,13 @@ import {
 } from 'lucide-react';
 
 export const StateAdminStorePage = () => {
-  const { states, orders = [], updatePayoutStatus, addProduct, deleteProduct, products = [], showToast, currentUser } = useApp();
+  const { states, orders = [], updatePayoutStatus, addProduct, deleteProduct, products = [], showToast, currentUser, refreshOrders } = useApp();
+
+  useEffect(() => {
+    if (typeof refreshOrders === 'function') {
+      refreshOrders();
+    }
+  }, []);
   const myState =
     states.find(
       (s) =>

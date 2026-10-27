@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { useLocation } from 'react-router-dom';
 import { DataTable } from '../../components/common/DataTable';
@@ -6,8 +6,14 @@ import { StatCard } from '../../components/common/StatCard';
 import { ShoppingBag, DollarSign, PackageCheck, Truck } from 'lucide-react';
 
 export const MemberOrders = () => {
-  const { currentUser, orders = [] } = useApp();
+  const { currentUser, orders = [], refreshOrders } = useApp();
   const location = useLocation();
+
+  useEffect(() => {
+    if (typeof refreshOrders === 'function') {
+      refreshOrders();
+    }
+  }, []);
 
   // If viewing inside Super Admin or National Admin portal, OR if logged in as Super/National Admin -> show ALL platform orders
   const isSuperAdmin =
