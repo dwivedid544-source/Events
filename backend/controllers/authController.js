@@ -145,22 +145,4 @@ module.exports = {
   login,
   getProfile
 };
-      });
-    }
-
-return res.json({
-  success: true,
-  data: rows[0],
-  message: 'Member profile fetched from MySQL database `club`'
-});
-  } catch (err) {
-  return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-}
-};
-
-module.exports = {
-  register,
-  login,
-  getProfile
-};
 

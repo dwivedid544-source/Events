@@ -6,22 +6,25 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('🌱 Starting seed into `club.db` database...');
 
-  // 1. Seed Users
-  const passwordHash = await bcrypt.hash('Password123!', 10);
-  await prisma.user.upsert({
-    where: { email: 'demo@example.com' },
-    update: {},
-    create: {
-      id: 'usr-lalit',
-      name: 'Lalit Panchole',
-      email: 'demo@example.com',
-      passwordHash,
-      role: 'SUPER_ADMIN',
-      phone: '(800) 555-0192',
-      stateCode: 'TX',
-      clubId: 'club-1'
-    }
-  });
+  // 1. Seed Users with simple testing credentials (password: 12345678)
+  const passwordHash = await bcrypt.hash('12345678', 10);
+  const seedUsers = [
+    { id: 'usr-superadmin', email: 'superadmin@gmail.com', name: 'Super Admin', role: 'SUPER_ADMIN', phone: '(800) 555-0192', stateCode: 'TX', clubId: 'club-1' },
+    { id: 'usr-nationaladmin', email: 'nationaladmin@gmail.com', name: 'National Admin', role: 'NATIONAL_ADMIN', phone: '(800) 555-0101', stateCode: 'TX', clubId: 'club-1' },
+    { id: 'usr-stateadmin', email: 'stateadmin@gmail.com', name: 'State Admin', role: 'STATE_ADMIN', phone: '(865) 555-0100', stateCode: 'TN', clubId: 'club-1' },
+    { id: 'usr-clubadmin', email: 'clubadmin@gmail.com', name: 'Club Admin', role: 'CLUB_ADMIN', phone: '(865) 555-0192', stateCode: 'TN', clubId: 'club-1' },
+    { id: 'usr-eventadmin', email: 'eventadmin@gmail.com', name: 'Event Admin', role: 'EVENT_ADMIN', phone: '(865) 555-0155', stateCode: 'TN', clubId: 'club-1' },
+    { id: 'usr-memberuser', email: 'member@gmail.com', name: 'Member User', role: 'MEMBER', phone: '(865) 555-0199', stateCode: 'TN', clubId: 'club-1' },
+    { id: 'usr-demo', email: 'demo@example.com', name: 'Demo Super Admin', role: 'SUPER_ADMIN', phone: '(800) 555-0192', stateCode: 'TX', clubId: 'club-1' }
+  ];
+
+  for (const u of seedUsers) {
+    await prisma.user.upsert({
+      where: { email: u.email },
+      update: { name: u.name, role: u.role, phone: u.phone, stateCode: u.stateCode, clubId: u.clubId, passwordHash },
+      create: { ...u, passwordHash }
+    });
+  }
 
   // 2. Seed State Associations
   const states = [
