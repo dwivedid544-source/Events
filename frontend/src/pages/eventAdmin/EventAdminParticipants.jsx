@@ -19,6 +19,8 @@ import {
 } from 'lucide-react';
 import { StatCard } from '../../components/common/StatCard';
 
+import { apiClient } from '../../utils/apiClient';
+
 export const EventAdminParticipants = () => {
   const { members = [], dogs = [], entries = [], showToast } = useApp();
   const [searchQuery, setSearchQuery] = useState('');
@@ -27,12 +29,16 @@ export const EventAdminParticipants = () => {
 
   // Dedicated Flow-Wise API Call on Page Mount
   React.useEffect(() => {
-    fetch(`${API_BASE_URL}/members`)
-      .then((res) => res.json())
+    apiClient
+      .get('/members')
       .then((data) => {
         console.log('📡 [Event Admin Participants Flow API Call]:', data);
       })
-      .catch((err) => console.warn('Failed fetching participants API:', err.message));
+      .catch((err) => {
+        if (err.status !== 401) {
+          console.warn('Failed fetching participants API:', err.message);
+        }
+      });
   }, []);
 
   // Map participants roster dynamically combining base handlers with trial entries

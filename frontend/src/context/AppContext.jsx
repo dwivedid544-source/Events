@@ -409,12 +409,22 @@ export const AppProvider = ({ children }) => {
     const targetEndpoint = routeApiMap[rawPath];
 
     if (targetEndpoint) {
-      fetch(`${API_BASE_URL}/${targetEndpoint}`)
-        .then((res) => res.json())
-        .then((data) => {
-          console.log(`📡 [Flow API Call] Path: ${location.pathname} ➔ Endpoint: ${targetEndpoint}:`, data);
-        })
-        .catch((err) => console.warn(`Flow API call failed for ${rawPath}:`, err.message));
+      const publicPrefixes = ['states', 'clubs', 'events', 'news', 'products', 'health'];
+      const isPublic = publicPrefixes.some((p) => targetEndpoint.startsWith(p));
+      const hasToken = Boolean(getAuthToken());
+
+      if (isPublic || hasToken) {
+        apiClient
+          .get(`/${targetEndpoint.replace(/^\//, '')}`)
+          .then((data) => {
+            console.log(`📡 [Flow API Call] Path: ${location.pathname} ➔ Endpoint: ${targetEndpoint}:`, data);
+          })
+          .catch((err) => {
+            if (err.status !== 401 && err.status !== 403) {
+              console.warn(`Flow API call note for ${rawPath}:`, err.message);
+            }
+          });
+      }
     }
   }, [location.pathname]);
 
