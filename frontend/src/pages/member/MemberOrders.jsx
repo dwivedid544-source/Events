@@ -19,11 +19,17 @@ export const MemberOrders = () => {
   // If Super Admin view, show all orders for complete audit ledger; otherwise filter to current user's personal orders
   const userOrders = isSuperAdmin
     ? orders
-    : orders.filter((o) =>
-        (currentUser?.email && o.email && o.email.toLowerCase() === currentUser.email.toLowerCase()) ||
-        (currentUser?.name && o.customer && o.customer.toLowerCase() === currentUser.name.toLowerCase()) ||
-        o.id === 'ORD-9018'
-      );
+    : orders.filter((o) => {
+        const orderEmail = (o.customerEmail || o.email || '').toLowerCase();
+        const userEmail = (currentUser?.email || '').toLowerCase();
+        const orderName = (o.customerName || o.customer || '').toLowerCase();
+        const userName = (currentUser?.name || '').toLowerCase();
+        return (
+          (userEmail && orderEmail && orderEmail === userEmail) ||
+          (userName && orderName && orderName === userName) ||
+          o.id === 'ORD-9018'
+        );
+      });
 
   // Normalize order objects defensively to prevent any undefined .toFixed() crashes
   const normalizedOrders = userOrders.map((o) => {
@@ -33,8 +39,8 @@ export const MemberOrders = () => {
       items: o.items || o.item || 'Sanctioned Gear / Equipment',
       total: rawTotal,
       amount: rawTotal,
-      customer: o.customer || currentUser?.name || 'Lalit Panchole',
-      email: o.email || currentUser?.email || 'demo@example.com',
+      customer: o.customerName || o.customer || currentUser?.name || 'Lalit Panchole',
+      email: o.customerEmail || o.email || currentUser?.email || 'demo@example.com',
       paymentStatus: o.paymentStatus || 'Paid',
       fulfillmentStatus: o.fulfillmentStatus || o.status || 'Delivered'
     };

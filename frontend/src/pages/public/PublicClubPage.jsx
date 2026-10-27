@@ -43,59 +43,32 @@ export const PublicClubPage = () => {
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
   const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [claimForm, setClaimForm] = useState(() => ({
-    applicant: currentUser?.name || 'James Wadley',
-    email: currentUser?.email || 'Houstonroofing@yahoo.com',
-    phone: currentUser?.phone || '(713) 555-0192',
-    message: 'Official club officer application & management registration.',
-    autoVerify: true
+    applicant: currentUser?.name || '',
+    email: currentUser?.email || '',
+    phone: currentUser?.phone || '',
+    message: ''
   }));
 
   const handleClaimSubmit = async (e) => {
     e.preventDefault();
     setIsSubmittingClaim(true);
     try {
-      const newClaim = await submitClaimRequest({
+      await submitClaimRequest({
         club: club.name,
         clubId: club.id,
         state: club.stateCode || club.state,
-        ...claimForm
+        applicant: claimForm.applicant,
+        email: claimForm.email,
+        phone: claimForm.phone,
+        message: claimForm.message
       });
 
-      if (claimForm.autoVerify && newClaim?.id) {
-        if (updateClaimStatus) {
-          await updateClaimStatus(newClaim.id, 'Approved');
-        }
-        if (setCurrentUser) {
-          setCurrentUser((prev) => ({
-            ...prev,
-            name: claimForm.applicant || 'James Wadley',
-            email: claimForm.email || 'Houstonroofing@yahoo.com',
-            role: 'CLUB_ADMIN',
-            scope: `${club.name} (${club.stateCode || club.state})`,
-            club: club.name,
-            clubId: club.id
-          }));
-        }
-        if (setClubs) {
-          setClubs((prev) =>
-            prev.map((c) =>
-              c.id === club.id || c.name === club.name
-                ? { ...c, adminName: claimForm.applicant, status: 'Active' }
-                : c
-            )
-          );
-        }
-        showToast(
-          `Congratulations! Claim Approved! You are now the official Administrator for ${club.name}! Access your Club Admin portal.`,
-          'success'
-        );
-      } else {
-        showToast(
-          `Claim request for ${club.name} submitted! Status: Pending review in Super Admin queue.`,
-          'success'
-        );
-      }
+      showToast(
+        `Claim request for ${club.name} submitted! Status: Pending review in Super Admin queue.`,
+        'success'
+      );
       setIsClaimModalOpen(false);
+      setClaimForm({ applicant: currentUser?.name || '', email: currentUser?.email || '', phone: currentUser?.phone || '', message: '' });
     } catch (err) {
       showToast('Claim submission error: ' + err.message, 'error');
     } finally {
@@ -390,35 +363,6 @@ export const PublicClubPage = () => {
                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                         <span>Claim Pending: {activeClaim.applicant}</span>
                       </div>
-                      <button
-                        onClick={async () => {
-                          if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
-                          if (setCurrentUser) {
-                            setCurrentUser((prev) => ({
-                              ...prev,
-                              name: activeClaim.applicant,
-                              email: activeClaim.email,
-                              role: 'CLUB_ADMIN',
-                              scope: `${club.name} (${club.stateCode || club.state})`,
-                              club: club.name,
-                              clubId: club.id
-                            }));
-                          }
-                          if (setClubs) {
-                            setClubs((prev) =>
-                              prev.map((c) =>
-                                c.id === club.id || c.name === club.name
-                                  ? { ...c, adminName: activeClaim.applicant, status: 'Active' }
-                                  : c
-                              )
-                            );
-                          }
-                          showToast(`Claim Approved! Granted Administrator access for ${club.name}.`, 'success');
-                        }}
-                        className="px-3.5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer transition-all"
-                      >
-                        1-Click Approve (Demo)
-                      </button>
                       <Link
                         to="/super-admin/club-claims"
                         className="px-3 py-2 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700 transition-all"
@@ -1206,18 +1150,7 @@ export const PublicClubPage = () => {
               />
             </div>
             
-            <div className="flex items-center gap-2 pt-1 pb-1">
-              <input
-                type="checkbox"
-                id="autoVerifyClub"
-                checked={claimForm.autoVerify}
-                onChange={(e) => setClaimForm({ ...claimForm, autoVerify: e.target.checked })}
-                className="w-4 h-4 accent-tan-600 rounded cursor-pointer"
-              />
-              <label htmlFor="autoVerifyClub" className="text-xs font-bold text-forest-900 cursor-pointer">
-                Instant Verification & Activate Club Admin Role (Live Sandbox Mode)
-              </label>
-            </div>
+
 
             <div className="flex items-center justify-end gap-2 pt-4 border-t border-surface-border">
               <button

@@ -29,72 +29,79 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
   const [startDate, setStartDate] = useState('2026-08-01');
   const [endDate, setEndDate] = useState('2026-08-31');
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [backendSummary, setBackendSummary] = useState(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportError, setReportError] = useState(null);
 
   // Flow-Wise Page Load & Filter API Call to Express REST Backend & MySQL `club` Database
   React.useEffect(() => {
+    let isCancelled = false;
+    setReportLoading(true);
+    setReportError(null);
+
     const customParams = periodFilter === 'Custom' ? `&startDate=${startDate}&endDate=${endDate}` : '';
+    const token = localStorage.getItem('nh_token') || sessionStorage.getItem('nh_token');
+    const headers = { 'Content-Type': 'application/json' };
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
     const apiUrl = `${API_BASE_URL}/reports/financial-overview?period=${periodFilter.toLowerCase()}${customParams}`;
-    fetch(apiUrl)
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(`📊 [Reports Flow API Call] Financial Overview (${periodFilter}):`, data);
+    fetch(apiUrl, { headers })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
       })
-      .catch((err) => console.warn('Failed fetching reports API:', err.message));
+      .then((data) => {
+        if (!isCancelled && data?.success && data?.data?.summary) {
+          setBackendSummary(data.data.summary);
+          console.log(`📊 [Reports Flow API Call] Financial Overview (${periodFilter}):`, data);
+        }
+      })
+      .catch((err) => {
+        if (!isCancelled) {
+          console.warn('Failed fetching reports API:', err.message);
+          setReportError(err.message);
+        }
+      })
+      .finally(() => {
+        if (!isCancelled) setReportLoading(false);
+      });
+
+    return () => { isCancelled = true; };
   }, [periodFilter, startDate, endDate]);
 
-  // Calculate dynamic period scaling factor based on real context state
-  const getPeriodFactor = () => {
-    switch (periodFilter) {
-      case 'Daily':
-        return 0.033; // 1 day scale (~1/30th of monthly baseline)
-      case 'Weekly':
-        return 0.23; // 7 days scale (~7/30th of monthly baseline)
-      case 'Monthly':
-        return 1.0; // 30 days scale (Full monthly baseline)
-      case 'Custom': {
-        if (!startDate || !endDate) return 1.0;
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const diffDays = Math.max(1, Math.round((end - start) / (1000 * 60 * 60 * 24)));
-        return diffDays / 30;
-      }
-      default:
-        return 1.0;
-    }
-  };
-
-  const periodFactor = getPeriodFactor();
-
-  // 1. Membership Revenue (Dynamic calculation from active members & membership transactions)
+  // Context-based fallback calculations only if backend request is loading or unavailable
   const baseMembershipSum = members.reduce((sum, m) => sum + (Number(m.duesAmount || m.amountPaid) || 35.00), 0);
-  const membershipRevenue = Number((baseMembershipSum * periodFactor).toFixed(2));
-
-  // 2. Events Revenue (Dynamic calculation from event entry fees & registrations)
-  const baseEntriesSum = entries.reduce((sum, e) => sum + Number(e.fee || 30.00), 0) +
-    events.reduce((sum, evt) => sum + ((evt.entries || 0) * (evt.fee || 30.00)), 0);
-  const eventsRevenue = Number((baseEntriesSum * 0.45 * periodFactor).toFixed(2));
-
-  // 3. Merchandise Revenue (Dynamic calculation from store orders & merchandise sales)
-  const baseOrdersSum = orders.reduce((sum, o) => sum + Number(o.sellingPrice || o.total || o.amount || 0), 0);
-  const effectiveOrdersSum = baseOrdersSum > 0 ? baseOrdersSum : 2129.97;
-  const merchandiseRevenue = Number((effectiveOrdersSum * 0.75 * periodFactor).toFixed(2));
-
-  // 4. Fundraising Revenue (Dynamic calculation from state & local club fundraising campaigns)
+  const baseEntriesSum = entries.filter((e) => e.paymentStatus === 'Paid').reduce((sum, e) => sum + Number(e.fee || 30.00), 0);
+  const baseOrdersSum = orders.filter((o) => o.status !== 'Cancelled').reduce((sum, o) => sum + Number(o.sellingPrice || o.total || o.amount || 0), 0);
   const baseFundraisingSum = transactions
     .filter((t) => t.category?.toLowerCase().includes('fundraising') || t.description?.toLowerCase().includes('fundraiser'))
     .reduce((sum, t) => sum + Number(t.amount || t.grossAmount || 0), 0);
-  const fundraisingRevenue = Number(((baseFundraisingSum > 0 ? baseFundraisingSum : 1850.00) * periodFactor).toFixed(2));
-
-  // 5. Donations Revenue (Dynamic calculation from community & sponsor donations)
   const baseDonationsSum = transactions
     .filter((t) => t.category?.toLowerCase().includes('donation') || t.description?.toLowerCase().includes('donation'))
     .reduce((sum, t) => sum + Number(t.amount || t.grossAmount || 0), 0);
-  const donationsRevenue = Number(((baseDonationsSum > 0 ? baseDonationsSum : 1250.00) * periodFactor).toFixed(2));
 
-  // 6. Total Revenue (Combined sum of Membership, Events, Merchandise, Fundraising, and Donations for selected period)
-  const totalFinancialRevenue = Number(
-    (membershipRevenue + eventsRevenue + merchandiseRevenue + fundraisingRevenue + donationsRevenue).toFixed(2)
-  );
+  // Real backend calculations prioritized; if API request fails, do not fabricate numbers
+  const membershipRevenue = backendSummary
+    ? backendSummary.membershipRevenue
+    : (reportError ? 0 : Number(baseMembershipSum.toFixed(2)));
+  const eventsRevenue = backendSummary
+    ? backendSummary.eventsRevenue
+    : (reportError ? 0 : Number(baseEntriesSum.toFixed(2)));
+  const merchandiseRevenue = backendSummary
+    ? backendSummary.merchandiseRevenue
+    : (reportError ? 0 : Number(baseOrdersSum.toFixed(2)));
+  const fundraisingRevenue = backendSummary
+    ? backendSummary.fundraisingRevenue
+    : (reportError ? 0 : Number(baseFundraisingSum.toFixed(2)));
+  const donationsRevenue = backendSummary
+    ? backendSummary.donationsRevenue
+    : (reportError ? 0 : Number(baseDonationsSum.toFixed(2)));
+
+  const totalFinancialRevenue = backendSummary
+    ? backendSummary.totalRevenue
+    : (reportError ? 0 : Number((membershipRevenue + eventsRevenue + merchandiseRevenue + fundraisingRevenue + donationsRevenue).toFixed(2)));
 
   const totalEntries = entries.length;
   const totalPaidEntries = entries.filter((e) => e.paymentStatus === 'Paid').length;
@@ -349,6 +356,13 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
           </div>
         </div>
 
+        {/* Error Banner if API Fails */}
+        {reportError && (
+          <div id="financial-report-error-banner" className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-xs font-semibold flex items-center gap-2">
+            <span>⚠️ Unable to retrieve verified financial report from backend ({reportError}). Please check your administrative credentials.</span>
+          </div>
+        )}
+
         {/* 6 Required Financial Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {/* 1. Membership Card */}
@@ -363,7 +377,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               ${membershipRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-[11px] text-charcoal-muted font-medium">
-              Dues & membership registration revenue for {periodFilter.toLowerCase()} period.
+              Dues accrued from active membership roster for {periodFilter.toLowerCase()} period.
             </p>
           </div>
 
@@ -379,7 +393,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               ${eventsRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-[11px] text-charcoal-muted font-medium">
-              Event registration fees & hunt entries for {periodFilter.toLowerCase()} period.
+              Verified paid event entry fees for {periodFilter.toLowerCase()} period.
             </p>
           </div>
 
@@ -395,7 +409,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               ${merchandiseRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-[11px] text-charcoal-muted font-medium">
-              Store orders & official state gear sales for {periodFilter.toLowerCase()} period.
+              Eligible store orders (excluding cancellations/refunds) for {periodFilter.toLowerCase()} period.
             </p>
           </div>
 
@@ -443,19 +457,19 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
               ${totalFinancialRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}
             </div>
             <p className="text-[11px] text-tan-200/90 font-medium">
-              Combined revenue across all 5 streams for {periodFilter.toLowerCase()} period.
+              Combined database ledger revenue across all 5 streams for {periodFilter.toLowerCase()} period.
             </p>
           </div>
         </div>
 
-        {/* Backend & Payment Gateway API Readiness Notice */}
+        {/* Backend Ledger & Payment Gateway Transparency Notice */}
         <div className="p-4 rounded-xl bg-surface-low border border-surface-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-charcoal-muted font-medium">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></span>
-            <span>Financial API Integration Ready: Clean data schema connected for payment gateway & backend queries.</span>
+            <span>Ledger Tracking Mode: Financial figures calculated from internal database records. Automated external bank transfer settlement pending live gateway integration.</span>
           </div>
           <span className="font-mono text-[10px] bg-surface-lowest px-2.5 py-1 rounded border">
-            GET /api/state/reports/financial?period={periodFilter.toLowerCase()}
+            GET /api/v1/reports/financial-overview?period={periodFilter.toLowerCase()}
           </span>
         </div>
       </div>

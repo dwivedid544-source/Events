@@ -17,10 +17,14 @@ export const ClubAdminResults = () => {
     score: '375 Pts'
   });
 
-  const handlePublish = (e) => {
+  const handlePublish = async (e) => {
     e.preventDefault();
-    addResult(formData);
-    setModalOpen(false);
+    try {
+      await addResult(formData);
+      setModalOpen(false);
+    } catch (err) {
+      // Error handled with toast in addResult
+    }
   };
 
   const columns = [

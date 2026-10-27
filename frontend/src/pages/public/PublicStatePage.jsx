@@ -36,43 +36,35 @@ export const PublicStatePage = () => {
   const [activeTab, setActiveTab] = useState('HOME');
   
   const [isClaimModalOpen, setIsClaimModalOpen] = useState(false);
+  const [isSubmittingClaim, setIsSubmittingClaim] = useState(false);
   const [claimForm, setClaimForm] = useState({
-    applicant: 'James Wadley',
-    email: 'Houstonroofing@yahoo.com',
-    phone: '(800) 555-0192',
-    message: 'Official State Association leadership application & registration.',
-    autoVerify: true
+    applicant: '',
+    email: '',
+    phone: '',
+    message: ''
   });
 
   const handleClaimSubmit = async (e) => {
     e.preventDefault();
-    const newClaim = await submitClaimRequest({
-      club: stateTitle,
-      state: stateData.code || stateData.name,
-      stateId: stateData.id,
-      ...claimForm
-    });
+    setIsSubmittingClaim(true);
+    try {
+      await submitClaimRequest({
+        club: stateTitle,
+        state: stateData.code || stateData.name,
+        stateId: stateData.id,
+        applicant: claimForm.applicant,
+        email: claimForm.email,
+        phone: claimForm.phone,
+        message: claimForm.message
+      });
 
-    if (claimForm.autoVerify && newClaim?.id) {
-      if (updateClaimStatus) {
-        await updateClaimStatus(newClaim.id, 'Approved');
-      }
-      if (setCurrentUser) {
-        setCurrentUser((prev) => ({
-          ...prev,
-          name: claimForm.applicant || 'James Wadley',
-          email: claimForm.email || 'Houstonroofing@yahoo.com',
-          role: 'STATE_ADMIN',
-          scope: `${stateTitle} (${stateData.code})`,
-          state: stateTitle,
-          stateCode: stateData.code
-        }));
-      }
-      showToast(`Congratulations! You are now the official Administrator for ${stateTitle}! Access your State Admin portal via the role switcher.`, 'success');
+      setClaimForm({ applicant: '', email: '', phone: '', message: '' });
+      setIsClaimModalOpen(false);
+    } catch (err) {
+      // Error toast is handled by submitClaimRequest
+    } finally {
+      setIsSubmittingClaim(false);
     }
-
-    setClaimForm({ applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(800) 555-0192', message: '', autoVerify: true });
-    setIsClaimModalOpen(false);
   };
 
   const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -462,26 +454,6 @@ export const PublicStatePage = () => {
                         <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
                         <span>Claim Pending: {activeClaim.applicant}</span>
                       </div>
-                      <button
-                        onClick={async () => {
-                          if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
-                          if (setCurrentUser) {
-                            setCurrentUser(prev => ({
-                              ...prev,
-                              name: activeClaim.applicant,
-                              email: activeClaim.email,
-                              role: 'STATE_ADMIN',
-                              scope: `${stateTitle} (${stateData.code})`,
-                              state: stateTitle,
-                              stateCode: stateData.code
-                            }));
-                          }
-                          showToast(`Claim Approved! Granted Administrator access for ${stateTitle}.`, 'success');
-                        }}
-                        className="px-3.5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer"
-                      >
-                        1-Click Approve (Demo)
-                      </button>
                       <Link
                         to="/super-admin/club-claims"
                         className="px-3 py-2 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700"

@@ -228,16 +228,57 @@ export const AppProvider = ({ children }) => {
             })
             .catch((e) => console.warn('Failed fetching members API:', e));
 
-          // 7. API Call: Fetch Club Claims from MySQL database `club`
-          fetch(`${API_BASE_URL}/club-claims`)
-            .then((r) => r.json())
+          // 7. API Call: Fetch Club Claims from MySQL database `club` (Protected Super Admin endpoint)
+          if (currentUser?.role === 'SUPER_ADMIN') {
+            apiClient.get('/club-claims')
+              .then((resData) => {
+                if (resData.success && Array.isArray(resData.data)) {
+                  setClaims(resData.data);
+                }
+              })
+              .catch((e) => console.warn('Failed fetching claims API:', e));
+          }
+
+          // Fetch Live Orders from database via authenticated endpoint
+          apiClient.get('/orders')
             .then((resData) => {
-              if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                setClaims(resData.data);
-                localStorage.setItem('nh_claims', JSON.stringify(resData.data));
+              if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
+                const normalized = resData.data.map((o) => {
+                  let itemsSummary = o.items || o.item;
+                  if (!itemsSummary && o.itemsJson) {
+                    try {
+                      const parsed = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
+                      if (Array.isArray(parsed) && parsed.length > 0) {
+                        itemsSummary = parsed.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
+                      }
+                    } catch (e) {
+                      // ignore
+                    }
+                  }
+                  const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
+                  return {
+                    ...o,
+                    customer: o.customer || o.customerName || 'Customer',
+                    customerName: o.customerName || o.customer || 'Customer',
+                    email: o.email || o.customerEmail || '',
+                    customerEmail: o.customerEmail || o.email || '',
+                    items: itemsSummary || 'Sanctioned Gear / Equipment',
+                    item: itemsSummary || 'Sanctioned Gear / Equipment',
+                    product: o.product || itemsSummary || 'Sanctioned Gear / Equipment',
+                    total: orderAmount,
+                    sellingPrice: orderAmount,
+                    amount: orderAmount,
+                    status: o.fulfillmentStatus || o.status || 'Processing',
+                    fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
+                    payoutStatus: o.payoutStatus || 'Pending',
+                    carrier: o.carrier || 'UPS Ground',
+                    trackingNumber: o.trackingNumber || 'Pending Dispatch'
+                  };
+                });
+                setOrders(normalized);
               }
             })
-            .catch((e) => console.warn('Failed fetching claims API:', e));
+            .catch((e) => console.warn('Failed fetching live orders API:', e.message));
 
           // 8. API Call: Fetch Products from MySQL database `club`
           fetch(`${API_BASE_URL}/products`)
@@ -502,27 +543,7 @@ export const AppProvider = ({ children }) => {
     return INITIAL_PRODUCTS;
   });
   
-  const [claims, setClaims] = useState(() => {
-    const saved = localStorage.getItem('nh_claims');
-    let parsed = saved ? JSON.parse(saved) : INITIAL_CLAIMS;
-    // Ensure James Wadley's claims are merged into the list
-    const jamesClaims = INITIAL_CLAIMS.filter(c => c.applicant === 'James Wadley');
-    jamesClaims.forEach(jc => {
-      if (!parsed.some(p => p.id === jc.id || (p.club === jc.club && p.applicant === jc.applicant))) {
-        parsed = [jc, ...parsed];
-      }
-    });
-    return parsed.map(c => ({
-      ...c,
-      club: c.club || c.clubName || '',
-      state: c.state || 'TN',
-      applicant: c.applicant || c.applicantName || '',
-      submittedDate: c.submittedDate || c.date || '',
-      claimStatus: c.claimStatus || c.status || 'Pending',
-      verificationStatus: c.verificationStatus || c.document || 'Pending Review',
-      message: c.message || 'Verification request submitted.'
-    }));
-  });
+  const [claims, setClaims] = useState([]);
 
   const [news, setNews] = useState(() => {
     const saved = localStorage.getItem('nh_news');
@@ -971,55 +992,66 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateFulfillmentStatus = async (orderId, fulfillmentStatus, trackingNumber, carrier) => {
-    setOrders((prev) =>
-      prev.map((o) => {
-        if (o.id !== orderId) return o;
-        const finalTracking =
-          trackingNumber !== undefined && trackingNumber !== null && trackingNumber !== ''
-            ? trackingNumber
-            : fulfillmentStatus === 'Processing'
-            ? 'Pending Dispatch'
-            : o.trackingNumber || `1Z${Math.floor(1000000000000000 + Math.random() * 9000000000000000)}`;
-
-        return {
-          ...o,
-          fulfillmentStatus,
-          status: fulfillmentStatus,
-          trackingNumber: finalTracking,
-          carrier: carrier || o.carrier || 'UPS Ground'
-        };
-      })
-    );
-
     try {
-      await fetch(`${API_BASE_URL}/orders/${orderId}/fulfillment`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fulfillmentStatus, trackingNumber, carrier })
+      const res = await apiClient.put(`/orders/${orderId}/fulfillment`, {
+        fulfillmentStatus,
+        trackingNumber,
+        carrier
       });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/orders/${orderId}/fulfillment`);
+      if (res?.success && res.data) {
+        const updatedOrder = res.data;
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === orderId
+              ? {
+                  ...o,
+                  ...updatedOrder,
+                  status: updatedOrder.fulfillmentStatus || updatedOrder.status || o.status,
+                  fulfillmentStatus: updatedOrder.fulfillmentStatus || o.fulfillmentStatus,
+                  trackingNumber: updatedOrder.trackingNumber || o.trackingNumber,
+                  carrier: updatedOrder.carrier || o.carrier
+                }
+              : o
+          )
+        );
+        showToast(`Order #${orderId} dispatch updated to: ${fulfillmentStatus}`, 'success');
+        return updatedOrder;
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected fulfillment update');
+      }
     } catch (err) {
-      console.warn('API Call Warning:', err.message);
+      console.error(`Failed to update fulfillment for #${orderId}:`, err);
+      showToast(`Fulfillment update failed: ${err.message}`, 'error');
+      throw err;
     }
-
-    showToast(`Order #${orderId} dispatch updated to: ${fulfillmentStatus}`, 'success');
   };
 
   const updatePayoutStatus = async (orderId, payoutStatus) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, payoutStatus } : o))
-    );
     try {
-      await fetch(`${API_BASE_URL}/orders/${orderId}/payout`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ payoutStatus })
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/orders/${orderId}/payout`);
+      const res = await apiClient.put(`/orders/${orderId}/payout`, { payoutStatus });
+      if (res?.success && res.data) {
+        const updatedOrder = res.data;
+        setOrders((prev) =>
+          prev.map((o) =>
+            o.id === orderId
+              ? {
+                  ...o,
+                  ...updatedOrder,
+                  payoutStatus: updatedOrder.payoutStatus || o.payoutStatus
+                }
+              : o
+          )
+        );
+        showToast(`Order #${orderId} payout status set to: ${payoutStatus}`, 'success');
+        return updatedOrder;
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected payout update');
+      }
     } catch (err) {
-      console.warn('API Call Warning:', err.message);
+      console.error(`Failed to update payout for #${orderId}:`, err);
+      showToast(`Payout update failed: ${err.message}`, 'error');
+      throw err;
     }
-    showToast(`Order #${orderId} payout status set to: ${payoutStatus}`, 'success');
   };
 
   const addMembership = async (membershipData) => {
@@ -1346,75 +1378,69 @@ export const AppProvider = ({ children }) => {
 
   // 3. Mobile Event Check-in Action (Connected to Backend API)
   const toggleCheckIn = async (entryId) => {
-    let targetStatus = '';
-    let targetParticipant = '';
-
-    setEntries((prev) => {
-      const next = prev.map((item) => {
-        if (item.id === entryId) {
-          const newStatus = item.checkInStatus === 'Checked In' ? 'Not Arrived' : 'Checked In';
-          targetStatus = newStatus;
-          targetParticipant = item.participant || 'Participant';
-          return { ...item, checkInStatus: newStatus };
-        }
-        return item;
-      });
-      localStorage.setItem('nh_entries', JSON.stringify(next));
-      return next;
-    });
-
-    if (targetStatus) {
-      showToast(
-        `Entry #${entryId} ${targetParticipant} status set to: ${targetStatus}`,
-        targetStatus === 'Checked In' ? 'success' : 'info'
-      );
-    }
+    const currentItem = entries.find((item) => item.id === entryId);
+    const targetStatus = currentItem?.checkInStatus === 'Checked In' ? 'Not Arrived' : 'Checked In';
 
     try {
-      await fetch(`${API_BASE_URL}/events/entries/${entryId}/check-in`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ checkInStatus: targetStatus })
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/events/entries/${entryId}/check-in -> ${targetStatus}`);
+      const res = await apiClient.put(`/events/entries/${entryId}/check-in`, { checkInStatus: targetStatus });
+      if (res?.success && res.data) {
+        const updatedEntry = res.data;
+        setEntries((prev) =>
+          prev.map((item) => (item.id === entryId ? { ...item, ...updatedEntry } : item))
+        );
+        showToast(
+          `Entry #${entryId} ${updatedEntry.participant || 'Participant'} status set to: ${updatedEntry.checkInStatus}`,
+          updatedEntry.checkInStatus === 'Checked In' ? 'success' : 'info'
+        );
+        return updatedEntry;
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected check-in update');
+      }
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('Check-in API error:', err);
+      showToast(`Check-in update failed: ${err.message}`, 'error');
+      throw err;
     }
   };
 
   const updateEntry = async (entryId, updatedFields) => {
-    let updatedItem = null;
-    setEntries((prev) => {
-      const next = prev.map((item) => {
-        if (item.id === entryId) {
-          updatedItem = { ...item, ...updatedFields };
-          return updatedItem;
-        }
-        return item;
-      });
-      localStorage.setItem('nh_entries', JSON.stringify(next));
-      return next;
-    });
-
-    if (updatedFields.paymentStatus) {
-      showToast(`Entry #${entryId} payment marked as ${updatedFields.paymentStatus}`, 'success');
-    } else if (updatedFields.checkInStatus) {
-      showToast(`Entry #${entryId} check-in set to ${updatedFields.checkInStatus}`, 'info');
-    } else {
-      showToast(`Entry #${entryId} updated successfully`, 'success');
-    }
-
     try {
-      await fetch(`${API_BASE_URL}/events/entries/${entryId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedFields)
-      });
-    } catch (err) {
-      console.warn('API Warning on updateEntry:', err.message);
-    }
+      let res;
+      if (updatedFields.checkInStatus) {
+        res = await apiClient.put(`/events/entries/${entryId}/check-in`, {
+          checkInStatus: updatedFields.checkInStatus
+        });
+      } else if (updatedFields.paymentStatus) {
+        res = await apiClient.put(`/events/entries/${entryId}/payment`, {
+          paymentStatus: updatedFields.paymentStatus
+        });
+      } else {
+        res = await apiClient.put(`/events/entries/${entryId}/check-in`, updatedFields);
+      }
 
-    return updatedItem;
+      if (res?.success && res.data) {
+        const updatedEntry = res.data;
+        setEntries((prev) =>
+          prev.map((item) => (item.id === entryId ? { ...item, ...updatedEntry } : item))
+        );
+
+        if (updatedFields.paymentStatus) {
+          showToast(`Entry #${entryId} payment marked as ${updatedFields.paymentStatus}`, 'success');
+        } else if (updatedFields.checkInStatus) {
+          showToast(`Entry #${entryId} check-in set to ${updatedFields.checkInStatus}`, 'info');
+        } else {
+          showToast(`Entry #${entryId} updated successfully`, 'success');
+        }
+
+        return updatedEntry;
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected entry update');
+      }
+    } catch (err) {
+      console.error('Update entry error:', err);
+      showToast(`Failed to update entry #${entryId}: ${err.message}`, 'error');
+      throw err;
+    }
   };
 
   const deleteEntry = async (entryId) => {
@@ -1654,56 +1680,24 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateClaimStatus = async (claimId, newStatus) => {
-    let approvedClaim = null;
-    setClaims((prev) => {
-      const next = prev.map((c) => {
-        if (c.id === claimId) {
-          approvedClaim = { ...c, claimStatus: newStatus, status: newStatus };
-          return approvedClaim;
-        }
-        return c;
-      });
-      localStorage.setItem('nh_claims', JSON.stringify(next));
-      return next;
-    });
-
-    if (newStatus === 'Approved' && approvedClaim) {
-      const stateKey = (approvedClaim.state || approvedClaim.stateId || '').toLowerCase();
-      setStates((prev) =>
-        prev.map((s) =>
-          s.id === stateKey || s.code.toLowerCase() === stateKey || s.name.toLowerCase().includes(stateKey)
-            ? { ...s, adminName: approvedClaim.applicant, status: 'Active' }
-            : s
-        )
-      );
-      if (approvedClaim.club) {
-        setClubs((prev) =>
-          prev.map((c) =>
-            c.name.toLowerCase() === approvedClaim.club.toLowerCase()
-              ? { ...c, adminName: approvedClaim.applicant, status: 'Active' }
-              : c
-          )
-        );
-      }
-    }
-
     try {
       const res = await apiClient.put(`/club-claims/${claimId}`, { claimStatus: newStatus });
-      if (res?.success) {
+      if (res?.success && res.data) {
+        const updated = res.data;
         setClaims((prev) =>
           prev.map((c) =>
             c.id === claimId
               ? {
                   ...c,
-                  claimStatus: newStatus,
-                  status: newStatus,
-                  verificationStatus: newStatus === 'Approved' ? 'Verified Official' : 'Rejected'
+                  claimStatus: updated.claimStatus || newStatus,
+                  status: updated.claimStatus || newStatus,
+                  verificationStatus: updated.verificationStatus || (newStatus === 'Approved' ? 'Verified Official' : 'Rejected')
                 }
               : c
           )
         );
         showToast(`Claim #${claimId} status updated to: ${newStatus}`, 'success');
-        return { success: true };
+        return { success: true, data: updated };
       } else {
         throw new Error(res?.error?.message || 'Server rejected claim status change');
       }
@@ -1717,18 +1711,19 @@ export const AppProvider = ({ children }) => {
   const submitClaimRequest = async (claimData) => {
     try {
       const payload = {
-        claimStatus: 'Pending',
-        status: 'Pending',
-        submittedDate: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' }),
-        verificationStatus: 'Pending Review',
-        ...claimData
+        club: claimData.club || claimData.clubName,
+        state: claimData.state || 'TX',
+        applicant: claimData.applicant,
+        email: claimData.email,
+        phone: claimData.phone || '',
+        message: claimData.message || ''
       };
 
       const res = await apiClient.post('/club-claims', payload);
       if (res?.success && res.data) {
         const confirmedClaim = res.data;
         setClaims((prev) => [confirmedClaim, ...prev.filter((c) => c.id !== confirmedClaim.id)]);
-        showToast(`Claim request for "${claimData.club || claimData.state}" submitted successfully! Review pending in Super Admin portal.`, 'success');
+        showToast(`Claim request for "${payload.club}" submitted successfully! Review pending in Super Admin portal.`, 'success');
         return confirmedClaim;
       } else {
         throw new Error(res?.error?.message || 'Server rejected claim submission');
@@ -1741,25 +1736,20 @@ export const AppProvider = ({ children }) => {
   };
 
   const addResult = async (resultData) => {
-    const newRes = {
-      id: `res-${Date.now()}`,
-      ...resultData,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' })
-    };
-    setResults((prev) => [newRes, ...prev]);
-
     try {
-      await fetch(`${API_BASE_URL}/results`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newRes)
-      });
-      console.log('📡 API Call Success: POST /api/v1/results');
+      const res = await apiClient.post('/results', resultData);
+      if (res?.success && res.data) {
+        setResults((prev) => [res.data, ...prev]);
+        showToast(`Published competition result for ${res.data.eventName || resultData.eventName || 'event'}!`, 'success');
+        return res.data;
+      } else {
+        throw new Error(res?.error?.message || 'Server rejected competition result');
+      }
     } catch (err) {
-      console.warn('API Call Warning:', err.message);
+      console.error('Publish competition result error:', err);
+      showToast(`Failed to publish result: ${err.message}`, 'error');
+      throw err;
     }
-
-    showToast(`Published competition result for ${resultData.eventName}!`, 'success');
   };
 
   const updatePermission = (role, module, action, value) => {

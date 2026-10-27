@@ -108,13 +108,16 @@ export const ClubAdminStorePage = () => {
   // Filter orders relevant to this Local Club (Oak Ridge Hunting Club)
   const clubOrders = orders.filter((o) => {
     const isClubRelated =
+      o.clubId === (myClub.id || 'club-1') ||
       o.club === myClub.name ||
       o.originType === 'CLUB' ||
       (o.orderSource && o.orderSource.toLowerCase().includes('oak ridge'));
 
+    const customerVal = (o.customerName || o.customer || '').toLowerCase();
+    const emailVal = (o.customerEmail || o.email || '').toLowerCase();
     const matchesSearch =
-      (o.customer || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (o.email || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+      customerVal.includes(searchQuery.toLowerCase()) ||
+      emailVal.includes(searchQuery.toLowerCase()) ||
       (o.id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
       (o.product || o.items || '').toLowerCase().includes(searchQuery.toLowerCase());
 
