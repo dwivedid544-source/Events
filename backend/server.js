@@ -637,8 +637,36 @@ app.get('/api/v1/products', async (req, res) => {
     return res.json({
       success: true,
       data: products.length > 0 ? products : [
-        { id: 'prd-1', name: 'Oak Ridge Hunting Club Official Cap', category: 'Apparel', price: 25.00, stock: 45, club: 'Oak Ridge Hunting Club', commission: '7.00%' },
-        { id: 'prd-2', name: 'Garmin Alpha 300 Tracking Collar', category: 'Hardware', price: 799.99, stock: 12, vendor: 'Garmin', commission: '50.00%' }
+        {
+          id: 'prd-1',
+          name: 'Oak Ridge Hunting Club Official Cap',
+          category: 'Apparel',
+          price: 25.00,
+          wholesaleCost: 12.00,
+          margin: 13.00,
+          inStock: 45,
+          stock: 45,
+          vendorName: 'Oak Ridge Hunting Club',
+          source: 'Hunting suppliers',
+          scopeChannel: 'LOCAL_CLUB',
+          image: 'https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=400&auto=format&fit=crop&q=80',
+          description: 'Official structured snapback club hat with embroidered club crest.'
+        },
+        {
+          id: 'prd-2',
+          name: 'Garmin Alpha 300 Tracking Collar',
+          category: 'Hardware',
+          price: 799.99,
+          wholesaleCost: 600.00,
+          margin: 199.99,
+          inStock: 12,
+          stock: 12,
+          vendorName: 'Garmin Outdoor',
+          source: 'Dog equipment companies',
+          scopeChannel: 'NATIONAL',
+          image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb395?w=400&auto=format&fit=crop&q=80',
+          description: 'High-sensitivity GPS tracking & training collar system for sporting hounds.'
+        }
       ],
       message: 'Merchandise products fetched from MySQL database `club`',
       timestamp: new Date().toISOString()
