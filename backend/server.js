@@ -10,6 +10,9 @@ const clubRoutes = require('./routes/clubRoutes');
 const eventRoutes = require('./routes/eventRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const resultRoutes = require('./routes/resultRoutes');
+const claimRoutes = require('./routes/claimRoutes');
+const orderRoutes = require('./routes/orderRoutes');
 const { verifyToken, requireRole } = require('./middlewares/authMiddleware');
 
 const app = express();
@@ -25,7 +28,13 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use(
+  express.json({
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+    }
+  })
+);
 
 // API Health Check from MySQL Database
 app.get('/api/v1/health', async (req, res) => {
@@ -58,23 +67,35 @@ app.use('/api/v1/clubs', clubRoutes);
 app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/reports', reportRoutes);
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/v1/results', resultRoutes);
+app.use('/api/v1/club-claims', claimRoutes);
+app.use('/api/v1/orders', orderRoutes);
 
 // National Admin Overview API (/national-admin) from MySQL Database
 app.get('/api/v1/national', async (req, res) => {
   try {
+    const currentYear = new Date().getUTCFullYear();
+    const ytdStart = `${currentYear}-01-01 00:00:00`;
+
     const [states] = await db.query('SELECT COUNT(*) as total FROM `StateAssociation`');
     const [clubs] = await db.query('SELECT COUNT(*) as total FROM `LocalClub`');
-    const [members] = await db.query('SELECT COUNT(*) as total FROM `Member`');
+    const [members] = await db.query("SELECT COUNT(*) as total FROM `Member` WHERE status = 'Active'");
+    const [orderRev] = await db.query("SELECT COALESCE(SUM(total), 0) as rev FROM `Order` WHERE status NOT IN ('Cancelled', 'Refunded') AND createdAt >= ?", [ytdStart]);
+    const [entryRev] = await db.query("SELECT COALESCE(SUM(fee), 0) as rev FROM `EventEntry` WHERE paymentStatus = 'Paid' AND createdAt >= ?", [ytdStart]);
+    const [memberRev] = await db.query("SELECT COALESCE(SUM(duesAmount), 0) as rev FROM `Member` WHERE status = 'Active' AND createdAt >= ?", [ytdStart]);
+    const nationalRevenueYTD = Number((Number(orderRev[0]?.rev || 0) + Number(entryRev[0]?.rev || 0) + Number(memberRev[0]?.rev || 0)).toFixed(2));
 
     return res.json({
       success: true,
       data: {
         organizationName: 'National Hunting Network Portal',
         nationalScope: '50 States Charter Network',
-        totalStates: states[0]?.total || 50,
-        totalClubs: clubs[0]?.total || 1240,
-        totalActiveMembers: members[0]?.total || 89400,
-        nationalRevenueYTD: 2450000.00,
+        year: currentYear,
+        ytdStartDate: `${currentYear}-01-01`,
+        totalStates: Number(states[0]?.total || 0),
+        totalClubs: Number(clubs[0]?.total || 0),
+        totalActiveMembers: Number(members[0]?.total || 0),
+        nationalRevenueYTD,
         nationalCommissionSplit: '43.00%',
         source: 'MySQL database `club`'
       },
@@ -91,6 +112,7 @@ app.get('/api/v1/super-admin', async (req, res) => {
   try {
     const [users] = await db.query('SELECT COUNT(*) as total FROM `User`');
     const [members] = await db.query('SELECT COUNT(*) as total FROM `Member`');
+    const [pendingClaims] = await db.query("SELECT COUNT(*) as total FROM `ClubClaim` WHERE claimStatus = 'Pending'");
 
     return res.json({
       success: true,
@@ -98,9 +120,9 @@ app.get('/api/v1/super-admin', async (req, res) => {
         systemRole: 'Master Super Admin Control Panel',
         systemHealth: '100% Operational',
         activeDatabases: ['MySQL `club` (127.0.0.1:3306)'],
-        totalUsers: users[0]?.total || 1420,
-        totalMembers: members[0]?.total || 89400,
-        pendingClaimRequests: 3,
+        totalUsers: Number(users[0]?.total || 0),
+        totalMembers: Number(members[0]?.total || 0),
+        pendingClaimRequests: Number(pendingClaims[0]?.total || 0),
         source: 'MySQL database `club`'
       },
       message: 'Super Admin system metrics fetched from MySQL database `club`',
@@ -132,6 +154,15 @@ app.get('/api/v1/vendors', async (req, res) => {
 // Commissions API Endpoint from MySQL Database
 app.get('/api/v1/commissions', async (req, res) => {
   try {
+    const currentYear = new Date().getUTCFullYear();
+    const ytdStart = `${currentYear}-01-01 00:00:00`;
+
+    const [payoutRows] = await db.query(
+      "SELECT COALESCE(SUM(total), 0) as total FROM `Order` WHERE payoutStatus IN ('Paid', 'Completed') AND createdAt >= ?",
+      [ytdStart]
+    );
+    const totalDisbursedYTD = Number(Number(payoutRows[0]?.total || 0).toFixed(2));
+
     return res.json({
       success: true,
       data: {
@@ -139,7 +170,11 @@ app.get('/api/v1/commissions', async (req, res) => {
         nationalSplit: '43.00%',
         stateSplit: '7.00%',
         clubSplit: '0.00%',
-        totalDisbursedYTD: 142500.00,
+        year: currentYear,
+        ytdStartDate: `${currentYear}-01-01`,
+        totalDisbursedYTD,
+        disbursementType: 'Internal Ledger',
+        bankTransferVerified: false,
         source: 'MySQL database `club`'
       },
       message: 'Commissions governance settings fetched from MySQL database `club`',
@@ -147,131 +182,6 @@ app.get('/api/v1/commissions', async (req, res) => {
     });
   } catch (err) {
     return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-  }
-});
-
-// In-Memory & Database Club Claims Store
-let storedClaims = [
-  { id: 'CLM-501', club: 'Hawaii State Association', state: 'HI', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 23, 2026', claimStatus: 'Pending', status: 'Pending', verificationStatus: 'Pending Verification', message: 'Official state association administration & treasury bank account setup for Hawaii sandbox.' },
-  { id: 'CLM-502', club: 'Texas Hound Association', state: 'TX', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 23, 2026', claimStatus: 'Pending', status: 'Pending', verificationStatus: 'Tax ID & Charter Submitted', message: 'Application to administer Texas State Hound Association and affiliate local hunting clubs.' },
-  { id: 'CLM-503', club: 'Tennessee State Association', state: 'TN', applicant: 'James Wadley', email: 'Houstonroofing@yahoo.com', phone: '(713) 555-0192', submittedDate: 'Oct 22, 2026', claimStatus: 'Pending', status: 'Pending', verificationStatus: 'Officer Application Submitted', message: 'State director registration for Tennessee field trials and Oak Ridge hunting club.' },
-  { id: 'clm-1', club: 'Lone Star Hound Club', clubName: 'Lone Star Hound Club', applicant: 'Jake Miller', email: 'jake@lonestar.org', phone: '(512) 555-0199', claimStatus: 'Pending', status: 'Pending Review', submittedDate: 'Aug 14, 2026', verificationStatus: 'Pending Review', message: 'Official Texas charter registration.' }
-];
-
-app.get('/api/v1/club-claims', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
-  try {
-    const [rows] = await db.query('SELECT * FROM `ClubClaim` ORDER BY `createdAt` DESC');
-    if (rows && rows.length > 0) {
-      return res.json({
-        success: true,
-        data: rows,
-        message: 'Club claim verification requests fetched from database',
-        timestamp: new Date().toISOString()
-      });
-    }
-  } catch (dbErr) {
-    console.warn('[Club Claims DB Query Warning]:', dbErr.message);
-  }
-  return res.json({
-    success: true,
-    data: storedClaims,
-    message: 'Club claim verification requests fetched (fallback)',
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.post('/api/v1/club-claims', async (req, res) => {
-  try {
-    const club = req.body.club || req.body.clubName;
-    const applicant = req.body.applicant;
-    const email = req.body.email;
-    const state = req.body.state || 'HI';
-    const phone = req.body.phone || '';
-    const message = req.body.message || 'Official State/Club administration claim request.';
-
-    if (!club || !applicant || !email) {
-      return res.status(400).json({
-        success: false,
-        error: { code: 'INVALID_INPUT', message: 'Club name, applicant name, and email are required' }
-      });
-    }
-
-    const claimId = req.body.id || ('CLM-' + Math.floor(100 + Math.random() * 900));
-    const claimStatus = 'Pending';
-    const submittedDate = new Date().toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
-    const verificationStatus = 'Pending Review';
-
-    const claim = {
-      id: claimId,
-      club,
-      state,
-      applicant,
-      email,
-      phone,
-      submittedDate,
-      claimStatus,
-      verificationStatus,
-      message,
-      createdAt: new Date().toISOString()
-    };
-
-    try {
-      await db.query(
-        `INSERT INTO \`ClubClaim\` (id, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [claimId, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message]
-      );
-    } catch (dbErr) {
-      console.warn('[Club Claim DB Insert Warning]:', dbErr.message);
-    }
-
-    storedClaims.unshift(claim);
-    console.log('✅ New Claim Registered in Backend & DB:', claim);
-    return res.status(201).json({ success: true, data: claim, message: 'Claim submitted successfully to database' });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-app.put('/api/v1/club-claims/:id', verifyToken, requireRole('SUPER_ADMIN'), async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { claimStatus, status } = req.body;
-    const nextStatus = claimStatus || status || 'Approved';
-
-    const allowedStatuses = ['Pending', 'Approved', 'Rejected'];
-    if (!allowedStatuses.includes(nextStatus)) {
-      return res.status(400).json({
-        success: false,
-        error: { code: 'INVALID_STATUS', message: 'Claim status must be Pending, Approved, or Rejected' }
-      });
-    }
-
-    const verStatus = nextStatus === 'Approved' ? 'Verified Official' : (nextStatus === 'Rejected' ? 'Rejected' : 'Pending Review');
-
-    try {
-      await db.query(
-        `UPDATE \`ClubClaim\` SET \`claimStatus\` = ?, \`verificationStatus\` = ? WHERE \`id\` = ?`,
-        [nextStatus, verStatus, id]
-      );
-    } catch (dbErr) {
-      console.warn('[Club Claim DB Update Warning]:', dbErr.message);
-    }
-
-    const found = storedClaims.find(c => c.id === id);
-    if (found) {
-      found.claimStatus = nextStatus;
-      found.status = nextStatus;
-      found.verificationStatus = verStatus;
-    }
-
-    return res.json({
-      success: true,
-      data: found || { id, claimStatus: nextStatus, verificationStatus: verStatus },
-      message: 'Claim status updated to ' + nextStatus + ' in database'
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: err.message });
   }
 });
 
@@ -295,12 +205,25 @@ app.put('/api/v1/users/:id/role', verifyToken, requireRole('SUPER_ADMIN'), async
   try {
     const { id } = req.params;
     const { role } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/users/${id}/role]: New Role -> ${role}`);
-    try {
-      await db.query('UPDATE `User` SET `role` = ? WHERE `id` = ?', [role, id]);
-    } catch (dbErr) {
-      console.warn('MySQL Update User Role note:', dbErr.message);
+
+    const allowedRoles = ['MEMBER', 'CLUB_ADMIN', 'STATE_ADMIN', 'EVENT_ADMIN', 'NATIONAL_ADMIN', 'SUPER_ADMIN'];
+    if (!role || !allowedRoles.includes(role)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_ROLE', message: 'Role must be one of: ' + allowedRoles.join(', ') }
+      });
     }
+
+    const [userRows] = await db.query('SELECT id, role FROM `User` WHERE id = ?', [id]);
+    if (!userRows || userRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'User not found' }
+      });
+    }
+
+    await db.query('UPDATE `User` SET `role` = ? WHERE `id` = ?', [role, id]);
+
     return res.json({
       success: true,
       userId: id,
@@ -308,7 +231,8 @@ app.put('/api/v1/users/:id/role', verifyToken, requireRole('SUPER_ADMIN'), async
       message: `User ${id} role updated to ${role} successfully`
     });
   } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+    console.error('[User Role Update Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
   }
 });
 
@@ -317,12 +241,25 @@ app.put('/api/v1/users/:id/status', verifyToken, requireRole('SUPER_ADMIN'), asy
   try {
     const { id } = req.params;
     const { status } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/users/${id}/status]: New Status -> ${status}`);
-    try {
-      await db.query('UPDATE `User` SET `status` = ? WHERE `id` = ?', [status, id]);
-    } catch (dbErr) {
-      console.warn('MySQL Update User Status note:', dbErr.message);
+
+    const allowedStatuses = ['Active', 'Inactive', 'Suspended'];
+    if (!status || !allowedStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        error: { code: 'INVALID_STATUS', message: 'Status must be one of: ' + allowedStatuses.join(', ') }
+      });
     }
+
+    const [userRows] = await db.query('SELECT id, status FROM `User` WHERE id = ?', [id]);
+    if (!userRows || userRows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'User not found' }
+      });
+    }
+
+    await db.query('UPDATE `User` SET `status` = ? WHERE `id` = ?', [status, id]);
+
     return res.json({
       success: true,
       userId: id,
@@ -330,7 +267,8 @@ app.put('/api/v1/users/:id/status', verifyToken, requireRole('SUPER_ADMIN'), asy
       message: `User ${id} status updated to ${status} successfully`
     });
   } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+    console.error('[User Status Update Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
   }
 });
 
@@ -371,23 +309,7 @@ app.get('/api/v1/announcements', async (req, res) => {
   }
 });
 
-// Results API Endpoint from MySQL Database
-app.get('/api/v1/results', async (req, res) => {
-  try {
-    const [entries] = await db.query('SELECT * FROM `EventEntry`');
-    return res.json({
-      success: true,
-      data: entries.length > 0 ? entries : [
-        { id: 'res-1', eventName: 'Nite Hunt & Treeing Contest', club: 'Oak Ridge Hunting Club', state: 'Tennessee', date: 'Sep 19, 2026', winnerDog: "Thunder's Southern Belle", winnerDogReg: 'UKC-892401', breed: 'Treeing Walker Coonhound', owner: 'Lalit Panchole', score: '375 Pts', placement: '1st Place' },
-        { id: 'res-2', eventName: 'Creek Water Race Championship', club: 'Cumberland Mountain Club', state: 'Tennessee', date: 'Sep 12, 2026', winnerDog: 'Blue Ridge Midnight Rambler', winnerDogReg: 'PKC-441092', breed: 'Bluetick Coonhound', owner: 'Lalit Panchole', score: '325 Pts', placement: '1st Place' }
-      ],
-      message: 'Sanctioned hunt results fetched from MySQL database `club`',
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-  }
-});
+// Note: /api/v1/results is managed directly by ./routes/resultRoutes.js
 
 // News API Endpoint from MySQL Database
 app.get('/api/v1/news', async (req, res) => {
@@ -485,64 +407,8 @@ app.post('/api/v1/states/communicate', async (req, res) => {
   }
 });
 
-// Event Check-In API Endpoint
-app.put('/api/v1/events/entries/:id/check-in', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { checkInStatus } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/events/entries/${id}/check-in]: Status -> ${checkInStatus}`);
-
-    return res.json({
-      success: true,
-      entryId: id,
-      checkInStatus,
-      message: `Entry #${id} check-in status updated to ${checkInStatus} in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
-
-// Event Entry Payment Status Update API Endpoint
-app.put('/api/v1/events/entries/:id/payment', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { paymentStatus } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/events/entries/${id}/payment]: Status -> ${paymentStatus}`);
-
-    return res.json({
-      success: true,
-      entryId: id,
-      paymentStatus,
-      message: `Entry #${id} payment status updated to ${paymentStatus} in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
-
-// Update Order Fulfillment Status API Endpoint
-app.put('/api/v1/orders/:id/fulfillment', async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { fulfillmentStatus, trackingNumber, carrier } = req.body;
-    console.log(`📡 API Call [PUT /api/v1/orders/${id}/fulfillment]: Status -> ${fulfillmentStatus}, Tracking -> ${trackingNumber || 'N/A'}, Carrier -> ${carrier || 'UPS Ground'}`);
-
-    return res.json({
-      success: true,
-      orderId: id,
-      fulfillmentStatus,
-      trackingNumber,
-      carrier: carrier || 'UPS Ground',
-      message: `Order #${id} fulfillment status updated to ${fulfillmentStatus} in database`,
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
+// Note: /api/v1/events/entries/:id/check-in and payment status are managed by ./routes/eventRoutes.js
+// Note: /api/v1/orders fulfillment and payout status are managed by ./routes/orderRoutes.js
 
 // Update User Profile API Endpoint - Protected: Self or Super Admin only
 app.put('/api/v1/users/:id/profile', verifyToken, async (req, res) => {
@@ -718,71 +584,7 @@ app.delete('/api/v1/products/:id', async (req, res) => {
   }
 });
 
-// Orders In-Memory Store & Database Sync
-let storedOrders = [
-  { id: 'ORD-9018', customer: 'Lalit Panchole', email: 'demo@example.com', date: 'Aug 07, 2026', items: 'Garmin Alpha 300 Tracking Collar (Qty: 1)', total: 849.99, amount: 849.99, paymentStatus: 'Paid', fulfillmentStatus: 'Processing', carrier: 'Direct Vendor Drop-Ship', trackingNumber: 'Pending Dispatch' },
-  { id: 'ORD-9015', customer: 'Lalit Panchole', email: 'demo@example.com', date: 'Aug 06, 2026', items: 'Oak Ridge Hunting Club Official Cap (Qty: 1)', total: 549.99, amount: 549.99, paymentStatus: 'Paid', fulfillmentStatus: 'Shipped', carrier: 'Direct Vendor Drop-Ship', trackingNumber: '1Z9999999999999998' },
-  { id: 'ORD-9012', customer: 'Lalit Panchole', email: 'demo@example.com', date: 'Aug 04, 2026', items: 'Official UKC Tracking Collar (Qty: 1)', total: 849.99, amount: 849.99, paymentStatus: 'Paid', fulfillmentStatus: 'Delivered', carrier: 'Direct Vendor Drop-Ship', trackingNumber: '1Z9999999999999999' }
-];
-
-// Orders API Endpoints (GET, POST, PUT)
-app.get('/api/v1/orders', async (req, res) => {
-  try {
-    try {
-      const [rows] = await db.query('SELECT * FROM `Order` ORDER BY createdAt DESC');
-      if (rows && rows.length > 0) {
-        return res.json({ success: true, data: rows, message: 'Orders fetched from MySQL database' });
-      }
-    } catch (dbErr) {
-      // fallback to storedOrders
-    }
-
-    return res.json({
-      success: true,
-      data: storedOrders,
-      message: 'Orders fetched via API',
-      timestamp: new Date().toISOString()
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-  }
-});
-
-app.post('/api/v1/orders', async (req, res) => {
-  const orderData = req.body;
-  storedOrders.unshift(orderData);
-  console.log('📡 API Call [POST /api/v1/orders]:', orderData.id || orderData.customer);
-  try {
-    const orderId = orderData.id || `ORD-${Date.now()}`;
-    const custName = orderData.customer || orderData.customerName || 'Customer';
-    const totalVal = Number(orderData.total || orderData.amount || 0);
-    const itemsStr = JSON.stringify(orderData.orderItems || orderData.items || []);
-    await db.query(
-      'INSERT INTO `Order` (id, orderNumber, customerName, total, status, itemsJson) VALUES (?, ?, ?, ?, ?, ?)',
-      [orderId, orderId, custName, totalVal, orderData.status || 'Processing', itemsStr]
-    );
-  } catch (dbErr) {
-    console.warn('MySQL Insert Order notice:', dbErr.message);
-  }
-  return res.status(201).json({
-    success: true,
-    data: orderData,
-    message: `Order ${orderData.id} recorded successfully via API in database`,
-    timestamp: new Date().toISOString()
-  });
-});
-
-app.put('/api/v1/orders/:id/payout', async (req, res) => {
-  const { id } = req.params;
-  console.log(`📡 API Call [PUT /api/v1/orders/${id}/payout]:`, req.body);
-  return res.json({
-    success: true,
-    id,
-    data: req.body,
-    message: `Order #${id} payout status updated via API`,
-    timestamp: new Date().toISOString()
-  });
-});
+// Note: /api/v1/orders endpoints are managed by ./routes/orderRoutes.js
 
 
 

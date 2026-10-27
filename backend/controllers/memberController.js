@@ -2,22 +2,37 @@ const db = require('../db');
 
 const getMembers = async (req, res) => {
   try {
+    // 1. Authentication check
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required to access member directory' }
+      });
+    }
+
+    // 2. Privilege check: Ordinary members cannot access directory
+    const ALLOWED_ADMIN_ROLES = ['SUPER_ADMIN', 'NATIONAL_ADMIN', 'STATE_ADMIN', 'CLUB_ADMIN', 'EVENT_ADMIN'];
+    if (!ALLOWED_ADMIN_ROLES.includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'Members are not permitted to access the membership directory' }
+      });
+    }
+
     const { club, state } = req.query;
     let query = 'SELECT * FROM `Member` WHERE 1=1';
     const params = [];
 
-    // Role-based scope enforcement
+    // 3. Role-based scope enforcement
     let effectiveState = state;
     let effectiveClub = club;
 
-    if (req.user) {
-      if (req.user.role === 'STATE_ADMIN') {
-        // State Admin is restricted strictly to their assigned state
-        effectiveState = req.user.stateCode || req.user.state;
-      } else if (req.user.role === 'CLUB_ADMIN') {
-        // Club Admin is restricted strictly to their assigned club
-        effectiveClub = req.user.club || req.user.clubId;
-      }
+    if (req.user.role === 'STATE_ADMIN') {
+      // State Admin is restricted strictly to their assigned state charter
+      effectiveState = req.user.stateCode || req.user.state;
+    } else if (req.user.role === 'CLUB_ADMIN' || req.user.role === 'EVENT_ADMIN') {
+      // Club Admin & Event Admin are restricted strictly to their assigned club
+      effectiveClub = req.user.club || req.user.clubId;
     }
 
     if (effectiveClub) {

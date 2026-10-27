@@ -84,8 +84,8 @@ const preSignUpEntry = async (req, res) => {
     const confirmationCode = `UHC-${Date.now().toString().slice(-6)}`;
 
     await db.query(
-      `INSERT INTO \`EventEntry\` (id, eventId, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode)
-       VALUES (?, ?, ?, ?, ?, ?, 'Paid', ?)`,
+      `INSERT INTO \`EventEntry\` (id, eventId, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode, checkInStatus)
+       VALUES (?, ?, ?, ?, ?, ?, 'Pending Payment', ?, 'Not Arrived')`,
       [entryId, id, dogId || null, participant || 'Handler', handlerPhone || '', Number(entryFee) || 30.00, confirmationCode]
     );
 
@@ -93,7 +93,7 @@ const preSignUpEntry = async (req, res) => {
 
     return res.status(201).json({
       success: true,
-      data: { id: entryId, eventId: id, confirmationCode, status: 'CONFIRMED' },
+      data: { id: entryId, eventId: id, confirmationCode, status: 'CONFIRMED', paymentStatus: 'Pending Payment', checkInStatus: 'Not Arrived' },
       message: 'Pre-signup entry saved directly to MySQL database `club`'
     });
   } catch (err) {
@@ -277,6 +277,203 @@ const deleteEvent = async (req, res) => {
   }
 };
 
+const checkInEntry = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { checkInStatus } = req.body;
+
+    // 1. Authentication check
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required for check-in operations' }
+      });
+    }
+
+    // 2. Validate input
+    const allowedStatuses = ['Checked In', 'Not Arrived', 'Scratched', 'Late'];
+    if (!checkInStatus || !allowedStatuses.includes(checkInStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_STATUS',
+          message: `Check-in status must be one of: ${allowedStatuses.join(', ')}`
+        }
+      });
+    }
+
+    // 3. Find target entry and join with parent event to check scope
+    const [entryRows] = await db.query(
+      `SELECT ee.*, ev.id AS evId, ev.name AS evName, ev.club AS evClub, ev.clubId AS evClubId, ev.state AS evState, ev.stateCode AS evStateCode
+       FROM \`EventEntry\` ee
+       LEFT JOIN \`Event\` ev ON ee.eventId = ev.id
+       WHERE ee.id = ?`,
+      [id]
+    );
+
+    const entry = entryRows[0];
+    if (!entry) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'ENTRY_NOT_FOUND', message: `Event entry #${id} not found` }
+      });
+    }
+
+    // 4. Role & Scope Enforcement
+    const role = req.user.role;
+    if (role === 'MEMBER') {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'Members are not permitted to manage event check-ins' }
+      });
+    }
+
+    if (role === 'STATE_ADMIN') {
+      const userState = (req.user.stateCode || req.user.state || '').toLowerCase();
+      const eventState = (entry.evStateCode || entry.evState || '').toLowerCase();
+      if (!userState || (!eventState.includes(userState) && !userState.includes(eventState))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to check in entries for events outside your state charter' }
+        });
+      }
+    } else if (role === 'CLUB_ADMIN' || role === 'EVENT_ADMIN') {
+      const userClub = (req.user.club || req.user.clubId || '').toLowerCase();
+      const eventClub = (entry.evClub || entry.evClubId || '').toLowerCase();
+      if (!userClub || (!eventClub.includes(userClub) && !userClub.includes(eventClub))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to check in entries for events outside your assigned club' }
+        });
+      }
+    }
+
+    // 5. Update DB
+    const checkedInAt = checkInStatus === 'Checked In' ? new Date().toISOString() : null;
+    await db.query(
+      'UPDATE `EventEntry` SET `checkInStatus` = ?, `checkedInAt` = ? WHERE `id` = ?',
+      [checkInStatus, checkedInAt, id]
+    );
+
+    const [updatedRows] = await db.query('SELECT * FROM `EventEntry` WHERE `id` = ?', [id]);
+    const updated = updatedRows[0] || { ...entry, checkInStatus, checkedInAt };
+
+    return res.json({
+      success: true,
+      data: updated,
+      message: `Entry #${id} check-in status updated to ${checkInStatus} in database`
+    });
+  } catch (err) {
+    console.error('[Check-In Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+};
+
+const updateEntryPayment = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { paymentStatus } = req.body;
+
+    // 1. Authentication check
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required to update entry payment status' }
+      });
+    }
+
+    // 2. Validate input
+    const allowedStatuses = ['Pending Payment', 'Paid', 'Refunded', 'Unpaid', 'Comped'];
+    if (!paymentStatus || !allowedStatuses.includes(paymentStatus)) {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'INVALID_STATUS',
+          message: `Payment status must be one of: ${allowedStatuses.join(', ')}`
+        }
+      });
+    }
+
+    // 3. Find target entry and join with parent event to check scope
+    const [entryRows] = await db.query(
+      `SELECT ee.*, ev.id AS evId, ev.name AS evName, ev.club AS evClub, ev.clubId AS evClubId, ev.state AS evState, ev.stateCode AS evStateCode
+       FROM \`EventEntry\` ee
+       LEFT JOIN \`Event\` ev ON ee.eventId = ev.id
+       WHERE ee.id = ?`,
+      [id]
+    );
+
+    const entry = entryRows[0];
+    if (!entry) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'ENTRY_NOT_FOUND', message: `Event entry #${id} not found` }
+      });
+    }
+
+    // 4. Role & Scope Enforcement: Only authorized administrators may change payment status
+    const role = req.user.role;
+    if (role === 'MEMBER') {
+      return res.status(403).json({
+        success: false,
+        error: { code: 'FORBIDDEN', message: 'Ordinary members cannot alter entry payment status' }
+      });
+    }
+
+    if (role === 'STATE_ADMIN') {
+      const userState = (req.user.stateCode || req.user.state || '').toLowerCase();
+      const eventState = (entry.evStateCode || entry.evState || '').toLowerCase();
+      if (!userState || (!eventState.includes(userState) && !userState.includes(eventState))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to update entry payments for events outside your state charter' }
+        });
+      }
+    } else if (role === 'CLUB_ADMIN' || role === 'EVENT_ADMIN') {
+      const userClub = (req.user.club || req.user.clubId || '').toLowerCase();
+      const eventClub = (entry.evClub || entry.evClubId || '').toLowerCase();
+      if (!userClub || (!eventClub.includes(userClub) && !userClub.includes(eventClub))) {
+        return res.status(403).json({
+          success: false,
+          error: { code: 'FORBIDDEN', message: 'You are not authorized to update entry payments for events outside your assigned club' }
+        });
+      }
+    }
+
+    // 5. Verification Integrity Check:
+    // Administrative authorization alone cannot falsely represent an unverified payment as received.
+    // In the absence of an integrated payment processor or verified settlement record,
+    // entries cannot be marked as 'Paid' by administrative fiat.
+    if (paymentStatus === 'Paid') {
+      return res.status(400).json({
+        success: false,
+        error: {
+          code: 'PAYMENT_VERIFICATION_REQUIRED',
+          message: 'Administrative authorization alone cannot mark an entry as Paid without verified payment settlement. Automated payment confirmation remains blocked until live payment processor integration is active.'
+        }
+      });
+    }
+
+    // 6. Update DB with permitted administrative status change (e.g. 'Unpaid', 'Pending Payment', 'Refunded', 'Comped')
+    await db.query(
+      'UPDATE `EventEntry` SET `paymentStatus` = ? WHERE `id` = ?',
+      [paymentStatus, id]
+    );
+
+    const [updatedRows] = await db.query('SELECT * FROM `EventEntry` WHERE `id` = ?', [id]);
+    const updated = updatedRows[0] || { ...entry, paymentStatus };
+
+    return res.json({
+      success: true,
+      data: updated,
+      message: `Entry #${id} payment status updated to ${paymentStatus} in database`
+    });
+  } catch (err) {
+    console.error('[Update Entry Payment Error]:', err.message);
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+};
+
 module.exports = {
   getEvents,
   getEventById,
@@ -284,5 +481,7 @@ module.exports = {
   preSignUpEntry,
   createEvent,
   updateEvent,
-  deleteEvent
+  deleteEvent,
+  checkInEntry,
+  updateEntryPayment
 };

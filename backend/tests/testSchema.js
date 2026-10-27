@@ -93,6 +93,27 @@ const SCHEMA_SQL = [
     fee REAL NOT NULL,
     paymentStatus TEXT DEFAULT 'Paid',
     confirmationCode TEXT NOT NULL,
+    checkInStatus TEXT DEFAULT 'Not Arrived',
+    checkedInAt DATETIME,
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )`,
+  `CREATE TABLE IF NOT EXISTS CompetitionResult (
+    id TEXT PRIMARY KEY,
+    eventId TEXT,
+    eventName TEXT NOT NULL,
+    club TEXT,
+    state TEXT,
+    stateCode TEXT,
+    placement TEXT,
+    place INTEGER,
+    winnerDog TEXT,
+    winnerDogReg TEXT,
+    breed TEXT,
+    owner TEXT,
+    participant TEXT,
+    score TEXT,
+    date TEXT,
+    status TEXT DEFAULT 'Published',
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
   `CREATE TABLE IF NOT EXISTS ClubClaim (
@@ -126,8 +147,14 @@ const SCHEMA_SQL = [
     id TEXT PRIMARY KEY,
     orderNumber TEXT UNIQUE NOT NULL,
     customerName TEXT NOT NULL,
+    customerEmail TEXT,
     total REAL NOT NULL,
-    status TEXT DEFAULT 'Completed',
+    status TEXT DEFAULT 'Processing',
+    fulfillmentStatus TEXT DEFAULT 'Processing',
+    trackingNumber TEXT DEFAULT 'Pending Dispatch',
+    carrier TEXT DEFAULT 'UPS Ground',
+    payoutStatus TEXT DEFAULT 'Pending',
+    clubId TEXT,
     itemsJson TEXT DEFAULT '[]',
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
   )`,
@@ -170,11 +197,41 @@ async function initializeTestSchema(db) {
   for (const statement of SCHEMA_SQL) {
     await db.query(statement);
   }
+  // Ensure columns exist if table was previously created
+  try {
+    await db.query("ALTER TABLE EventEntry ADD COLUMN checkInStatus TEXT DEFAULT 'Not Arrived'");
+  } catch (e) {
+    // column already exists
+  }
+  try {
+    await db.query("ALTER TABLE EventEntry ADD COLUMN checkedInAt DATETIME");
+  } catch (e) {
+    // column already exists
+  }
+  // Phase 7 migrations for Order fulfillment and payout persistence
+  try {
+    await db.query("ALTER TABLE `Order` ADD COLUMN customerEmail TEXT");
+  } catch (e) {}
+  try {
+    await db.query("ALTER TABLE `Order` ADD COLUMN fulfillmentStatus TEXT DEFAULT 'Processing'");
+  } catch (e) {}
+  try {
+    await db.query("ALTER TABLE `Order` ADD COLUMN trackingNumber TEXT DEFAULT 'Pending Dispatch'");
+  } catch (e) {}
+  try {
+    await db.query("ALTER TABLE `Order` ADD COLUMN carrier TEXT DEFAULT 'UPS Ground'");
+  } catch (e) {}
+  try {
+    await db.query("ALTER TABLE `Order` ADD COLUMN payoutStatus TEXT DEFAULT 'Pending'");
+  } catch (e) {}
+  try {
+    await db.query("ALTER TABLE `Order` ADD COLUMN clubId TEXT");
+  } catch (e) {}
 }
 
 async function seedTestFixtures(db) {
   // Clear any previous records
-  const tables = ['User', 'Member', 'StateAssociation', 'LocalClub', 'Event', 'EventEntry', 'ClubClaim', 'Product', '`Order`', 'DonationPledge', 'FinancialTransaction', 'News'];
+  const tables = ['User', 'Member', 'StateAssociation', 'LocalClub', 'Event', 'EventEntry', 'ClubClaim', 'Product', '`Order`', 'DonationPledge', 'FinancialTransaction', 'News', 'CompetitionResult'];
   for (const t of tables) {
     await db.query(`DELETE FROM ${t}`);
   }
@@ -238,6 +295,13 @@ async function seedTestFixtures(db) {
     ['club-2', 'Cumberland Mountain Club', 'Middlesboro', 'Bell County', 'Kentucky', 'KY', 'state-ky', '40965', 96, 8, 304, 8940, 'Cumberland Admin']
   );
 
+  await db.query(
+    `INSERT INTO LocalClub (id, name, city, county, state, stateCode, stateId, zip, membersCount, eventsCount, entriesCount, revenue, adminName)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['club-tx-1', 'Lone Star Hound Club', 'Austin', 'Travis County', 'Texas', 'TX', 'state-tx', '78701', 50, 4, 120, 4500, 'Texas Admin']
+  );
+
+
   // 4. Events (one in club-1, one in club-2)
   await db.query(
     `INSERT INTO Event (id, name, federation, sport, type, club, clubId, state, stateCode, city, date, fee, entriesCount, maxCapacity, status, deadline, address, description, startTime)
@@ -275,6 +339,45 @@ async function seedTestFixtures(db) {
     `INSERT INTO ClubClaim (id, club, state, applicant, email, phone, submittedDate, claimStatus, verificationStatus, message)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ['CLM-501', 'Hawaii State Association', 'HI', 'James Wadley', 'Houstonroofing@yahoo.com', '(713) 555-0192', 'Oct 23, 2026', 'Pending', 'Pending Verification', 'Official state association administration claim.']
+  );
+
+  // 7. Event Entries (ent-1 in evt-1 / club-1, ent-2 in evt-2 / club-2)
+  await db.query(
+    `INSERT INTO EventEntry (id, eventId, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode, checkInStatus, checkedInAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['ent-1', 'evt-1', 'dog-101', 'John Walker', '(865) 555-0101', 30.0, 'Pending Payment', 'UHC-100001', 'Not Arrived', null]
+  );
+
+  await db.query(
+    `INSERT INTO EventEntry (id, eventId, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode, checkInStatus, checkedInAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['ent-2', 'evt-2', 'dog-102', 'Thomas Shelby', '(606) 555-0202', 45.0, 'Paid', 'UHC-100002', 'Not Arrived', null]
+  );
+
+  // 8. Competition Results
+  await db.query(
+    `INSERT INTO CompetitionResult (id, eventId, eventName, club, state, stateCode, placement, place, winnerDog, winnerDogReg, breed, owner, participant, score, date, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['res-1', 'evt-1', 'Oak Ridge Championship Hunt', 'Oak Ridge Hunting Club', 'Tennessee', 'TN', '1st Place', 1, "Thunder's Southern Belle", 'UKC-892401', 'Treeing Walker Coonhound', 'Lalit Panchole', 'Lalit Panchole', '375 Pts', 'Sep 19, 2026', 'Published']
+  );
+
+  await db.query(
+    `INSERT INTO CompetitionResult (id, eventId, eventName, club, state, stateCode, placement, place, winnerDog, winnerDogReg, breed, owner, participant, score, date, status)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['res-2', 'evt-2', 'Cumberland Mountain Field Trial', 'Cumberland Mountain Club', 'Kentucky', 'KY', '1st Place', 1, 'Blue Ridge Midnight Rambler', 'PKC-441092', 'Bluetick Coonhound', 'Lalit Panchole', 'Lalit Panchole', '325 Pts', 'Sep 12, 2026', 'Published']
+  );
+
+  // 9. Orders
+  await db.query(
+    `INSERT INTO \`Order\` (id, orderNumber, customerName, customerEmail, total, status, fulfillmentStatus, trackingNumber, carrier, payoutStatus, clubId, itemsJson)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['ord-1', 'ORD-9001', 'Regular Member', 'member@example.com', 89.99, 'Processing', 'Processing', 'Pending Dispatch', 'UPS Ground', 'Pending', 'club-1', '[{"name":"Oak Ridge Cap","quantity":1,"price":89.99}]']
+  );
+
+  await db.query(
+    `INSERT INTO \`Order\` (id, orderNumber, customerName, customerEmail, total, status, fulfillmentStatus, trackingNumber, carrier, payoutStatus, clubId, itemsJson)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ['ord-2', 'ORD-9002', 'Kentucky Member', 'ky.member@example.com', 145.50, 'Shipped', 'Shipped', '1Z9999999999999991', 'UPS Ground', 'Approved', 'club-2', '[{"name":"Tracking Collar","quantity":1,"price":145.50}]']
   );
 }
 

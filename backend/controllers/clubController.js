@@ -91,51 +91,105 @@ const pledgeClubDonation = async (req, res) => {
   }
 };
 
-const createClaimRequest = async (req, res) => {
-  try {
-    const { club, state, applicant, email, phone, message } = req.body;
-    const claimId = `clm-${Date.now()}`;
+const claimController = require('./claimController');
 
-    return res.status(201).json({
-      success: true,
-      data: { id: claimId, club, state, applicant, status: 'Pending' },
-      message: 'Claim request saved to database `club`'
-    });
-  } catch (err) {
-    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-  }
+const createClaimRequest = async (req, res) => {
+  return claimController.submitClaim(req, res);
 };
 
 const updateClub = async (req, res) => {
   try {
     const { id } = req.params;
-    const {
-      name,
-      city,
-      state,
-      zip,
-      description,
-      address,
-      phone,
-      email,
-      adminName,
-      heroTitle,
-      heroSubtitle,
-      announcementBanner
-    } = req.body;
 
-    // Scope validation: Club Admin can only update their assigned club; Super/National Admin can update any club
-    if (req.user) {
-      const isSuper = req.user.role === 'SUPER_ADMIN' || req.user.role === 'NATIONAL_ADMIN';
-      const isClubAdmin = req.user.role === 'CLUB_ADMIN';
-      const isAssignedClub = req.user.clubId === id || (req.user.club && req.user.club.toLowerCase().includes((name || '').toLowerCase()));
-      if (!isSuper && (!isClubAdmin || !isAssignedClub)) {
+    // 1. Authentication check
+    if (!req.user || !req.user.role) {
+      return res.status(401).json({
+        success: false,
+        error: { code: 'UNAUTHORIZED', message: 'Authentication required to modify club details' }
+      });
+    }
+
+    // 2. Resource existence check
+    const [rows] = await db.query('SELECT * FROM `LocalClub` WHERE id = ?', [id]);
+    const existingClub = rows[0];
+    if (!existingClub) {
+      return res.status(404).json({
+        success: false,
+        error: { code: 'NOT_FOUND', message: 'Local Club not found' }
+      });
+    }
+
+    // 3. Role & Scope authorization check
+    const userRole = req.user.role;
+    const isSuperOrNational = userRole === 'SUPER_ADMIN' || userRole === 'NATIONAL_ADMIN';
+
+    if (!isSuperOrNational) {
+      if (userRole === 'STATE_ADMIN') {
+        const userState = (req.user.stateCode || req.user.state || '').toLowerCase();
+        const clubStateCode = (existingClub.stateCode || '').toLowerCase();
+        const clubStateName = (existingClub.state || '').toLowerCase();
+
+        const stateMap = {
+          tx: 'texas',
+          tn: 'tennessee',
+          ky: 'kentucky',
+          al: 'alabama',
+          ak: 'alaska',
+          az: 'arizona',
+          ar: 'arkansas',
+          ca: 'california',
+          hi: 'hawaii'
+        };
+        const altState = (stateMap[userState] || '').toLowerCase();
+
+        const stateMatches = userState && (
+          clubStateCode === userState ||
+          clubStateName === userState ||
+          clubStateName === altState ||
+          clubStateName.includes(userState)
+        );
+
+        if (!stateMatches) {
+          return res.status(403).json({
+            success: false,
+            error: { code: 'FORBIDDEN', message: 'You are not authorized to modify clubs outside your state charter' }
+          });
+        }
+      } else if (userRole === 'CLUB_ADMIN') {
+        const userClubId = (req.user.clubId || '').toLowerCase();
+        const userClubName = (req.user.club || '').toLowerCase();
+        const targetClubId = (existingClub.id || '').toLowerCase();
+        const targetClubName = (existingClub.name || '').toLowerCase();
+
+        const clubMatches = (userClubId && userClubId === targetClubId) ||
+          (userClubName && (targetClubName.includes(userClubName) || userClubName.includes(targetClubName)));
+
+        if (!clubMatches) {
+          return res.status(403).json({
+            success: false,
+            error: { code: 'FORBIDDEN', message: 'You are not authorized to modify clubs outside your assigned club' }
+          });
+        }
+      } else {
         return res.status(403).json({
           success: false,
-          error: { code: 'FORBIDDEN', message: 'You do not have administrative permission to modify this club' }
+          error: { code: 'FORBIDDEN', message: 'You do not have administrative permission to modify club details' }
         });
       }
     }
+
+    const {
+      name,
+      city,
+      county,
+      state,
+      stateCode,
+      zip,
+      adminName,
+      dogType,
+      federation,
+      eventType
+    } = req.body;
 
     console.log(`📡 [API Call]: PUT /api/v1/clubs/${id} - Updating club data for: ${name || id}`);
 
@@ -144,20 +198,39 @@ const updateClub = async (req, res) => {
         `UPDATE \`LocalClub\`
          SET name = COALESCE(?, name),
              city = COALESCE(?, city),
+             county = COALESCE(?, county),
              state = COALESCE(?, state),
+             stateCode = COALESCE(?, stateCode),
              zip = COALESCE(?, zip),
-             adminName = COALESCE(?, adminName)
+             adminName = COALESCE(?, adminName),
+             dogType = COALESCE(?, dogType),
+             federation = COALESCE(?, federation),
+             eventType = COALESCE(?, eventType)
          WHERE id = ?`,
-        [name, city, state, zip, adminName, id]
+        [
+          name || null,
+          city || null,
+          county || null,
+          state || null,
+          stateCode || null,
+          zip || null,
+          adminName || null,
+          dogType || null,
+          federation || null,
+          eventType || null,
+          id
+        ]
       );
     } catch (dbErr) {
       console.warn('MySQL LocalClub update fallback warning:', dbErr.message);
     }
 
+    const [updatedRows] = await db.query('SELECT * FROM `LocalClub` WHERE id = ?', [id]);
+
     return res.json({
       success: true,
       message: `Club ${name || id} details updated successfully`,
-      data: { id, ...req.body, updatedAt: new Date().toISOString() }
+      data: updatedRows[0] || { id, ...req.body, updatedAt: new Date().toISOString() }
     });
   } catch (err) {
     return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });

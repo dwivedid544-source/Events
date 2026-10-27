@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('../db');
-const { JWT_SECRET } = require('../middlewares/authMiddleware');
+const { getJwtSecret } = require('../middlewares/authMiddleware');
 
 const register = async (req, res) => {
   try {
@@ -23,6 +23,8 @@ const register = async (req, res) => {
 
     // Security: Self-registration strictly creates MEMBER accounts. Privilege escalation prohibited.
     const assignedRole = 'MEMBER';
+    const assignedState = stateCode || 'TX';
+    const assignedClub = clubId || 'club-1';
 
     const passwordHash = await bcrypt.hash(password, 10);
     const userId = `usr-${Date.now()}`;
@@ -30,19 +32,20 @@ const register = async (req, res) => {
     await db.query(
       `INSERT INTO \`User\` (id, email, passwordHash, name, role, phone, stateCode, clubId)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, email, passwordHash, name, assignedRole, phone || '', stateCode || 'TX', clubId || 'club-1']
+      [userId, email, passwordHash, name, assignedRole, phone || '', assignedState, assignedClub]
     );
 
+    const secret = getJwtSecret();
     const token = jwt.sign(
-      { id: userId, name, email, role: assignedRole },
-      JWT_SECRET,
+      { id: userId, name, email, role: assignedRole, stateCode: assignedState, clubId: assignedClub },
+      secret,
       { expiresIn: '24h' }
     );
 
     return res.status(201).json({
       success: true,
       data: {
-        user: { id: userId, name, email, role: assignedRole },
+        user: { id: userId, name, email, role: assignedRole, stateCode: assignedState, clubId: assignedClub },
         token
       },
       message: 'Account created successfully in MySQL database `club`'
@@ -83,9 +86,17 @@ const login = async (req, res) => {
       });
     }
 
+    const secret = getJwtSecret();
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email, role: user.role },
-      JWT_SECRET,
+      {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        stateCode: user.stateCode,
+        clubId: user.clubId
+      },
+      secret,
       { expiresIn: '24h' }
     );
 

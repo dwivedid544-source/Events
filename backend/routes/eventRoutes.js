@@ -13,6 +13,8 @@ router.post('/', verifyToken, requireRole(...ADMIN_ROLES), eventController.creat
 router.put('/:id', verifyToken, requireRole(...ADMIN_ROLES), eventController.updateEvent);
 router.delete('/:id', verifyToken, requireRole(...ADMIN_ROLES), eventController.deleteEvent);
 router.post('/:id/pre-signup', eventController.preSignUpEntry);
+router.put('/entries/:id/check-in', verifyToken, eventController.checkInEntry);
+router.put('/entries/:id/payment', verifyToken, eventController.updateEntryPayment);
 
 module.exports = router;
 
