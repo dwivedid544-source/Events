@@ -180,6 +180,17 @@ const createOrder = async (req, res) => {
       ? orderData.itemsJson
       : JSON.stringify(orderData.orderItems || orderData.items || []);
 
+    // Check if order already exists in database (prevents unique constraint failures on retries)
+    const [existingRows] = await db.query('SELECT * FROM `Order` WHERE id = ? OR orderNumber = ?', [orderId, orderNumber]);
+    if (existingRows && existingRows.length > 0) {
+      return res.status(200).json({
+        success: true,
+        data: existingRows[0],
+        message: `Order #${orderId} already exists in database`,
+        timestamp: new Date().toISOString()
+      });
+    }
+
     await db.query(
       `INSERT INTO \`Order\` (id, orderNumber, customerName, customerEmail, total, status, fulfillmentStatus, trackingNumber, carrier, payoutStatus, clubId, itemsJson)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,

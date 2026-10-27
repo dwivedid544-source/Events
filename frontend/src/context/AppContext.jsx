@@ -2312,17 +2312,30 @@ export const AppProvider = ({ children }) => {
     const clubName = checkoutData.clubName || firstCartOrigin?.clubName || 'Oak Ridge Hunting Club';
     const firstVendor = targetCart[0]?.vendorName || checkoutData.vendorName || 'Garmin Outdoor';
 
-    const orderSubtotal = checkoutData.subtotal || targetCart.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0);
-    const orderShipping = checkoutData.shipping || (orderSubtotal > 100 || orderSubtotal === 0 ? 0 : 15.00);
-    const orderTax = checkoutData.tax || (orderSubtotal * 0.08);
-    const orderTotal = checkoutData.total || (orderSubtotal + orderShipping + orderTax);
+    const orderSubtotal = Number((checkoutData.subtotal !== undefined ? checkoutData.subtotal : targetCart.reduce((acc, item) => acc + (item.price * (item.quantity || 1)), 0)).toFixed(2));
+    const orderShipping = Number((checkoutData.shipping !== undefined ? checkoutData.shipping : (orderSubtotal > 100 || orderSubtotal === 0 ? 0 : 15.00)).toFixed(2));
+    const orderTax = Number((checkoutData.tax !== undefined ? checkoutData.tax : (orderSubtotal * 0.08)).toFixed(2));
+    const orderTotal = Number((checkoutData.total !== undefined ? checkoutData.total : (orderSubtotal + orderShipping + orderTax)).toFixed(2));
 
     const splits = calculateOrderSplit(orderSubtotal, originType);
 
+    const serializedOrderItems = targetCart.map((i) => ({
+      id: i.id,
+      name: i.name,
+      category: i.category || 'Gear',
+      price: Number(i.price) || 0,
+      quantity: i.quantity || 1,
+      subtotal: Number(((Number(i.price) || 0) * (i.quantity || 1)).toFixed(2)),
+      image: i.image || ''
+    }));
+
     const createdOrder = {
       id: orderId,
+      orderNumber: orderId,
       customer: fullName,
+      customerName: fullName,
       email: cleanEmail,
+      customerEmail: cleanEmail,
       phone: checkoutData.phone || '',
       shippingAddress: {
         address1: checkoutData.address1 || '',
@@ -2348,15 +2361,9 @@ export const AppProvider = ({ children }) => {
       originType,
       state: stateName,
       club: clubName,
-      orderItems: targetCart.map((i) => ({
-        id: i.id,
-        name: i.name,
-        category: i.category,
-        price: i.price,
-        quantity: i.quantity || 1,
-        subtotal: i.price * (i.quantity || 1),
-        image: i.image
-      })),
+      clubId: checkoutData.clubId || null,
+      orderItems: serializedOrderItems,
+      itemsJson: JSON.stringify(serializedOrderItems),
       subtotal: orderSubtotal,
       shipping: orderShipping,
       tax: orderTax,
@@ -2374,7 +2381,7 @@ export const AppProvider = ({ children }) => {
 
     // 1. Save new order immediately to state and localStorage
     setOrders((prev) => {
-      const updated = [createdOrder, ...prev];
+      const updated = [createdOrder, ...prev.filter((o) => o.id !== orderId)];
       try {
         localStorage.setItem('nh_orders_v2', JSON.stringify(updated));
       } catch (e) {
@@ -2383,20 +2390,15 @@ export const AppProvider = ({ children }) => {
       return updated;
     });
 
-    // 2. Fire API call to backend POST /api/v1/orders & Clover Payment Charge
-    try {
-      fetch(`${API_BASE_URL}/orders`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(createdOrder)
-      }).then(() => console.log(`📡 API Call Success: POST ${API_BASE_URL}/orders`))
-        .catch((e) => console.warn('API Call Warning:', e.message));
+    // 2. Synchronize order to database, then process payment charge sequentially
+    (async () => {
+      try {
+        // Persist order in backend database first
+        await apiClient.post('/orders', createdOrder);
+        console.log(`📡 Order #${orderId} saved to database`);
 
-      // Record Clover settlement
-      fetch(`${API_BASE_URL}/payments/charge`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
+        // Record Clover settlement after order exists in database
+        const chargeRes = await apiClient.post('/payments/charge', {
           amount: orderTotal,
           customerName: fullName,
           email: cleanEmail,
@@ -2405,13 +2407,12 @@ export const AppProvider = ({ children }) => {
           description: `Store Order ${orderId} (${fullName})`,
           stateId: createdOrder.shippingAddress?.state,
           cardLast4: checkoutData.cardNumber ? checkoutData.cardNumber.slice(-4) : '4242'
-        })
-      }).then((r) => r.json())
-        .then((data) => console.log('💳 Clover Order Settlement Success:', data))
-        .catch((e) => console.warn('Clover Charge Warning:', e.message));
-    } catch (err) {
-      console.warn('API Call Error:', err);
-    }
+        });
+        console.log('💳 Clover Order Settlement Success:', chargeRes);
+      } catch (err) {
+        console.warn('Order backend sync / charge warning:', err.message || err);
+      }
+    })();
 
     // 3. Reduce product stock ONLY after successful order placement
     setProducts((prevProducts) =>

@@ -683,7 +683,10 @@ app.all('/api/v1/*', (req, res) => {
 
 // Global Error Handler
 app.use((err, req, res, next) => {
-  console.error('[Backend Error]:', err.stack);
+  console.error(`[Backend Error] ${req.method} ${req.originalUrl}:`, err.message);
+  if (process.env.NODE_ENV !== 'production' && err.stack) {
+    console.error(err.stack);
+  }
   res.status(err.status || 500).json({
     success: false,
     error: {
