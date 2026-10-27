@@ -291,7 +291,10 @@ export const AppProvider = ({ children }) => {
                   price: Number(p.price) || 0,
                   wholesaleCost: Number(p.wholesaleCost) || Number(p.wholesale_price) || 0,
                   inStock: p.inStock !== undefined ? Number(p.inStock) : (p.stock !== undefined ? Number(p.stock) : 50),
-                  stock: p.stock !== undefined ? Number(p.stock) : (p.inStock !== undefined ? Number(p.inStock) : 50)
+                  stock: p.stock !== undefined ? Number(p.stock) : (p.inStock !== undefined ? Number(p.inStock) : 50),
+                  image: p.image || 'https://images.unsplash.com/photo-1544816155-12df9643f363?w=500&auto=format&fit=crop&q=80',
+                  vendorName: p.vendorName || p.club || p.vendor || 'Authorized Vendor',
+                  source: p.source || (p.scopeChannel === 'NATIONAL' ? 'UHC' : 'Hunting suppliers')
                 }));
                 setProducts(normalizedProds);
                 localStorage.setItem('nh_products_v2', JSON.stringify(normalizedProds));

@@ -156,3 +156,4 @@ module.exports = {
   login,
   getProfile
 };
+

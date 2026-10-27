@@ -1,17 +1,8 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+const conn = require('./db');
 
 async function seedProducts() {
-  console.log('Connecting to Live Railway MySQL to seed products...');
-  const conn = await mysql.createConnection({
-    host: process.env.DB_HOST,
-    port: process.env.DB_PORT,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
-  });
+  console.log('Connecting to MySQL `club` to seed products...');
 
-  console.log('Connected to Railway MySQL successfully!');
 
   // Check columns in Product table
   const [cols] = await conn.query('DESCRIBE `Product`');
@@ -313,8 +304,11 @@ async function seedProducts() {
 
   console.log('🎉 Successfully seeded all products into Railway MySQL database `Product` table!');
   const [[cnt]] = await conn.query('SELECT COUNT(*) as c FROM `Product`');
-  console.log(`Total Products in Railway DB: ${cnt.c}`);
-  await conn.end();
+  console.log(`Total Products in DB: ${cnt.c}`);
+  process.exit(0);
 }
 
-seedProducts().catch(console.error);
+seedProducts().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

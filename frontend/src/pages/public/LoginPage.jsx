@@ -22,8 +22,8 @@ export const LoginPage = () => {
   const urlEmail = searchParams.get('email');
   const isNewAccount = searchParams.get('newAccount') === 'true';
 
-  const [email, setEmail] = useState(urlEmail || 'demo@example.com');
-  const [password, setPassword] = useState('Password123!');
+  const [email, setEmail] = useState(urlEmail || '');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -260,7 +260,44 @@ export const LoginPage = () => {
             </div>
             <div className="p-3 rounded-xl bg-surface-low border border-surface-border text-[11px] text-charcoal-muted leading-relaxed">
               <strong className="text-forest-900 block font-bold mb-0.5">Role Authorization Policy:</strong>
-              Access permissions (Super Admin, National, State, Club, Event) are strictly validated by the backend service. Client-side role impersonation has been removed for security and compliance.
+              Access permissions (Super Admin, National, State, Club, Event, Member) are strictly validated by the backend service.
+            </div>
+
+            {/* Quick Fill Test Accounts for Pair Programming & Testing */}
+            <div className="p-3 rounded-xl bg-tan-500/10 border border-tan-600/30 text-xs space-y-2">
+              <div className="flex items-center justify-between text-[11px] font-extrabold text-forest-900">
+                <span className="flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-tan-600" /> Quick-Fill Verified Test Accounts
+                </span>
+                <span className="text-[10px] text-charcoal-muted font-normal">Pass: 12345678</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
+                {[
+                  { role: 'Super Admin', email: 'superadmin@gmail.com', color: 'hover:border-red-500' },
+                  { role: 'National Admin', email: 'nationaladmin@gmail.com', color: 'hover:border-tan-600' },
+                  { role: 'State Admin', email: 'stateadmin@gmail.com', color: 'hover:border-blue-500' },
+                  { role: 'Club Admin', email: 'clubadmin@gmail.com', color: 'hover:border-amber-500' },
+                  { role: 'Event Admin', email: 'eventadmin@gmail.com', color: 'hover:border-purple-500' },
+                  { role: 'Member', email: 'member@gmail.com', color: 'hover:border-emerald-500' }
+                ].map((acc) => (
+                  <button
+                    key={acc.email}
+                    type="button"
+                    onClick={() => {
+                      setEmail(acc.email);
+                      setPassword('12345678');
+                    }}
+                    className={`px-2 py-1.5 rounded-lg bg-surface-lowest border border-surface-border text-left transition-all ${acc.color} group hover:shadow-xs active:scale-98`}
+                  >
+                    <div className="text-[10px] font-extrabold text-forest-900 group-hover:text-forest-700 leading-tight">
+                      {acc.role}
+                    </div>
+                    <div className="text-[9px] text-charcoal-light truncate max-w-full">
+                      {acc.email}
+                    </div>
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>

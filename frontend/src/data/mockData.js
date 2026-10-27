@@ -1,12 +1,12 @@
 // Master Mock Data for Nationwide Hunting Club, Membership & Event Management Platform
 
 export const INITIAL_USERS = [
-  { id: 'usr-lalit', name: 'Lalit Panchole', email: 'demo@example.com', role: 'MEMBER', scope: 'Oak Ridge Hunting Club (Tennessee)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now', membershipId: 'TN-ORHC-2026-99012' },
-  { id: 'usr-2', name: 'Robert Miller', email: 'robert.miller@oakridgehc.org', role: 'CLUB_ADMIN', scope: 'Oak Ridge Hunting Club', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '10 mins ago' },
-  { id: 'usr-3', name: 'Sarah Tennessee', email: 'sarah.tn@tn-hunting.org', role: 'STATE_ADMIN', scope: 'Tennessee', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '1 hour ago' },
-  { id: 'usr-4', name: 'David Eventmaster', email: 'david@nitehunt2026.com', role: 'EVENT_ADMIN', scope: 'Nite Hunt (Sep 19, 2026)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now' },
-  { id: 'usr-5', name: 'National Director James', email: 'james.director@nationalhunting.org', role: 'NATIONAL_ADMIN', scope: 'National Organization', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '4 hours ago' },
-  { id: 'usr-6', name: 'Super Admin Alex', email: 'alex.super@nationalhunting.org', role: 'SUPER_ADMIN', scope: 'Entire Platform', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now' },
+  { id: 'usr-superadmin', name: 'Super Admin', email: 'superadmin@gmail.com', role: 'SUPER_ADMIN', scope: 'Entire Platform', avatar: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now' },
+  { id: 'usr-nationaladmin', name: 'National Admin', email: 'nationaladmin@gmail.com', role: 'NATIONAL_ADMIN', scope: 'National Organization', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '4 hours ago' },
+  { id: 'usr-stateadmin', name: 'State Admin', email: 'stateadmin@gmail.com', role: 'STATE_ADMIN', scope: 'Tennessee', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '1 hour ago' },
+  { id: 'usr-clubadmin', name: 'Club Admin', email: 'clubadmin@gmail.com', role: 'CLUB_ADMIN', scope: 'Oak Ridge Hunting Club', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: '10 mins ago' },
+  { id: 'usr-eventadmin', name: 'Event Admin', email: 'eventadmin@gmail.com', role: 'EVENT_ADMIN', scope: 'Nite Hunt (Sep 19, 2026)', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now' },
+  { id: 'usr-memberuser', name: 'Member User', email: 'member@gmail.com', role: 'MEMBER', scope: 'Oak Ridge Hunting Club (Tennessee)', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', status: 'Active', lastActive: 'Just now', membershipId: 'TN-ORHC-2026-99012' },
 ];
 
 export const INITIAL_MEMBERS = [

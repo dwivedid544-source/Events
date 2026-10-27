@@ -208,13 +208,30 @@ async function setupMySQL() {
 
     console.log('✅ All 11 MySQL Tables created successfully in `club` database!');
 
-    // Seed Admin User
-    const hash = bcrypt.hashSync('Password123!', 10);
-    await connection.query(`
-      INSERT INTO \`User\` (\`id\`, \`email\`, \`passwordHash\`, \`name\`, \`role\`, \`phone\`, \`stateCode\`, \`clubId\`)
-      VALUES ('usr-lalit', 'demo@example.com', '${hash}', 'Lalit Panchole', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1')
-      ON DUPLICATE KEY UPDATE \`name\`='Lalit Panchole';
-    `);
+    // Seed Admin & Role Users with simple testing credentials (password: 12345678)
+    const hash = bcrypt.hashSync('12345678', 10);
+    const seedUsers = [
+      ['usr-superadmin', 'superadmin@gmail.com', hash, 'Super Admin', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1'],
+      ['usr-nationaladmin', 'nationaladmin@gmail.com', hash, 'National Admin', 'NATIONAL_ADMIN', '(800) 555-0101', 'TX', 'club-1'],
+      ['usr-stateadmin', 'stateadmin@gmail.com', hash, 'State Admin', 'STATE_ADMIN', '(865) 555-0100', 'TN', 'club-1'],
+      ['usr-clubadmin', 'clubadmin@gmail.com', hash, 'Club Admin', 'CLUB_ADMIN', '(865) 555-0192', 'TN', 'club-1'],
+      ['usr-eventadmin', 'eventadmin@gmail.com', hash, 'Event Admin', 'EVENT_ADMIN', '(865) 555-0155', 'TN', 'club-1'],
+      ['usr-memberuser', 'member@gmail.com', hash, 'Member User', 'MEMBER', '(865) 555-0199', 'TN', 'club-1'],
+      ['usr-demo', 'demo@example.com', hash, 'Demo Super Admin', 'SUPER_ADMIN', '(800) 555-0192', 'TX', 'club-1']
+    ];
+
+    for (const u of seedUsers) {
+      await connection.query(`
+        INSERT INTO \`User\` (\`id\`, \`email\`, \`passwordHash\`, \`name\`, \`role\`, \`phone\`, \`stateCode\`, \`clubId\`)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE 
+          \`passwordHash\`=VALUES(\`passwordHash\`),
+          \`name\`=VALUES(\`name\`),
+          \`role\`=VALUES(\`role\`),
+          \`stateCode\`=VALUES(\`stateCode\`),
+          \`clubId\`=VALUES(\`clubId\`);
+      `, u);
+    }
 
     // Seed State Associations (All 50 US States)
     const states = [

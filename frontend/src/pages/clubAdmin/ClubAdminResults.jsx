@@ -10,11 +10,11 @@ export const ClubAdminResults = () => {
 
   const [formData, setFormData] = useState({
     eventId: events[0]?.id || '',
-    eventName: events[0]?.name || 'Nite Hunt',
+    eventName: events[0]?.name || '',
     place: 1,
-    participant: 'John Walker',
-    dog: 'Ranger (Walker)',
-    score: '375 Pts'
+    participant: '',
+    dog: '',
+    score: ''
   });
 
   const handlePublish = async (e) => {

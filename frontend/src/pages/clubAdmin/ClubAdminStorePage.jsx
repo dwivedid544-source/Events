@@ -54,8 +54,8 @@ export const ClubAdminStorePage = () => {
     name: '',
     category: 'Caps',
     price: '',
-    vendorName: 'Browning Outdoors',
-    inStock: 50,
+    vendorName: '',
+    inStock: '',
     image: '',
     description: ''
   });

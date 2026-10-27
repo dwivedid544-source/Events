@@ -45,8 +45,8 @@ export const StateAdminStorePage = () => {
     name: '',
     category: 'Gear',
     price: '',
-    vendorName: 'Browning Outdoors',
-    inStock: 40,
+    vendorName: '',
+    inStock: '',
     image: '',
     description: ''
   });

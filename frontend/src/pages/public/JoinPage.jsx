@@ -11,13 +11,13 @@ export const JoinPage = () => {
 
   // Form State
   const [formData, setFormData] = useState({
-    firstName: 'John',
-    lastName: 'Walker',
-    email: 'john.walker@example.com',
-    phone: '(865) 555-0192',
-    password: 'password123',
-    selectedState: 'Tennessee',
-    selectedClub: 'Oak Ridge Hunting Club',
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    password: '',
+    selectedState: '',
+    selectedClub: '',
     membershipType: 'Individual Membership',
     price: 45
   });
@@ -25,11 +25,11 @@ export const JoinPage = () => {
   const [createdMember, setCreatedMember] = useState(null);
   const [isCharging, setIsCharging] = useState(false);
   const [cardData, setCardData] = useState({
-    name: 'James Wadley',
-    number: '4532 8821 9912 3401',
-    expiry: '08/28',
-    cvc: '391',
-    zip: '77001'
+    name: '',
+    number: '',
+    expiry: '',
+    cvc: '',
+    zip: ''
   });
 
   const handleNext = async (e) => {
@@ -112,6 +112,7 @@ export const JoinPage = () => {
                 <input
                   type="text"
                   required
+                  placeholder="e.g. John"
                   value={formData.firstName}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   className="w-full px-3 py-2 text-xs bg-surface-low border border-surface-border rounded focus:border-forest-800"
@@ -122,6 +123,7 @@ export const JoinPage = () => {
                 <input
                   type="text"
                   required
+                  placeholder="e.g. Walker"
                   value={formData.lastName}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="w-full px-3 py-2 text-xs bg-surface-low border border-surface-border rounded focus:border-forest-800"
@@ -133,6 +135,7 @@ export const JoinPage = () => {
               <input
                 type="email"
                 required
+                placeholder="name@example.com"
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="w-full px-3 py-2 text-xs bg-surface-low border border-surface-border rounded focus:border-forest-800"
@@ -143,6 +146,7 @@ export const JoinPage = () => {
               <input
                 type="text"
                 required
+                placeholder="(555) 000-0000"
                 value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="w-full px-3 py-2 text-xs bg-surface-low border border-surface-border rounded focus:border-forest-800"
@@ -153,6 +157,7 @@ export const JoinPage = () => {
               <input
                 type="password"
                 required
+                placeholder="Create a strong password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="w-full px-3 py-2 text-xs bg-surface-low border border-surface-border rounded focus:border-forest-800"

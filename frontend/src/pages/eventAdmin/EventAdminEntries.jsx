@@ -49,7 +49,7 @@ export const EventAdminEntries = () => {
   const [newEntryForm, setNewEntryForm] = useState({
     participant: '',
     participantEmail: '',
-    participantPhone: '(865) 555-0192',
+    participantPhone: '',
     dog: '',
     breed: 'Treeing Walker Coonhound',
     fee: 30,

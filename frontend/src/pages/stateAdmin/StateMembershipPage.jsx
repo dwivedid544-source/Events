@@ -72,13 +72,13 @@ export const StateMembershipPage = () => {
   const [registerForm, setRegisterForm] = useState({
     name: '',
     email: '',
-    phone: '(865) 555-0199',
-    city: 'Knoxville',
+    phone: '',
+    city: '',
     state: stateName,
-    address: '1420 Hunting Ridge Rd',
-    clubAffiliation: 'Oak Ridge Hunting Club',
+    address: '',
+    clubAffiliation: '',
     membershipType: 'Individual Membership',
-    dogSportInterests: ['Coonhound Hunts'],
+    dogSportInterests: [],
     duesAmount: 35.00
   });
 

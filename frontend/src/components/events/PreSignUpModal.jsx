@@ -6,9 +6,9 @@ export const PreSignUpModal = ({ event, onClose }) => {
   const { dogs, currentUser, enterEvent, showToast } = useApp();
 
   const [selectedDogId, setSelectedDogId] = useState(dogs[0]?.id || '');
-  const [handlerName, setHandlerName] = useState(currentUser?.name || 'Lalit Panchole');
-  const [handlerPhone, setHandlerPhone] = useState('(865) 555-0192');
-  const [handlerEmail, setHandlerEmail] = useState(currentUser?.email || 'demo@example.com');
+  const [handlerName, setHandlerName] = useState(currentUser?.name || '');
+  const [handlerPhone, setHandlerPhone] = useState(currentUser?.phone || '');
+  const [handlerEmail, setHandlerEmail] = useState(currentUser?.email || '');
   const [division, setDivision] = useState('Open Division');
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [regConfirmationCode, setRegConfirmationCode] = useState('');

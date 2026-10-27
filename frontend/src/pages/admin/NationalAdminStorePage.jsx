@@ -98,9 +98,9 @@ export const NationalAdminStorePage = () => {
 
   // Manual Test Order Form State
   const [orderForm, setOrderForm] = useState({
-    customerName: 'Lalit Panchole',
-    customerEmail: 'demo@example.com',
-    customerPhone: '(865) 555-0199',
+    customerName: '',
+    customerEmail: '',
+    customerPhone: '',
     productId: products[0]?.id || '',
     originType: 'CLUB', // CLUB | STATE | NATIONAL
     clubName: 'Oak Ridge Hunting Club',

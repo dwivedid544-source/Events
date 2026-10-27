@@ -59,7 +59,15 @@ export const FindClubPage = () => {
         {filteredClubs.map((club) => (
           <div key={club.id} className="bg-surface-lowest rounded-xl border border-surface-border p-6 shadow-ambient flex flex-col justify-between hover:shadow-ambient-lg transition-all space-y-4">
             <div className="flex items-start gap-4">
-              <img src={club.logo} alt={club.name} className="w-16 h-16 rounded-xl object-cover border border-surface-border" />
+              <img
+                src={club.logo || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80'}
+                alt={club.name}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=200&auto=format&fit=crop&q=80';
+                }}
+                className="w-16 h-16 rounded-xl object-cover border border-surface-border bg-surface-low shrink-0"
+              />
               <div className="space-y-1">
                 <span className="text-[10px] uppercase font-bold text-tan-700">{club.state} • ZIP {club.zip}</span>
                 <h3 className="font-extrabold text-lg text-charcoal">{club.name}</h3>
