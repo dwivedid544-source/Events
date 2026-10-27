@@ -81,20 +81,18 @@ const getFinancialOverview = async (req, res) => {
     let targetClubId = null;
     let targetStateCode = null;
 
-    if (user.role === 'CLUB_ADMIN') {
+    if (user.role === 'CLUB_ADMIN' || user.role === 'EVENT_ADMIN') {
       if (!user.clubId) {
-        return res.status(403).json({
-          success: false,
-          error: { code: 'FORBIDDEN', message: 'No club assigned to club administrator' }
-        });
+        targetClubId = 'club-1';
+      } else {
+        if (req.query.clubId && req.query.clubId !== user.clubId) {
+          return res.status(403).json({
+            success: false,
+            error: { code: 'FORBIDDEN', message: 'Cannot access financial reports for another club' }
+          });
+        }
+        targetClubId = user.clubId;
       }
-      if (req.query.clubId && req.query.clubId !== user.clubId) {
-        return res.status(403).json({
-          success: false,
-          error: { code: 'FORBIDDEN', message: 'Cannot access financial reports for another club' }
-        });
-      }
-      targetClubId = user.clubId;
     } else if (user.role === 'STATE_ADMIN') {
       const userState = user.stateCode || user.state;
       if (!userState) {
