@@ -530,7 +530,7 @@ app.get('/api/v1/products', async (req, res) => {
           vendorName: 'Garmin Outdoor',
           source: 'Dog equipment companies',
           scopeChannel: 'NATIONAL',
-          image: 'https://images.unsplash.com/photo-1508873696983-2df5293cb395?w=400&auto=format&fit=crop&q=80',
+          image: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400&auto=format&fit=crop&q=80',
           description: 'High-sensitivity GPS tracking & training collar system for sporting hounds.'
         }
       ],
@@ -616,59 +616,59 @@ app.delete('/api/v1/products/:id', async (req, res) => {
 
 
 
-  // Settings GET & POST endpoints from MySQL Database
-  app.get('/api/v1/settings', async (req, res) => {
-    try {
-      return res.json({
-        success: true,
-        data: {
-          orgName: 'National Hunting Network',
-          contactEmail: 'robert.miller@oakridgehc.org',
-          contactPhone: '(865) 555-0192',
-          sanctionFee: '30.00',
-          stateCharterFee: '150.00',
-          address: '1420 Hunting Ridge Rd, Knoxville, TN 37901',
-          notifications: true,
-          autoApproveEntries: true,
-          currency: 'USD ($)'
-        },
-        message: 'Configuration settings fetched from MySQL database `club`',
-        timestamp: new Date().toISOString()
-      });
-    } catch (err) {
-      return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-    }
-  });
+// Settings GET & POST endpoints from MySQL Database
+app.get('/api/v1/settings', async (req, res) => {
+  try {
+    return res.json({
+      success: true,
+      data: {
+        orgName: 'National Hunting Network',
+        contactEmail: 'robert.miller@oakridgehc.org',
+        contactPhone: '(865) 555-0192',
+        sanctionFee: '30.00',
+        stateCharterFee: '150.00',
+        address: '1420 Hunting Ridge Rd, Knoxville, TN 37901',
+        notifications: true,
+        autoApproveEntries: true,
+        currency: 'USD ($)'
+      },
+      message: 'Configuration settings fetched from MySQL database `club`',
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+});
 
-  app.post('/api/v1/settings', async (req, res) => {
-    try {
-      const settingsData = req.body;
-      return res.json({
-        success: true,
-        data: settingsData,
-        message: 'Configuration settings updated successfully in MySQL database `club`',
-        timestamp: new Date().toISOString()
-      });
-    } catch (err) {
-      return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
-    }
-  });
+app.post('/api/v1/settings', async (req, res) => {
+  try {
+    const settingsData = req.body;
+    return res.json({
+      success: true,
+      data: settingsData,
+      message: 'Configuration settings updated successfully in MySQL database `club`',
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
+  }
+});
 
-  app.post('/api/v1/settings/commissions', async (req, res) => {
-    try {
-      const newSettings = req.body;
-      console.log('📡 API Call [POST /api/v1/settings/commissions]:', newSettings);
+app.post('/api/v1/settings/commissions', async (req, res) => {
+  try {
+    const newSettings = req.body;
+    console.log('📡 API Call [POST /api/v1/settings/commissions]:', newSettings);
 
-      return res.json({
-        success: true,
-        data: newSettings,
-        message: 'National Commission Rules updated & saved successfully in database',
-        timestamp: new Date().toISOString()
-      });
-    } catch (err) {
-      return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
-    }
-  });
+    return res.json({
+      success: true,
+      data: newSettings,
+      message: 'National Commission Rules updated & saved successfully in database',
+      timestamp: new Date().toISOString()
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, error: { code: 'SERVER_ERROR', message: err.message } });
+  }
+});
 
 // 404 Handler for undefined API routes
 app.all('/api/v1/*', (req, res) => {
@@ -681,17 +681,17 @@ app.all('/api/v1/*', (req, res) => {
   });
 });
 
-  // Global Error Handler
-  app.use((err, req, res, next) => {
-    console.error('[Backend Error]:', err.stack);
-    res.status(err.status || 500).json({
-      success: false,
-      error: {
-        code: err.code || 'INTERNAL_SERVER_ERROR',
-        message: err.message || 'An unexpected error occurred'
-      }
-    });
+// Global Error Handler
+app.use((err, req, res, next) => {
+  console.error('[Backend Error]:', err.stack);
+  res.status(err.status || 500).json({
+    success: false,
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: err.message || 'An unexpected error occurred'
+    }
   });
+});
 
 // Start Server (only if executed directly)
 if (require.main === module) {
