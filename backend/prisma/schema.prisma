@@ -85,6 +85,10 @@ model Event {
   entriesCount Int      @default(0)
   maxCapacity  Int      @default(50)
   status       String   @default("Registration Open")
+  deadline     String?
+  address      String?
+  description  String?  @db.Text
+  startTime    String?
   createdAt    DateTime @default(now())
 }
 
@@ -116,13 +120,19 @@ model Product {
 }
 
 model Order {
-  id           String   @id @default(uuid())
-  orderNumber  String   @unique
-  customerName String
-  total        Float
-  status       String   @default("Completed")
-  itemsJson    String?  @db.Text
-  createdAt    DateTime @default(now())
+  id                String   @id @default(uuid())
+  orderNumber       String   @unique
+  customerName      String
+  customerEmail     String?
+  total             Float
+  status            String   @default("Completed")
+  fulfillmentStatus String   @default("Processing")
+  payoutStatus      String   @default("Pending")
+  clubId            String?
+  trackingNumber    String?
+  carrier           String?
+  itemsJson         String?  @db.Text
+  createdAt         DateTime @default(now())
 }
 
 model DonationPledge {
@@ -159,4 +169,24 @@ model News {
   date      String
   state     String?
   createdAt DateTime @default(now())
+}
+
+model CompetitionResult {
+  id           String   @id @default(uuid())
+  eventId      String?
+  eventName    String
+  club         String?
+  state        String?
+  stateCode    String?
+  placement    String?
+  place        Int?     @default(1)
+  winnerDog    String
+  winnerDogReg String?
+  breed        String?  @default("Coonhound")
+  owner        String?
+  participant  String
+  score        String?  @default("0 Pts")
+  date         String?
+  status       String?  @default("Published")
+  createdAt    DateTime @default(now())
 }
