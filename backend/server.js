@@ -61,6 +61,7 @@ app.get('/api/v1/health', async (req, res) => {
 
 // Primary REST API Routes querying MySQL `club` DB
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1', authRoutes); // Aliases: /me, /profile
 app.use('/api/v1/members', memberRoutes);
 app.use('/api/v1/states', stateRoutes);
 app.use('/api/v1/clubs', clubRoutes);
