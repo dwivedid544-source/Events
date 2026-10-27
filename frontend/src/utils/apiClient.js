@@ -40,6 +40,10 @@ export const clearAuthSession = () => {
   }
 };
 
+export const isOfflineToken = (token) => {
+  return typeof token === 'string' && (token.startsWith('nh_offline_token_') || token.startsWith('nh_mock_token_'));
+};
+
 /**
  * Internal request wrapper
  */
@@ -50,14 +54,15 @@ async function request(endpoint, options = {}) {
 
   const isInternalApi = url.startsWith(API_BASE_URL);
   const token = getAuthToken();
+  const isOffline = isOfflineToken(token);
 
   const headers = {
     'Content-Type': 'application/json',
     ...(options.headers || {})
   };
 
-  // Only attach Bearer token to internal backend requests
-  if (isInternalApi && token) {
+  // Only attach Bearer token to internal backend requests if not an offline demo token
+  if (isInternalApi && token && !isOffline) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
@@ -70,13 +75,15 @@ async function request(endpoint, options = {}) {
   try {
     response = await fetch(url, config);
   } catch (networkErr) {
-    console.error(`[API Network Error] ${options.method || 'GET'} ${url}:`, networkErr.message);
-    throw new Error(`Network connection error: Unable to reach backend service (${networkErr.message})`);
+    console.warn(`[API Network Notice] ${options.method || 'GET'} ${url}: Unable to reach backend (${networkErr.message})`);
+    const err = new Error(`Network connection error: Unable to reach backend service (${networkErr.message})`);
+    err.isNetworkError = true;
+    throw err;
   }
 
   // Handle 401 Unauthorized
   if (response.status === 401) {
-    if (isInternalApi && token) {
+    if (isInternalApi && token && !isOffline) {
       // Discard expired/invalid token
       clearAuthSession();
       if (typeof window !== 'undefined') {

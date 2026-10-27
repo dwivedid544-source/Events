@@ -10,11 +10,12 @@ import {
   Eye,
   EyeOff,
   Lock,
-  Loader2
+  Loader2,
+  Radio
 } from 'lucide-react';
 
 export const LoginPage = () => {
-  const { loginUser } = useApp();
+  const { loginUser, backendConnected } = useApp();
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -139,7 +140,20 @@ export const LoginPage = () => {
         <div className="lg:col-span-7 p-6 lg:p-10 space-y-6 flex flex-col justify-between bg-surface-lowest text-charcoal">
           <div className="space-y-5">
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-tan-700">Official Access Portal</span>
+              <div className="flex items-center justify-between gap-2 mb-1.5">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-tan-700">Official Access Portal</span>
+                {backendConnected ? (
+                  <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>Backend Live</span>
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center gap-1.5 text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-300 px-2 py-0.5 rounded-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                    <span>Demo Fallback Mode</span>
+                  </div>
+                )}
+              </div>
               <h2 className="text-2xl font-extrabold text-forest-900 tracking-tight">Sign In to Account</h2>
               <p className="text-xs text-charcoal-muted mt-1">
                 Enter your verified email and password to access your authorized portal.
@@ -260,7 +274,7 @@ export const LoginPage = () => {
             </div>
             <div className="p-3 rounded-xl bg-surface-low border border-surface-border text-[11px] text-charcoal-muted leading-relaxed">
               <strong className="text-forest-900 block font-bold mb-0.5">Role Authorization Policy:</strong>
-              Access permissions (Super Admin, National, State, Club, Event, Member) are strictly validated by the backend service.
+              Access permissions (Super Admin, National, State, Club, Event, Member) are verified with the backend API when connected and operate seamlessly with offline fallback mode.
             </div>
 
             {/* Quick Fill Test Accounts for Pair Programming & Testing */}
