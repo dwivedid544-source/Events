@@ -367,7 +367,8 @@ export const PublicStatePage = () => {
 
       {/* 🏛️ REQUIREMENT 2: STATE HEADER */}
       {/* Must contain: Logo, Name, Branding/Colors, Contact Info, Association Officers */}
-      <header className="relative bg-gradient-to-r from-forest-950 via-forest-900 to-forest-950 text-white rounded-3xl p-6 sm:p-8 lg:p-10 border-2 border-tan-500/40 shadow-2xl overflow-hidden space-y-6">
+      <header className="relative bg-gradient-to-r from-forest-950 via-forest-900 to-forest-950 text-white rounded-3xl p-6 sm:p-8 lg:p-10 border-2 border-tan-500/40 shadow-2xl overflow-hidden space-y-5">
+        {/* Top Header Row: Logo, Title & Officers Info */}
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
           
           {/* Logo & State Association Name */}
@@ -392,126 +393,128 @@ export const PublicStatePage = () => {
               </div>
               
               {/* State Association Name */}
-              <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight">
                 {stateTitle}
               </h1>
 
               {/* State Contact Information Header Bar */}
-              <div className="flex flex-wrap items-center gap-4 text-xs text-tan-200 font-medium pt-1">
-                <div className="flex items-center gap-1.5">
+              <div className="flex flex-wrap items-center gap-2.5 text-xs text-tan-200/90 font-medium pt-1">
+                <span className="inline-flex items-center gap-1.5 bg-forest-900/70 border border-forest-700/60 px-2.5 py-1 rounded-lg">
                   <Phone className="w-3.5 h-3.5 text-tan-400" />
-                  <span>{stateCms?.contactInfo?.match(/Phone:\s*([^\s|]+)/)?.[1] || '(800) 555-0192'}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
+                  <span>{stateCms?.contactInfo?.match(/Phone:\s*([^|\n]+)/)?.[1]?.trim() || '(800) 555-0192'}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-forest-900/70 border border-forest-700/60 px-2.5 py-1 rounded-lg">
                   <Mail className="w-3.5 h-3.5 text-tan-400" />
-                  <span>{stateCms?.contactInfo?.match(/Email:\s*([^\s|]+)/)?.[1] || `contact@${stateData.code.toLowerCase()}hunting.org`}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
+                  <span>{stateCms?.contactInfo?.match(/Email:\s*([^|\n]+)/)?.[1]?.trim() || `contact@${stateData.code.toLowerCase()}hunting.org`}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 bg-forest-900/70 border border-forest-700/60 px-2.5 py-1 rounded-lg">
                   <MapPin className="w-3.5 h-3.5 text-tan-400" />
-                  <span>{stateCms?.contactInfo?.match(/Headquarters:\s*([^|]+)/)?.[1]?.trim() || `State Headquarters, ${stateData.name}`}</span>
-                </div>
+                  <span>{stateCms?.contactInfo?.match(/Headquarters:\s*([^|\n]+)/)?.[1]?.trim() || `State Headquarters, ${stateData.name}`}</span>
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Association Officers Header Summary & Action */}
+          {/* Association Officers Header Summary & Primary CTA */}
           <div className="flex flex-col sm:flex-row lg:flex-col items-start lg:items-end gap-3 shrink-0">
-            <div className="p-3 rounded-2xl bg-forest-900/90 border border-forest-700 space-y-1.5 text-xs text-left lg:text-right">
-              <div className="text-[10px] font-black uppercase text-tan-400 flex items-center gap-1 lg:justify-end">
+            <div className="p-3.5 rounded-2xl bg-forest-900/90 border border-forest-700 space-y-1 text-xs text-left lg:text-right min-w-[210px] shadow-sm">
+              <div className="text-[10px] font-black uppercase text-tan-400 flex items-center gap-1.5 lg:justify-end">
                 <UserCheck className="w-3.5 h-3.5 text-tan-400" />
                 <span>Association Officers</span>
               </div>
-              <div className="font-extrabold text-white">{stateData.adminName || 'Austin Sterling'} (Director)</div>
-              <div className="text-[11px] text-tan-200">Board: 3 Elected State Officers</div>
+              <div className="font-extrabold text-sm text-white">
+                {stateData.adminName || 'Austin Sterling'} <span className="text-xs text-tan-300 font-semibold">(Director)</span>
+              </div>
+              <div className="text-[11px] text-tan-200/80">Board: 3 Elected State Officers</div>
             </div>
 
-            <div className="flex flex-wrap gap-2 items-center">
-              {(() => {
-                const activeClaim = claims.find(c => 
-                  (
-                    (c.id === 'CLM-501' && (stateData.code === 'HI' || stateData.id === 'hi')) ||
-                    c.stateId?.toLowerCase() === stateData.id?.toLowerCase() ||
-                    (c.state && stateData.code && c.state.toUpperCase() === stateData.code.toUpperCase()) ||
-                    (c.state && stateData.name && c.state.toLowerCase() === stateData.name.toLowerCase()) ||
-                    (c.club && stateTitle && (c.club.toLowerCase() === stateTitle.toLowerCase() || (cleanStateName && c.club.toLowerCase().includes(cleanStateName.toLowerCase()))))
-                  ) &&
-                  (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
-                );
-
-                if (activeClaim && activeClaim.claimStatus === 'Approved') {
-                  return (
-                    <>
-                      <div className="px-5 py-3 bg-emerald-950/90 border border-emerald-500/80 text-emerald-300 font-black text-xs rounded-xl shadow-lg flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Verified State Admin: {activeClaim.applicant}</span>
-                      </div>
-                      <Link
-                        to="/state-admin"
-                        className="px-4 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5"
-                      >
-                        <span>Manage State Portal</span>
-                      </Link>
-                    </>
-                  );
-                }
-
-                if (activeClaim && activeClaim.claimStatus === 'Pending') {
-                  return (
-                    <>
-                      <div className="px-4 py-2.5 bg-amber-950/90 border border-amber-500/80 text-amber-300 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span>Claim Pending: {activeClaim.applicant}</span>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
-                          if (setCurrentUser) {
-                            setCurrentUser(prev => ({
-                              ...prev,
-                              name: activeClaim.applicant,
-                              email: activeClaim.email,
-                              role: 'STATE_ADMIN',
-                              scope: `${stateTitle} (${stateData.code})`,
-                              state: stateTitle,
-                              stateCode: stateData.code
-                            }));
-                          }
-                          showToast(`Claim Approved! Granted Administrator access for ${stateTitle}.`, 'success');
-                        }}
-                        className="px-3.5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer"
-                      >
-                        1-Click Approve (Demo)
-                      </button>
-                      <Link
-                        to="/super-admin/club-claims"
-                        className="px-3 py-2 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700"
-                      >
-                        Admin Queue
-                      </Link>
-                    </>
-                  );
-                }
-
-                return (
-                  <button
-                    onClick={() => setIsClaimModalOpen(true)}
-                    className="px-5 py-3 bg-forest-900 border border-forest-750 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
-                  >
-                    <UserCheck className="w-4 h-4 text-tan-400" />
-                    <span>Claim Page</span>
-                  </button>
-                );
-              })()}
+            <div className="flex items-center gap-2">
               <Link
                 to={`/join-state/${stateData.id || 'texas'}`}
-                className="px-5 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all"
+                className="px-5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all hover:scale-[1.02] active:scale-98"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Join {stateData.name.includes('Texas') ? 'the Texas Hound Association' : stateTitle}</span>
+                <span>Join Association</span>
               </Link>
             </div>
           </div>
         </div>
+
+        {/* Claim Pending / Approved Notification Strip */}
+        {(() => {
+          const activeClaim = claims.find(c => 
+            (
+              (c.id === 'CLM-501' && (stateData.code === 'HI' || stateData.id === 'hi')) ||
+              c.stateId?.toLowerCase() === stateData.id?.toLowerCase() ||
+              (c.state && stateData.code && c.state.toUpperCase() === stateData.code.toUpperCase()) ||
+              (c.state && stateData.name && c.state.toLowerCase() === stateData.name.toLowerCase()) ||
+              (c.club && stateTitle && (c.club.toLowerCase() === stateTitle.toLowerCase() || (cleanStateName && c.club.toLowerCase().includes(cleanStateName.toLowerCase()))))
+            ) &&
+            (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
+          );
+
+          if (activeClaim && activeClaim.claimStatus === 'Pending') {
+            return (
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-amber-950/80 border border-amber-500/50 backdrop-blur-md shadow-md">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                  <span className="text-xs font-bold text-amber-200">
+                    State Admin Claim Pending: <strong className="text-amber-100">{activeClaim.applicant}</strong> ({activeClaim.email})
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={async () => {
+                      if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
+                      if (setCurrentUser) {
+                        setCurrentUser(prev => ({
+                          ...prev,
+                          name: activeClaim.applicant,
+                          email: activeClaim.email,
+                          role: 'STATE_ADMIN',
+                          scope: `${stateTitle} (${stateData.code})`,
+                          state: stateTitle,
+                          stateCode: stateData.code
+                        }));
+                      }
+                      showToast(`Claim Approved! Granted Administrator access for ${stateTitle}.`, 'success');
+                    }}
+                    className="px-3.5 py-1.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer transition-all hover:scale-105 active:scale-95"
+                  >
+                    1-Click Approve (Demo)
+                  </button>
+                  <Link
+                    to="/super-admin/club-claims"
+                    className="px-3 py-1.5 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700 transition-all"
+                  >
+                    Admin Queue
+                  </Link>
+                </div>
+              </div>
+            );
+          }
+
+          if (activeClaim && activeClaim.claimStatus === 'Approved') {
+            return (
+              <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500/50 backdrop-blur-md shadow-md">
+                <div className="flex items-center gap-2.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span className="text-xs font-bold text-emerald-200">
+                    Verified State Administrator: <strong className="text-white">{activeClaim.applicant}</strong>
+                  </span>
+                </div>
+                <Link
+                  to="/state-admin"
+                  className="px-4 py-1.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow transition-all hover:scale-105 active:scale-95"
+                >
+                  Manage State Portal
+                </Link>
+              </div>
+            );
+          }
+
+          return null;
+        })()}
 
         {/* Quick Stat Counter Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-forest-800 text-center">

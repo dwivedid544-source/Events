@@ -330,7 +330,7 @@ export const PublicClubPage = () => {
       <section id="home" className="space-y-6">
         <div className="bg-gradient-to-r from-forest-950 via-forest-900 to-forest-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-tan-500/40 shadow-2xl space-y-6">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-            <div className="flex items-start sm:items-center gap-5">
+            <div className="flex items-start sm:items-center gap-5 min-w-0 flex-1">
               {/* Club Logo */}
               <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-tan-500/20 border-2 border-tan-400 overflow-hidden shrink-0 shadow-xl flex items-center justify-center">
                 <img src={clubLogo} alt={club.name} className="w-full h-full object-cover" />
@@ -346,109 +346,107 @@ export const PublicClubPage = () => {
                   </span>
                 </div>
 
-                <h1 className="text-2xl sm:text-4xl lg:text-5xl font-black text-white leading-tight">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight">
                   {club.name}
                 </h1>
 
-                <p className="text-xs sm:text-sm text-tan-200 font-medium flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-tan-400" />
+                <p className="text-xs sm:text-sm text-tan-200/90 font-medium flex items-center gap-1.5">
+                  <MapPin className="w-4 h-4 text-tan-400 shrink-0" />
                   <span>{clubLocation.address}, {clubLocation.city}, {clubLocation.state} ({clubLocation.zip})</span>
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 shrink-0">
-              {(() => {
-                const activeClaim = claims.find(
-                  (c) =>
-                    (c.clubId === club.id || c.club === club.name || (c.club && c.club.toLowerCase() === club.name.toLowerCase())) &&
-                    (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
-                );
-
-                if (activeClaim && activeClaim.claimStatus === 'Approved') {
-                  return (
-                    <>
-                      <div className="px-4 py-2.5 bg-emerald-950/90 border border-emerald-500/80 text-emerald-300 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        <span>Verified Club Admin: {activeClaim.applicant}</span>
-                      </div>
-                      <Link
-                        to="/club-admin"
-                        className="px-4 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-1.5 transition-all"
-                      >
-                        <Building2 className="w-4 h-4 text-forest-950" />
-                        <span>Manage Club Portal</span>
-                      </Link>
-                    </>
-                  );
-                }
-
-                if (activeClaim && activeClaim.claimStatus === 'Pending') {
-                  return (
-                    <>
-                      <div className="px-4 py-2.5 bg-amber-950/90 border border-amber-500/80 text-amber-300 font-bold text-xs rounded-xl shadow-lg flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                        <span>Claim Pending: {activeClaim.applicant}</span>
-                      </div>
-                      <button
-                        onClick={async () => {
-                          if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
-                          if (setCurrentUser) {
-                            setCurrentUser((prev) => ({
-                              ...prev,
-                              name: activeClaim.applicant,
-                              email: activeClaim.email,
-                              role: 'CLUB_ADMIN',
-                              scope: `${club.name} (${club.stateCode || club.state})`,
-                              club: club.name,
-                              clubId: club.id
-                            }));
-                          }
-                          if (setClubs) {
-                            setClubs((prev) =>
-                              prev.map((c) =>
-                                c.id === club.id || c.name === club.name
-                                  ? { ...c, adminName: activeClaim.applicant, status: 'Active' }
-                                  : c
-                              )
-                            );
-                          }
-                          showToast(`Claim Approved! Granted Administrator access for ${club.name}.`, 'success');
-                        }}
-                        className="px-3.5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer transition-all"
-                      >
-                        1-Click Approve (Demo)
-                      </button>
-                      <Link
-                        to="/super-admin/club-claims"
-                        className="px-3 py-2 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700 transition-all"
-                      >
-                        Admin Queue
-                      </Link>
-                    </>
-                  );
-                }
-
-                return (
-                  <button
-                    onClick={() => setIsClaimModalOpen(true)}
-                    className="px-5 py-3 bg-forest-900 border border-forest-750 hover:bg-forest-950 text-white font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
-                  >
-                    <UserCheck className="w-4 h-4 text-tan-400" />
-                    <span>Claim Page</span>
-                  </button>
-                );
-              })()}
-
+            <div className="flex items-center gap-2 shrink-0">
               <Link
                 to={`/join-club/${club.id}`}
-                className="px-5 py-3 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer"
+                className="px-5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow-lg flex items-center gap-2 transition-all cursor-pointer hover:scale-[1.02] active:scale-98"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Join {club.name}</span>
+                <span>Join Club</span>
               </Link>
             </div>
           </div>
+
+          {/* Club Claim Strip */}
+          {(() => {
+            const activeClaim = claims.find(
+              (c) =>
+                (c.clubId === club.id || c.club === club.name || (c.club && c.club.toLowerCase() === club.name.toLowerCase())) &&
+                (c.claimStatus === 'Pending' || c.claimStatus === 'Approved')
+            );
+
+            if (activeClaim && activeClaim.claimStatus === 'Pending') {
+              return (
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-amber-950/80 border border-amber-500/50 backdrop-blur-md shadow-md">
+                  <div className="flex items-center gap-2.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span className="text-xs font-bold text-amber-200">
+                      Club Admin Claim Pending: <strong className="text-amber-100">{activeClaim.applicant}</strong> ({activeClaim.email})
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={async () => {
+                        if (updateClaimStatus) await updateClaimStatus(activeClaim.id, 'Approved');
+                        if (setCurrentUser) {
+                          setCurrentUser((prev) => ({
+                            ...prev,
+                            name: activeClaim.applicant,
+                            email: activeClaim.email,
+                            role: 'CLUB_ADMIN',
+                            scope: `${club.name} (${club.stateCode || club.state})`,
+                            club: club.name,
+                            clubId: club.id
+                          }));
+                        }
+                        if (setClubs) {
+                          setClubs((prev) =>
+                            prev.map((c) =>
+                              c.id === club.id || c.name === club.name
+                                ? { ...c, adminName: activeClaim.applicant, status: 'Active' }
+                                : c
+                            )
+                          );
+                        }
+                        showToast(`Claim Approved! Granted Administrator access for ${club.name}.`, 'success');
+                      }}
+                      className="px-3.5 py-1.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer transition-all hover:scale-105 active:scale-95"
+                    >
+                      1-Click Approve (Demo)
+                    </button>
+                    <Link
+                      to="/super-admin/club-claims"
+                      className="px-3 py-1.5 bg-forest-900 hover:bg-forest-950 text-tan-300 font-bold text-xs rounded-xl border border-forest-700 transition-all"
+                    >
+                      Admin Queue
+                    </Link>
+                  </div>
+                </div>
+              );
+            }
+
+            if (activeClaim && activeClaim.claimStatus === 'Approved') {
+              return (
+                <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl bg-emerald-950/80 border border-emerald-500/50 backdrop-blur-md shadow-md">
+                  <div className="flex items-center gap-2.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <span className="text-xs font-bold text-emerald-200">
+                      Verified Club Administrator: <strong className="text-white">{activeClaim.applicant}</strong>
+                    </span>
+                  </div>
+                  <Link
+                    to="/club-admin"
+                    className="px-4 py-1.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow transition-all hover:scale-105 active:scale-95"
+                  >
+                    Manage Club Portal
+                  </Link>
+                </div>
+              );
+            }
+
+            return null;
+          })()}/div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-forest-800 text-center text-xs">
             <div className="p-3 rounded-xl bg-forest-900/80 border border-forest-800">
