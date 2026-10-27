@@ -78,7 +78,7 @@ export const HomePage = () => {
   const currentSport = SPORTS_OPTIONS.find((s) => s.key === selectedSport) || SPORTS_OPTIONS[0];
 
   // Interactive USA State Hover state
-  const [activeHoverState, setActiveHoverState] = useState(states[0] || null);
+  const [activeHoverState, setActiveHoverState] = useState(() => states.find(s => s.id === 'tx') || states[0] || null);
 
   // Newsletter Form State
   const [newsletterName, setNewsletterName] = useState('');

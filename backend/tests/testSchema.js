@@ -238,7 +238,7 @@ async function seedTestFixtures(db) {
 
   const hash = bcrypt.hashSync('Password123!', 10);
 
-  // 1. Users
+  // 1. Users (Standard Test Fixtures)
   await db.query(
     `INSERT INTO User (id, email, passwordHash, name, role, phone, stateCode, clubId)
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -262,6 +262,24 @@ async function seedTestFixtures(db) {
      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     ['usr-club-admin', 'clubadmin@example.com', hash, 'Oak Ridge Club Admin', 'CLUB_ADMIN', '(555) 000-0004', 'TN', 'club-1']
   );
+
+  // Quick-Fill UI Accounts (Password: 12345678)
+  const qfHash = await bcrypt.hash('12345678', 10);
+  const qfUsers = [
+    ['usr-qf-super', 'superadmin@gmail.com', qfHash, 'Super Admin', 'SUPER_ADMIN', '(555) 019-2834', 'TX', 'club-1'],
+    ['usr-qf-national', 'nationaladmin@gmail.com', qfHash, 'National Admin', 'NATIONAL_ADMIN', '(555) 019-2834', 'TX', 'club-1'],
+    ['usr-qf-state', 'stateadmin@gmail.com', qfHash, 'Texas State Admin', 'STATE_ADMIN', '(555) 019-2834', 'TX', 'club-1'],
+    ['usr-qf-club', 'clubadmin@gmail.com', qfHash, 'Club Admin', 'CLUB_ADMIN', '(555) 019-2834', 'TX', 'club-1'],
+    ['usr-qf-event', 'eventadmin@gmail.com', qfHash, 'Event Coordinator', 'EVENT_ADMIN', '(555) 019-2834', 'TX', 'club-1'],
+    ['usr-qf-member', 'member@gmail.com', qfHash, 'Active Member', 'MEMBER', '(555) 019-2834', 'TX', 'club-1']
+  ];
+  for (const qf of qfUsers) {
+    await db.query(
+      `INSERT OR IGNORE INTO User (id, email, passwordHash, name, role, phone, stateCode, clubId)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      qf
+    );
+  }
 
   // 2. States
   await db.query(
