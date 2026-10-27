@@ -217,77 +217,7 @@ export const AppProvider = ({ children }) => {
             })
             .catch((e) => console.warn('Failed fetching news API:', e));
 
-          // 6. Authenticated Endpoints Sync (Only executed when an active session token is present)
-          if (getAuthToken()) {
-            apiClient.get('/members')
-              .then((resData) => {
-                if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                  setMembers(resData.data);
-                  localStorage.setItem('nh_members', JSON.stringify(resData.data));
-                }
-              })
-              .catch((e) => console.warn('Failed fetching members API:', e.message));
-
-            if (currentUser?.role === 'SUPER_ADMIN') {
-              apiClient.get('/club-claims')
-                .then((resData) => {
-                  if (resData?.success && Array.isArray(resData.data)) {
-                    setClaims(resData.data);
-                  }
-                })
-                .catch((e) => console.warn('Failed fetching claims API:', e.message));
-            }
-
-            apiClient.get('/orders')
-              .then((resData) => {
-                if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
-                  const normalized = resData.data.map((o) => {
-                    let itemsSummary = o.items || o.item;
-                    if (!itemsSummary && o.itemsJson) {
-                      try {
-                        const parsed = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
-                        if (Array.isArray(parsed) && parsed.length > 0) {
-                          itemsSummary = parsed.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
-                        }
-                      } catch (e) {
-                        // ignore
-                      }
-                    }
-                    const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
-                    return {
-                      ...o,
-                      customer: o.customer || o.customerName || 'Customer',
-                      customerName: o.customerName || o.customer || 'Customer',
-                      email: o.email || o.customerEmail || '',
-                      customerEmail: o.customerEmail || o.email || '',
-                      items: itemsSummary || 'Sanctioned Gear / Equipment',
-                      item: itemsSummary || 'Sanctioned Gear / Equipment',
-                      product: o.product || itemsSummary || 'Sanctioned Gear / Equipment',
-                      total: orderAmount,
-                      sellingPrice: orderAmount,
-                      amount: orderAmount,
-                      status: o.fulfillmentStatus || o.status || 'Processing',
-                      fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
-                      payoutStatus: o.payoutStatus || 'Pending',
-                      carrier: o.carrier || 'UPS Ground',
-                      trackingNumber: o.trackingNumber || 'Pending Dispatch'
-                    };
-                  });
-                  setOrders(normalized);
-                }
-              })
-              .catch((e) => console.warn('Failed fetching live orders API:', e.message));
-
-            apiClient.get('/reports/financial-overview?period=monthly')
-              .then((resData) => {
-                if (resData?.success) {
-                  console.log('📊 Financial Report API response:', resData);
-                }
-              })
-              .catch((e) => console.warn('Failed fetching report API:', e.message));
-          }
-
-          // 7. API Call: Fetch Products from MySQL database `club` (Public catalog)
+          // 6. API Call: Fetch Products from MySQL database `club` (Public catalog)
           fetch(`${API_BASE_URL}/products`)
             .then((r) => r.json())
             .then((resData) => {
@@ -314,6 +244,77 @@ export const AppProvider = ({ children }) => {
         console.warn('Backend API connecting/offline, running client fallback:', err.message);
       });
   }, []);
+
+  // Synchronize role-scoped authenticated data only after user session is verified
+  useEffect(() => {
+    if (!currentUser || !getAuthToken()) return;
+
+    const isAdmin = ['SUPER_ADMIN', 'NATIONAL_ADMIN', 'STATE_ADMIN', 'CLUB_ADMIN', 'EVENT_ADMIN'].includes(currentUser.role);
+
+    if (isAdmin) {
+      apiClient
+        .get('/members')
+        .then((resData) => {
+          if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
+            setMembers(resData.data);
+            localStorage.setItem('nh_members', JSON.stringify(resData.data));
+          }
+        })
+        .catch(() => {});
+
+      if (currentUser.role === 'SUPER_ADMIN') {
+        apiClient
+          .get('/club-claims')
+          .then((resData) => {
+            if (resData?.success && Array.isArray(resData.data)) {
+              setClaims(resData.data);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+
+    apiClient
+      .get('/orders')
+      .then((resData) => {
+        if (resData?.success && Array.isArray(resData.data) && resData.data.length > 0) {
+          const normalized = resData.data.map((o) => {
+            let itemsSummary = o.items || o.item;
+            if (!itemsSummary && o.itemsJson) {
+              try {
+                const parsed = typeof o.itemsJson === 'string' ? JSON.parse(o.itemsJson) : o.itemsJson;
+                if (Array.isArray(parsed) && parsed.length > 0) {
+                  itemsSummary = parsed.map((item) => `${item.name || 'Item'} (Qty: ${item.quantity || 1})`).join(', ');
+                }
+              } catch (e) {
+                // ignore
+              }
+            }
+            const orderAmount = Number(o.sellingPrice || o.total || o.amount || 0);
+            return {
+              ...o,
+              customer: o.customer || o.customerName || 'Customer',
+              customerName: o.customerName || o.customer || 'Customer',
+              email: o.email || o.customerEmail || '',
+              customerEmail: o.customerEmail || o.email || '',
+              items: itemsSummary || 'Sanctioned Gear / Equipment',
+              item: itemsSummary || 'Sanctioned Gear / Equipment',
+              product: o.product || itemsSummary || 'Sanctioned Gear / Equipment',
+              total: orderAmount,
+              sellingPrice: orderAmount,
+              amount: orderAmount,
+              status: o.fulfillmentStatus || o.status || 'Processing',
+              fulfillmentStatus: o.fulfillmentStatus || o.status || 'Processing',
+              payoutStatus: o.payoutStatus || 'Pending',
+              carrier: o.carrier || 'UPS Ground',
+              trackingNumber: o.trackingNumber || 'Pending Dispatch'
+            };
+          });
+          setOrders(normalized);
+        }
+      })
+      .catch(() => {});
+  }, [currentUser]);
 
   // Flow-Wise Route API Dispatcher: Fires exact API endpoint for EVERY single route in the app
   useEffect(() => {
