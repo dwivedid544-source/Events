@@ -46,13 +46,6 @@ export const LoginPage = () => {
     try {
       const result = await loginUser(email, password);
       if (result?.success && result.user) {
-        // If arrived via redirect, return to intended destination
-        if (targetRedirect) {
-          navigate(targetRedirect, { replace: true });
-          return;
-        }
-
-        // Navigate based on verified authenticated role
         const roleHomeMap = {
           SUPER_ADMIN: '/super-admin',
           NATIONAL_ADMIN: '/national-admin',
@@ -62,7 +55,22 @@ export const LoginPage = () => {
           MEMBER: '/member'
         };
         const dest = roleHomeMap[result.user.role] || '/member';
-        navigate(dest, { replace: true });
+
+        // Check if targetRedirect is valid for this user's role
+        let finalRedirect = dest;
+        if (targetRedirect) {
+          const userPortal = dest; // e.g. /club-admin
+          const isForeignAdminPortal = /^\/(super-admin|national-admin|state-admin|club-admin|event-admin|member)/.test(targetRedirect) &&
+            !targetRedirect.startsWith(userPortal);
+
+          if (!isForeignAdminPortal) {
+            finalRedirect = targetRedirect;
+          } else if (targetRedirect.endsWith('/settings')) {
+            finalRedirect = `${userPortal}/settings`;
+          }
+        }
+
+        navigate(finalRedirect, { replace: true });
       }
     } catch (err) {
       setErrorMessage(err.message || 'Authentication failed. Please verify your email and password.');

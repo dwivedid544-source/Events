@@ -49,6 +49,17 @@ export const ProtectedRoute = ({ allowedRoles = [], children }) => {
     };
     const userHomePath = roleHomeMap[currentUser.role] || '/member';
 
+    const isSettings = location.pathname.endsWith('/settings');
+    const roleSettingsMap = {
+      SUPER_ADMIN: '/super-admin/settings',
+      NATIONAL_ADMIN: '/national-admin/settings',
+      STATE_ADMIN: '/state-admin/settings',
+      CLUB_ADMIN: '/club-admin/settings',
+      EVENT_ADMIN: '/event-admin/details',
+      MEMBER: '/member/profile'
+    };
+    const userSettingsPath = roleSettingsMap[currentUser.role] || userHomePath;
+
     return (
       <div className="min-h-[70vh] flex items-center justify-center p-4">
         <div className="max-w-md w-full bg-surface-lowest border border-surface-border rounded-2xl p-6 lg:p-8 shadow-ambient space-y-5 text-center">
@@ -68,12 +79,30 @@ export const ProtectedRoute = ({ allowedRoles = [], children }) => {
           </div>
 
           <div className="pt-2 flex flex-col sm:flex-row gap-2 justify-center">
+            {isSettings && (
+              <Link
+                to={userSettingsPath}
+                className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-forest-900 hover:bg-forest-950 text-white text-xs font-bold transition-all shadow-sm"
+              >
+                <span>Go to My Settings</span>
+              </Link>
+            )}
             <Link
               to={userHomePath}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-forest-900 hover:bg-forest-950 text-white text-xs font-bold transition-all shadow-sm"
+              className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-sm ${
+                isSettings
+                  ? 'bg-surface-low hover:bg-surface-border text-forest-900 border border-surface-border'
+                  : 'bg-forest-900 hover:bg-forest-950 text-white'
+              }`}
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Return to My Dashboard</span>
+            </Link>
+            <Link
+              to="/login"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-surface-low hover:bg-surface-border text-forest-900 border border-surface-border text-xs font-bold transition-all shadow-sm"
+            >
+              <span>Switch Account</span>
             </Link>
           </div>
         </div>
