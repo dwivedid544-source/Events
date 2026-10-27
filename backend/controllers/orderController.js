@@ -31,8 +31,8 @@ const getOrders = async (req, res) => {
         query += ' AND clubId = ?';
         params.push(clubId);
       }
-    } else if (user.role === 'CLUB_ADMIN') {
-      // Club Admin only sees orders assigned to their club
+    } else if (user.role === 'CLUB_ADMIN' || user.role === 'EVENT_ADMIN') {
+      // Club Admin & Event Admin only see orders assigned to their club
       if (!user.clubId) {
         return res.json({ success: true, data: [], count: 0, message: 'No club assigned to admin' });
       }
@@ -129,7 +129,7 @@ const getOrderById = async (req, res) => {
         error: { code: 'FORBIDDEN', message: 'You do not have permission to view this order' }
       });
     }
-    if (user.role === 'CLUB_ADMIN' && order.clubId && order.clubId !== user.clubId) {
+    if ((user.role === 'CLUB_ADMIN' || user.role === 'EVENT_ADMIN') && order.clubId && order.clubId !== user.clubId) {
       return res.status(403).json({
         success: false,
         error: { code: 'FORBIDDEN', message: 'Order does not belong to your assigned club' }
