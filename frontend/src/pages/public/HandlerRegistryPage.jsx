@@ -626,3 +626,4 @@ export const HandlerRegistryPage = () => {
     </div>
   );
 };
+

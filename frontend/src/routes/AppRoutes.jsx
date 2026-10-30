@@ -113,6 +113,8 @@ export const AppRoutes = () => {
         <Route path="/stud-dogs" element={<StudDogsPage />} />
         <Route path="/resources" element={<ResourceLibraryPage />} />
         <Route path="/virtual-hunts" element={<VirtualHuntsPage />} />
+        <Route path="/preview-state-dashboard" element={<StateAdminDashboard />} />
+        <Route path="/preview-club-dashboard" element={<ClubAdminDashboard />} />
         <Route path="/handlers" element={<HandlerRegistryPage />} />
         <Route path="/handlers/:handlerId" element={<HandlerRegistryPage />} />
         <Route path="/clubs" element={<FindClubPage />} />
