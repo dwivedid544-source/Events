@@ -77,3 +77,4 @@ Thumbs.db
 backend/backups/
 *.sql
 *.zip
+backend/scripts/*.js
