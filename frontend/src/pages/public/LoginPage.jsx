@@ -292,7 +292,7 @@ export const LoginPage = () => {
                 <span className="flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-tan-600" /> Quick-Fill Verified Test Accounts
                 </span>
-                <span className="text-[10px] text-charcoal-muted font-normal">Pass: 12345678</span>
+                <span className="text-[10px] text-charcoal-muted font-normal">Select Role Email</span>
               </div>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5">
                 {[
@@ -308,7 +308,7 @@ export const LoginPage = () => {
                     type="button"
                     onClick={() => {
                       setEmail(acc.email);
-                      setPassword('12345678');
+                      // password entered securely by authorized user
                     }}
                     className={`px-2 py-1.5 rounded-lg bg-surface-lowest border border-surface-border text-left transition-all ${acc.color} group hover:shadow-xs active:scale-98`}
                   >

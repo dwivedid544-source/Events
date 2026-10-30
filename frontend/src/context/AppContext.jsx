@@ -2218,62 +2218,51 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateUserRole = async (userId, newRole) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
-    );
-
     try {
-      await fetch(`${API_BASE_URL}/users/${userId}/role`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ role: newRole })
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/users/${userId}/role`);
+      const res = await apiClient.put(`/users/${userId}/role`, { role: newRole });
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
+      );
+      showToast(`User role updated to ${newRole}`, 'info');
+      return res;
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('[Update User Role Error]:', err.message);
+      showToast(err.message || 'Failed to update user role', 'error');
+      throw err;
     }
-
-    showToast(`User role updated to ${newRole}`, 'info');
   };
 
   const updateMemberStatus = async (memberId, newStatus) => {
-    setMembers((prev) =>
-      prev.map((m) => (m.id === memberId ? { ...m, status: newStatus } : m))
-    );
-
     try {
-      await fetch(`${API_BASE_URL}/members/${memberId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/members/${memberId}/status`);
+      const res = await apiClient.put(`/members/${memberId}/status`, { status: newStatus });
+      setMembers((prev) =>
+        prev.map((m) => (m.id === memberId ? { ...m, status: newStatus } : m))
+      );
+      showToast(`Member status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
+      return res;
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('[Update Member Status Error]:', err.message);
+      showToast(err.message || 'Failed to update member status', 'error');
+      throw err;
     }
-
-    showToast(`Member status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
   };
 
   const updateMember = async (memberId, updatedData) => {
-    setMembers((prev) => {
-      const next = prev.map((m) => (m.id === memberId ? { ...m, ...updatedData } : m));
-      localStorage.setItem('nh_members', JSON.stringify(next));
-      return next;
-    });
-
     try {
-      await fetch(`${API_BASE_URL}/members/${memberId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData)
+      if (updatedData.status) {
+        await apiClient.put(`/members/${memberId}/status`, { status: updatedData.status });
+      }
+      setMembers((prev) => {
+        const next = prev.map((m) => (m.id === memberId ? { ...m, ...updatedData } : m));
+        localStorage.setItem('nh_members', JSON.stringify(next));
+        return next;
       });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/members/${memberId}`);
+      showToast(`Updated member record for "${updatedData.name || memberId}"!`, 'success');
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('[Update Member Error]:', err.message);
+      showToast(err.message || 'Failed to update member', 'error');
+      throw err;
     }
-
-    showToast(`Updated member record for "${updatedData.name || memberId}"!`, 'success');
   };
 
   const deleteMember = async (memberId) => {
@@ -2325,39 +2314,32 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateUserStatus = async (userId, newStatus) => {
-    setUsers((prev) =>
-      prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
-    );
-
     try {
-      await fetch(`${API_BASE_URL}/users/${userId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/users/${userId}/status`);
+      const res = await apiClient.put(`/users/${userId}/status`, { status: newStatus });
+      setUsers((prev) =>
+        prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u))
+      );
+      showToast(`User account status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
+      return res;
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('[Update User Status Error]:', err.message);
+      showToast(err.message || 'Failed to update user status', 'error');
+      throw err;
     }
-
-    showToast(`User account status set to "${newStatus}"!`, (newStatus || '').toLowerCase() === 'active' ? 'success' : 'warning');
   };
 
   const updateUserProfile = async (userId, profileData) => {
-    setCurrentUser((prev) => ({ ...prev, ...profileData }));
-
     try {
-      await fetch(`${API_BASE_URL}/users/${userId}/profile`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(profileData)
-      });
-      console.log(`📡 API Call Success: PUT ${API_BASE_URL}/users/${userId}/profile`);
+      const res = await apiClient.put(`/users/${userId}/profile`, profileData);
+      const updated = res?.data || profileData;
+      setCurrentUser((prev) => ({ ...prev, ...updated }));
+      showToast('Profile updated successfully!', 'success');
+      return res;
     } catch (err) {
-      console.warn('API Warning:', err.message);
+      console.error('[Update User Profile Error]:', err.message);
+      showToast(err.message || 'Failed to update profile', 'error');
+      throw err;
     }
-
-    showToast('Profile updated successfully!', 'success');
   };
 
   // Cart Actions & Calculated Values
@@ -2636,12 +2618,8 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('nh_products_v2', JSON.stringify(updated));
 
     try {
-      await fetch(`${API_BASE_URL}/products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(productWithId)
-      });
-      console.log(`📡 API Call Success: POST ${API_BASE_URL}/products`);
+      await apiClient.post('/products', productWithId);
+      console.log(`📡 API Call Success: POST /products`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }
@@ -2656,11 +2634,8 @@ export const AppProvider = ({ children }) => {
     localStorage.setItem('nh_products_v2', JSON.stringify(updated));
 
     try {
-      await fetch(`${API_BASE_URL}/products/${prodId}`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-      });
-      console.log(`📡 API Call Success: DELETE ${API_BASE_URL}/products/${prodId}`);
+      await apiClient.delete(`/products/${prodId}`);
+      console.log(`📡 API Call Success: DELETE /products/${prodId}`);
     } catch (err) {
       console.warn('API Call Warning:', err.message);
     }

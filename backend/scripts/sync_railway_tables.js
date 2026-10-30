@@ -1,6 +1,6 @@
 const mysql = require('mysql2/promise');
 
-const DATABASE_URL = 'mysql://root:PRTPRVJMLydCnXnYRgazQxqOOCBhxIkz@centerbeam.proxy.rlwy.net:53549/railway';
+const DATABASE_URL = process.env.DATABASE_URL || 'mysql://root:wwOyLdhgbawFdXEoeBrvXeUQIyjlxxSw@iriguchi.proxy.rlwy.net:58182/railway';
 
 async function syncSchema() {
   const pool = mysql.createPool(DATABASE_URL);
@@ -72,6 +72,14 @@ async function syncSchema() {
   if (!evtColNames.includes('startTime')) {
     await pool.query("ALTER TABLE `Event` ADD COLUMN `startTime` VARCHAR(50) DEFAULT '7:00 PM'");
     console.log('Added startTime to Event');
+  }
+
+  // 4. Ensure status column in User table
+  const [userCols] = await pool.query('DESCRIBE `User`');
+  const userColNames = userCols.map(c => c.Field);
+  if (!userColNames.includes('status')) {
+    await pool.query("ALTER TABLE `User` ADD COLUMN `status` VARCHAR(50) DEFAULT 'Active'");
+    console.log('Added status to User table');
   }
 
   await pool.end();

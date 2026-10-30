@@ -73,3 +73,7 @@ backend/data/
 ehthumbs.db
 Thumbs.db
 [Dd]esktop.ini
+
+backend/backups/
+*.sql
+*.zip
