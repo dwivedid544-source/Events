@@ -79,8 +79,12 @@ export const StateAdminDashboard = () => {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Link to="/state-admin/membership" className="px-4 py-2 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-lg shadow">
-            State Membership System
+          <Link to="/resources" className="px-4 py-2 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-lg shadow flex items-center gap-1.5">
+            <FileText className="w-3.5 h-3.5" />
+            <span>State Management Center</span>
+          </Link>
+          <Link to="/state-admin/membership" className="px-4 py-2 bg-forest-950 hover:bg-forest-900 text-white font-extrabold text-xs rounded-lg shadow border border-forest-700">
+            State Memberships
           </Link>
           <Link to="/state-admin/clubs" className="px-4 py-2 bg-forest-950 hover:bg-forest-900 text-white font-extrabold text-xs rounded-lg shadow border border-forest-700">
             Manage State Clubs
@@ -88,12 +92,87 @@ export const StateAdminDashboard = () => {
         </div>
       </div>
 
+      {/* State Management Center Tile Callout */}
+      <div className="bg-gradient-to-r from-forest-900 to-forest-950 p-6 rounded-2xl border-2 border-tan-500/40 text-white flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-lg">
+        <div className="space-y-1">
+          <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-tan-500 text-forest-950">
+            State Officer Resource Center
+          </span>
+          <h2 className="text-lg font-black text-white">STATE MANAGEMENT CENTER</h2>
+          <p className="text-xs text-tan-200">
+            Master repository for Documents & Forms, Annual Planning, Financial Templates, State Event Calendars, and Disciplinary Policies.
+          </p>
+        </div>
+        <Link
+          to="/resources"
+          className="px-5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow transition-all shrink-0 cursor-pointer"
+        >
+          Open Forms & Documents →
+        </Link>
+      </div>
+
+      {/* 5-Stream Daily Financial Revenue Tracking (Client Specification) */}
+      <div className="bg-surface-lowest p-6 rounded-2xl border border-surface-border shadow-ambient space-y-4">
+        <div className="flex items-center justify-between border-b border-surface-border pb-3">
+          <div>
+            <h3 className="font-black text-base text-forest-950 flex items-center gap-2">
+              <DollarSign className="w-5 h-5 text-emerald-600" />
+              <span>Daily Revenue & Financial Tracking (5 Core Streams)</span>
+            </h3>
+            <p className="text-xs text-charcoal-muted mt-0.5">
+              Real-time daily tracking of state revenues across all chartered chapters and sanctioned operations.
+            </p>
+          </div>
+          <span className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-black rounded-xl">
+            Total State Revenue: $6,715.00
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+          <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
+            <span className="text-[10px] text-charcoal-muted uppercase font-black block">1. Monthly Memberships</span>
+            <div className="text-lg font-black text-forest-950">$2,850.00</div>
+            <span className="text-[10px] text-emerald-700 font-bold block">114 State Signups</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
+            <span className="text-[10px] text-charcoal-muted uppercase font-black block">2. Sanctioned Events</span>
+            <div className="text-lg font-black text-blue-900">$1,920.00</div>
+            <span className="text-[10px] text-blue-700 font-bold block">Championship Entries</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
+            <span className="text-[10px] text-charcoal-muted uppercase font-black block">3. Merchandise (7% Split)</span>
+            <div className="text-lg font-black text-tan-800">`${stateCommissionsEarned.toFixed(2)}`</div>
+            <span className="text-[10px] text-charcoal-muted font-bold block">Wholesale Drop-Ship</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
+            <span className="text-[10px] text-charcoal-muted uppercase font-black block">4. Fundraising Drives</span>
+            <div className="text-lg font-black text-purple-900">$650.00</div>
+            <span className="text-[10px] text-purple-700 font-bold block">Youth Clinics & Conservation</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
+            <span className="text-[10px] text-charcoal-muted uppercase font-black block">5. Direct Donations</span>
+            <div className="text-lg font-black text-emerald-800">$420.00</div>
+            <span className="text-[10px] text-emerald-700 font-bold block">Public State Pledges</span>
+          </div>
+
+          <div className="p-4 rounded-xl bg-forest-950 text-white border-2 border-tan-500 space-y-1">
+            <span className="text-[10px] text-tan-300 uppercase font-black block">TOTAL STATE TREASURY</span>
+            <div className="text-lg font-black text-emerald-400">$6,715.00</div>
+            <span className="text-[10px] text-tan-200 font-bold block">Current Active Balance</span>
+          </div>
+        </div>
+      </div>
+
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <StatCard title="Active State Members" value={myState.membersCount.toLocaleString()} subtext="Across 42 Clubs" icon={Users} trend="+8% YTD" />
         <StatCard title="Participating Clubs" value={myState.clubsCount.toString()} subtext="Chartered Local Clubs" icon={Building2} />
-        <StatCard title="Merchandise Sales" value={`$${stateMerchSales.toFixed(2)}`} subtext={`${myStateOrders.length} State & Club Orders`} icon={Calendar} />
-        <StatCard title="State Commission (7%)" value={`$${stateCommissionsEarned.toFixed(2)}`} subtext={`Pending Payout: $${pendingStatePayouts.toFixed(2)}`} icon={DollarSign} trend="+7% Margin Share" />
+        <StatCard title="Merchandise Sales" value={`${stateMerchSales.toFixed(2)}`} subtext={`${myStateOrders.length} State & Club Orders`} icon={Calendar} />
+        <StatCard title="State Commission (7%)" value={`${stateCommissionsEarned.toFixed(2)}`} subtext={`Pending Payout: ${pendingStatePayouts.toFixed(2)}`} icon={DollarSign} trend="+7% Margin Share" />
       </div>
 
       {/* State Direct Deposit & Banking Configuration Card */}

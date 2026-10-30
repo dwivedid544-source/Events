@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 
 export const StudDogsPage = () => {
+  const [activeSection, setActiveSection] = useState('studs'); // 'studs' | 'puppies'
   const [selectedTier, setSelectedTier] = useState('all');
   const [showEnrollModal, setShowEnrollModal] = useState(false);
   const [enrollTier, setEnrollTier] = useState('stud'); // 'free', 'stud', 'featured', 'premier'
@@ -160,6 +161,58 @@ export const StudDogsPage = () => {
     }
   ];
 
+  
+  const puppyLitters = [
+    {
+      id: 'lit-1',
+      title: 'Boggy Creek Kobe x Timber River Belle Litter',
+      breed: 'Treeing Walker Coonhound',
+      sire: 'Boggy Creek Kobe (GRNITECH CH)',
+      dam: 'Timber River Belle (NITECH)',
+      whelpDate: 'Ready Nov 15, 2026 (6 Weeks Old)',
+      pupsAvailable: '3 Males, 2 Females Available',
+      price: '$650 - $850',
+      location: 'Houston, TX / Honolulu, HI',
+      breeder: 'James Wadley & Boggy Creek Kennels',
+      phone: '(713) 555-0192',
+      image: 'https://images.unsplash.com/photo-1591160690555-5debfba289f0?w=500&auto=format&fit=crop&q=80',
+      verifiedDNA: true,
+      description: 'Exceptional direct outcross litter combining Kobe\'s 26% cast-win rate with dual-grand championship maternal lineage. Microchipped, UKC/PKC/UHC eligible, first vaccinations completed.'
+    },
+    {
+      id: 'lit-2',
+      title: 'Cumberland Rebel Yell x Bluegrass Daisy Litter',
+      breed: 'Treeing Walker Coonhound',
+      sire: 'Cumberland Rebel Yell (GRNITECH)',
+      dam: 'Bluegrass Daisy (CH)',
+      whelpDate: 'Whelped Oct 02, 2026',
+      pupsAvailable: '2 Males Available',
+      price: '$550',
+      location: 'Oak Ridge, TN',
+      breeder: 'Marcus Vance',
+      phone: '(865) 555-0199',
+      image: 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=500&auto=format&fit=crop&q=80',
+      verifiedDNA: true,
+      description: 'High-drive timber lineage with early treeing aptitude. Both parents active competition hounds with verified UHC performance records.'
+    },
+    {
+      id: 'lit-3',
+      title: 'Kentucky Blue Striker x Cumberland Queen Litter',
+      breed: 'Bluetick Coonhound',
+      sire: 'Kentucky Blue Striker (NITECH)',
+      dam: 'Cumberland Queen (CH)',
+      whelpDate: 'Due Dec 01, 2026 (Taking Deposits)',
+      pupsAvailable: 'Taking 4 Male / 3 Female Deposits',
+      price: '$600',
+      location: 'Cumberland, KY',
+      breeder: 'Calhoun Sporting Dogs',
+      phone: '(606) 555-0311',
+      image: 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=500&auto=format&fit=crop&q=80',
+      verifiedDNA: true,
+      description: 'Deep resonant bawl track hounds bred for heavy cover and river swamp navigation. Health certified and performance guaranteed.'
+    }
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 lg:px-8 py-10 space-y-12">
       {/* Hero Header */}
@@ -188,6 +241,37 @@ export const StudDogsPage = () => {
         </div>
       </div>
 
+            {/* Section Switcher: Available Studs vs Puppies & Litters */}
+      <div className="flex items-center justify-center">
+        <div className="bg-surface-lowest p-1.5 rounded-2xl border border-surface-border shadow-sm flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setActiveSection('studs')}
+            className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer ${
+              activeSection === 'studs'
+                ? 'bg-forest-950 text-white shadow-md'
+                : 'text-charcoal hover:bg-surface-low'
+            }`}
+          >
+            Available Stud Sires (4 Tiers)
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveSection('puppies')}
+            className={`px-6 py-2.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+              activeSection === 'puppies'
+                ? 'bg-forest-950 text-white shadow-md'
+                : 'text-charcoal hover:bg-surface-low'
+            }`}
+          >
+            <span>Puppies & Upcoming Litters for Sale</span>
+            <span className="px-2 py-0.5 rounded-full text-[10px] bg-tan-500 text-forest-950 font-black">New</span>
+          </button>
+        </div>
+      </div>
+
+      {activeSection === 'studs' ? (
+      <div className="space-y-12">
       {/* Pricing & Subscription Tiers (Client's Exact Specification) */}
       <div className="space-y-6">
         <div className="text-center space-y-2 max-w-xl mx-auto">
@@ -459,6 +543,48 @@ export const StudDogsPage = () => {
             </form>
           </div>
         </div>
+      )}
+      </div>
+      ) : (
+      /* PUPPIES & UPCOMING LITTERS SECTION */
+      <div className="space-y-8">
+        <div className="text-center max-w-xl mx-auto space-y-2">
+          <h2 className="text-2xl font-black text-forest-950">Verified Puppies & Sanctioned Litters</h2>
+          <p className="text-xs text-charcoal-muted">Direct puppies from UHC registered sires and verified champion dams. Every litter includes pedigree credentials and health tracking.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {puppyLitters.map((litter) => (
+            <div key={litter.id} className="bg-surface-lowest rounded-2xl border border-surface-border shadow-ambient overflow-hidden flex flex-col justify-between hover:shadow-xl hover:border-tan-500/60 transition-all">
+              <div>
+                <div className="h-52 bg-surface-low overflow-hidden relative">
+                  <img src={litter.image} alt={litter.title} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                  <span className="absolute top-3 left-3 text-[10px] font-black uppercase px-2.5 py-1 rounded-full bg-forest-950/90 text-tan-300 border border-forest-800">{litter.breed}</span>
+                  <span className="absolute bottom-3 left-3 text-[10px] font-black px-2.5 py-1 rounded-lg bg-emerald-950/90 text-emerald-300 border border-emerald-500/50">Verified UHC Genetics ✓</span>
+                </div>
+                <div className="p-5 space-y-3">
+                  <div>
+                    <span className="text-[10px] text-charcoal-muted font-bold block">{litter.whelpDate}</span>
+                    <h3 className="font-black text-base text-forest-950 mt-0.5">{litter.title}</h3>
+                  </div>
+                  <p className="text-xs text-charcoal-muted leading-relaxed">{litter.description}</p>
+                  <div className="p-3 bg-surface-low rounded-xl border border-surface-border text-xs space-y-1">
+                    <div className="flex justify-between"><strong>Sire:</strong> <span className="text-forest-950 font-bold">{litter.sire}</span></div>
+                    <div className="flex justify-between"><strong>Dam:</strong> <span className="text-forest-950 font-bold">{litter.dam}</span></div>
+                    <div className="flex justify-between"><strong>Available:</strong> <span className="text-emerald-700 font-black">{litter.pupsAvailable}</span></div>
+                    <div className="flex justify-between"><strong>Price:</strong> <span className="text-forest-950 font-black">{litter.price}</span></div>
+                    <div className="flex justify-between"><strong>Location:</strong> <span>{litter.location}</span></div>
+                  </div>
+                </div>
+              </div>
+              <div className="p-4 bg-surface-low/80 border-t border-surface-border flex items-center justify-between">
+                <span className="text-[10px] text-charcoal-muted font-bold">Breeder: {litter.breeder}</span>
+                <button type="button" onClick={() => alert(`Contacting breeder ${litter.breeder} at ${litter.phone} for puppy reservation.`)} className="px-4 py-2 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow cursor-pointer">Inquire Puppy</button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
       )}
     </div>
   );

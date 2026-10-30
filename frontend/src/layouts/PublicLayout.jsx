@@ -46,6 +46,7 @@ export const PublicLayout = () => {
     { label: 'STATES', path: '/states' },
     { label: 'LOCAL CLUBS', path: '/clubs' },
     { label: 'HOUND FINDER', path: '/hound-finder' },
+    { label: 'HANDLERS', path: '/handlers' },
     { label: 'STUD DOGS', path: '/stud-dogs' },
     { label: 'VIRTUAL HUNTS', path: '/virtual-hunts' },
     { label: 'RESOURCES', path: '/resources' },

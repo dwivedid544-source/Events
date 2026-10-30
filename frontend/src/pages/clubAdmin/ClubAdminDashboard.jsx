@@ -1,3 +1,4 @@
+import { DigitalScorecardModal } from '../../components/hunt/DigitalScorecardModal';
 import React, { useState } from 'react';
 import { useApp , API_BASE_URL} from '../../context/AppContext';
 import { apiClient } from '../../utils/apiClient';
@@ -38,7 +39,8 @@ export const ClubAdminDashboard = () => {
       .catch((err) => console.warn('Failed fetching club admin API:', err.message));
   }, []);
 
-  const [activeTab, setActiveTab] = useState('MEMBERS'); // MEMBERS | EVENTS | FINANCES | MERCHANDISE | COMMUNICATION
+  const [activeTab, setActiveTab] = useState('MEMBERS');
+  const [showScorecard, setShowScorecard] = useState(false); // MEMBERS | EVENTS | FINANCES | MERCHANDISE | COMMUNICATION
 
   // Assigned Club
   const myClub = clubs.find((c) => c.id === 'club-tx-houston') || clubs[0] || {};
@@ -152,6 +154,51 @@ export const ClubAdminDashboard = () => {
         <div className="p-3.5 rounded-2xl bg-forest-900/90 border border-forest-700 text-right text-xs">
           <span className="text-[10px] text-tan-300 uppercase font-bold block">Treasury Club Balance</span>
           <strong className="text-2xl font-black text-emerald-400">${clubBalance.toLocaleString('en-US', { minimumFractionDigits: 2 })}</strong>
+        </div>
+      </div>
+
+      {/* CLUB MANAGEMENT CENTER & DIGITAL SCORECARD CALLOUT TILE */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="bg-gradient-to-r from-forest-900 to-forest-950 p-6 rounded-3xl border-2 border-tan-500/40 text-white flex flex-col justify-between gap-4 shadow-lg">
+          <div className="space-y-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-tan-500 text-forest-950">
+              National UHC Library Integration
+            </span>
+            <h3 className="text-lg font-black text-white">CLUB MANAGEMENT CENTER</h3>
+            <p className="text-xs text-tan-200">
+              Access the master library: Monthly Meeting Packages, Hunt Checklists, Financial Worksheets, Officer Guides, and Member Renewal Notices.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-forest-800">
+            <Link
+              to="/resources"
+              className="px-4 py-2 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black text-xs rounded-xl shadow transition-all cursor-pointer"
+            >
+              Forms & Documents Library →
+            </Link>
+          </div>
+        </div>
+
+        <div className="bg-surface-lowest p-6 rounded-3xl border border-surface-border flex flex-col justify-between gap-4 shadow-ambient">
+          <div className="space-y-1">
+            <span className="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300">
+              Houndsman Advantage System
+            </span>
+            <h3 className="text-lg font-black text-forest-950">Digital Hunt Scorecard & Timer</h3>
+            <p className="text-xs text-charcoal-muted">
+              Live cast timer, strike and tree points entry, plus/minus scoring, and instant cast winner certification for club trial judges.
+            </p>
+          </div>
+          <div className="pt-2 border-t border-surface-border">
+            <button
+              type="button"
+              onClick={() => setShowScorecard(true)}
+              className="px-4 py-2 bg-forest-950 hover:bg-forest-900 text-white font-black text-xs rounded-xl shadow transition-all cursor-pointer flex items-center gap-2"
+            >
+              <span>Launch Live Cast Scorecard</span>
+              <span className="text-tan-400 font-bold">⏱</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -687,6 +734,13 @@ export const ClubAdminDashboard = () => {
           </div>
         </div>
       )}
+    
+      {/* DIGITAL HUNT SCORECARD MODAL */}
+      <DigitalScorecardModal
+        isOpen={showScorecard}
+        onClose={() => setShowScorecard(false)}
+        castTitle={`${myClub.name} - Official Cast Scorecard`}
+      />
     </div>
   );
 };
