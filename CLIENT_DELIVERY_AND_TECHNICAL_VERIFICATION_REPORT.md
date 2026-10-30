@@ -174,3 +174,17 @@ With the production URL reconfigured, authentication headers hardened, and the 5
 1. The delivered order should be accepted based on the completion of the core CRM, 50-state database, payment integration, and claims workflow.
 2. The specialized modules (Hound Finder athletic statistics, paid stud dog subscriptions, and interactive resource library) should be scheduled as Phase 2 milestones with dedicated timelines and requirements.
 
+
+
+---
+
+## 9. Comprehensive Feature Verification (James Wadley Starting Messages Audit)
+
+| # | Requested Specification | Implementation Details | Live Route / File |
+|---|---|---|---|
+| 1 | **UHC Handler Registry & Sherdog FightFinder** | Permanent handler profiles, UHC Handler ID, Casts, Cast Wins, Win %, Lifetime Earnings, State/National Rank, Linked Hounds, and Chronological Competition Log. Features **James Wadley (UHC HANDLER #00127)** as senior master competitor. | `/handlers` (HandlerRegistryPage.jsx) |
+| 2 | **Digital Hunt Scorecard (Houndsman Advantage System)** | Live cast countdown timer, Strike Points (100, 75, 50, 25), Tree Points, Plus/Minus scoring, Circle points, Net score calculator, Official UHC Hunt Rules drawer, and Cast Certification. | DigitalScorecardModal.jsx (Accessible from Club Dashboard) |
+| 3 | **Puppies & Upcoming Litters for Sale** | Sanctioned litter listings with sire & dam pedigrees, whelped dates, photos, health guarantees, location, pricing, and direct breeder contact actions. | `/stud-dogs` (Puppies Tab) (StudDogsPage.jsx) |
+| 4 | **5-Stream Daily Financial Tracking on Dashboards** | Dedicated revenue tracking cards on both State and Club Dashboards: (1) Monthly Memberships, (2) Sanctioned Events, (3) Merchandise Splits, (4) Fundraising Drives, and (5) Direct Donations. | `/state-admin/dashboard` and `/club-admin/dashboard` |
+| 5 | **State & Club Management Center Direct Links** | Top dashboard tiles linking directly into the Master UHC Resource Library for forms, templates, meeting minutes, and hunt checklists. | `/resources` integration in both State & Club dashboards |
+| 6 | **Test Purchase Beneficiary & Wholesale Split Routing** | Checkout page allows selecting which local club (15%) or state association (7%) receives sales credit, displaying transparent wholesale vs. chapter margin splits before payment settlement. | `/checkout` (CheckoutPage.jsx) |
