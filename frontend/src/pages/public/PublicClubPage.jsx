@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useApp } from '../../context/AppContext';
 import { PreSignUpModal } from '../../components/events/PreSignUpModal';
 import { Modal } from '../../components/common/Modal';
@@ -32,6 +32,8 @@ import {
 
 export const PublicClubPage = () => {
   const { clubId } = useParams();
+  const navigate = useNavigate();
+  const [selectedClubDonationTier, setSelectedClubDonationTier] = useState({ name: 'Club Supporter', amount: 25 });
   const { clubs, events, products, news, results, states, addToCart, showToast, submitClaimRequest, claims = [], updateClaimStatus, setCurrentUser, setClubs, currentUser, switchRole } = useApp();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -49,6 +51,25 @@ export const PublicClubPage = () => {
     message: '',
     autoVerify: true
   }));
+
+  const handlePledgeClubDonation = () => {
+    addToCart({
+      id: `club-donation-${club?.id || 'club'}-${Date.now()}`,
+      name: `${club?.name || 'Local Club'} Care Fund (${selectedClubDonationTier.name})`,
+      category: 'Donations',
+      price: selectedClubDonationTier.amount,
+      inStock: 999,
+      organizationType: 'CLUB',
+      scopeEntity: club?.name,
+      image: 'https://images.unsplash.com/photo-1544717305-2782549b5136?auto=format&fit=crop&q=80&w=400'
+    }, 1, {
+      originType: 'CLUB',
+      orderSource: club?.name,
+      clubName: club?.name,
+      stateName: club?.state
+    });
+    navigate('/checkout');
+  };
 
   const handleClaimSubmit = async (e) => {
     e.preventDefault();
@@ -944,7 +965,7 @@ export const PublicClubPage = () => {
             <div>
               <h3 className="font-black text-base text-white">Support {club.name}</h3>
               <p className="text-xs text-tan-200 font-medium">
-                Choose a contribution tier to support local club operations. Prepared for future payment integration.
+                Choose a contribution tier to support local club operations. Choose a contribution tier to support local club operations. Powered by Clover direct payment processing.
               </p>
             </div>
             <span className="px-3 py-1 bg-tan-500 text-forest-950 text-[10px] font-black uppercase rounded-lg">
@@ -953,32 +974,70 @@ export const PublicClubPage = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="p-4 rounded-xl bg-forest-900 border border-forest-800 space-y-2">
-              <div className="font-black text-tan-300 text-sm">Supporter Tier</div>
+            <button
+              type="button"
+              onClick={() => setSelectedClubDonationTier({ name: 'Supporter Tier', amount: 15 })}
+              className={`p-4 rounded-xl border text-left transition-all ${
+                selectedClubDonationTier.amount === 15
+                  ? 'bg-forest-900 border-tan-400 ring-2 ring-tan-500/60'
+                  : 'bg-forest-900/60 border-forest-800 hover:border-forest-700'
+              } space-y-2 cursor-pointer`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-black text-tan-300 text-sm">Supporter Tier</span>
+                {selectedClubDonationTier.amount === 15 && <CheckCircle2 className="w-4 h-4 text-tan-400" />}
+              </div>
               <div className="text-xl font-black text-white">$15.00</div>
               <p className="text-[11px] text-tan-200/80">Recognized on {club.name} clubhouse donor board.</p>
-            </div>
+            </button>
 
-            <div className="p-4 rounded-xl bg-forest-900 border border-tan-500/60 space-y-2">
-              <div className="font-black text-tan-400 text-sm">Club Partner Tier</div>
+            <button
+              type="button"
+              onClick={() => setSelectedClubDonationTier({ name: 'Club Partner Tier', amount: 50 })}
+              className={`p-4 rounded-xl border text-left transition-all ${
+                selectedClubDonationTier.amount === 50
+                  ? 'bg-forest-900 border-tan-400 ring-2 ring-tan-500/60'
+                  : 'bg-forest-900/60 border-forest-800 hover:border-forest-700'
+              } space-y-2 cursor-pointer`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-black text-tan-400 text-sm">Club Partner Tier</span>
+                {selectedClubDonationTier.amount === 50 && <CheckCircle2 className="w-4 h-4 text-tan-400" />}
+              </div>
               <div className="text-xl font-black text-white">$50.00</div>
               <p className="text-[11px] text-tan-200/80">Includes official {club.name} cap patch & hunt event pass.</p>
-            </div>
+            </button>
 
-            <div className="p-4 rounded-xl bg-forest-900 border border-forest-800 space-y-2">
-              <div className="font-black text-tan-300 text-sm">Legacy Patron Tier</div>
-              <div className="text-xl font-black text-white">$150.00+</div>
+            <button
+              type="button"
+              onClick={() => setSelectedClubDonationTier({ name: 'Legacy Patron Tier', amount: 150 })}
+              className={`p-4 rounded-xl border text-left transition-all ${
+                selectedClubDonationTier.amount === 150
+                  ? 'bg-forest-900 border-tan-400 ring-2 ring-tan-500/60'
+                  : 'bg-forest-900/60 border-forest-800 hover:border-forest-700'
+              } space-y-2 cursor-pointer`}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-black text-tan-300 text-sm">Legacy Patron Tier</span>
+                {selectedClubDonationTier.amount === 150 && <CheckCircle2 className="w-4 h-4 text-tan-400" />}
+              </div>
+              <div className="text-xl font-black text-white">$150.00</div>
               <p className="text-[11px] text-tan-200/80">Permanent plaque on club wall & annual hunt dinner invite.</p>
-            </div>
+            </button>
           </div>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-tan-300 font-medium border-t border-forest-800/80">
-            <span>Future Payment API Endpoint: <code className="font-mono text-white bg-forest-900 px-2 py-0.5 rounded border border-forest-800">POST /api/clubs/{club.id}/donations/pledge</code></span>
+            <span className="flex items-center gap-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+              <span>Selected: <strong>{selectedClubDonationTier.name} (${selectedClubDonationTier.amount}.00)</strong> — 100% credited to {club.name}</span>
+            </span>
             <button
-              onClick={() => showToast(`Thank you for supporting ${club.name}! Donation portal will activate with payment gateway integration.`, 'info')}
-              className="w-full sm:w-auto px-4 py-2 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black rounded-lg shadow transition-all text-xs"
+              type="button"
+              onClick={handlePledgeClubDonation}
+              className="w-full sm:w-auto px-5 py-2.5 bg-tan-500 hover:bg-tan-400 text-forest-950 font-black rounded-xl shadow transition-all text-xs flex items-center justify-center gap-2 cursor-pointer"
             >
-              Pledge Support
+              <span>Pledge Support (${selectedClubDonationTier.amount}.00)</span>
+              <span>→</span>
             </button>
           </div>
         </div>
