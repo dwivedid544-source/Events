@@ -2568,6 +2568,7 @@ export const AppProvider = ({ children }) => {
           customerName: fullName,
           email: cleanEmail,
           orderId: orderId,
+          source: checkoutData.cardToken || `clv_token_${Date.now()}`,
           category: 'MERCHANDISE_ORDER',
           description: `Store Order ${orderId} (${fullName})`,
           stateId: createdOrder.shippingAddress?.state,
