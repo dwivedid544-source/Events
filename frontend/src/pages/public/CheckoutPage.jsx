@@ -34,6 +34,8 @@ export const CheckoutPage = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedChannel, setSelectedChannel] = useState('Honolulu Hound & Hunting Club');
+  const [channelType, setChannelType] = useState('CLUB'); // 'CLUB' | 'STATE' | 'NATIONAL'
   const [errorMsg, setErrorMsg] = useState('');
 
   if (cart.length === 0) {
@@ -68,7 +70,13 @@ export const CheckoutPage = () => {
     setIsSubmitting(true);
 
     setTimeout(() => {
-      const createdOrder = placeOrder(formData);
+      const createdOrder = placeOrder({
+        ...formData,
+        originType: channelType,
+        orderSource: selectedChannel,
+        clubName: channelType === 'CLUB' ? selectedChannel : '',
+        stateName: channelType === 'STATE' ? selectedChannel : (channelType === 'CLUB' ? 'Hawaii' : 'National')
+      });
       setIsSubmitting(false);
 
       if (createdOrder) {
@@ -243,7 +251,72 @@ export const CheckoutPage = () => {
             </div>
           </div>
 
-          {/* Section 3: Payment Method (Clover Gateway) */}
+                    {/* Section 2.5: Chapter & Purchasing Channel Selection (Client Test Requirement) */}
+          <div className="bg-surface-lowest rounded-2xl p-6 border-2 border-tan-500/50 shadow-ambient space-y-4">
+            <div className="flex items-center justify-between border-b border-surface-border pb-3">
+              <h2 className="text-base font-black text-forest-950 flex items-center gap-2">
+                <span>2. Select Purchasing Outlet & Beneficiary Chapter</span>
+              </h2>
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-tan-500 text-forest-950">
+                15% Club / 7% State Dues
+              </span>
+            </div>
+            <p className="text-xs text-charcoal-muted font-medium">
+              Choose which local club or state association receives the sales credit and automated commission payout for this order.
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs pt-1">
+              <button
+                type="button"
+                onClick={() => {
+                  setChannelType('CLUB');
+                  setSelectedChannel('Honolulu Hound & Hunting Club');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                  channelType === 'CLUB' && selectedChannel === 'Honolulu Hound & Hunting Club'
+                    ? 'border-forest-950 bg-forest-950 text-white shadow-md'
+                    : 'border-surface-border bg-surface-low text-charcoal hover:border-tan-500'
+                }`}
+              >
+                <div className="font-black text-xs">Honolulu Hound & Hunting Club</div>
+                <div className="text-[10px] opacity-80 mt-1">Local Club (15% Split to Club)</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setChannelType('CLUB');
+                  setSelectedChannel('Oak Ridge Hunting Club');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                  channelType === 'CLUB' && selectedChannel === 'Oak Ridge Hunting Club'
+                    ? 'border-forest-950 bg-forest-950 text-white shadow-md'
+                    : 'border-surface-border bg-surface-low text-charcoal hover:border-tan-500'
+                }`}
+              >
+                <div className="font-black text-xs">Oak Ridge Hunting Club</div>
+                <div className="text-[10px] opacity-80 mt-1">Local Club (15% Split to Club)</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setChannelType('STATE');
+                  setSelectedChannel('Hawaii State Association');
+                }}
+                className={`p-4 rounded-xl border text-left transition-all cursor-pointer ${
+                  channelType === 'STATE'
+                    ? 'border-forest-950 bg-forest-950 text-white shadow-md'
+                    : 'border-surface-border bg-surface-low text-charcoal hover:border-tan-500'
+                }`}
+              >
+                <div className="font-black text-xs">Hawaii State Association</div>
+                <div className="text-[10px] opacity-80 mt-1">State Charter (7% Split to State)</div>
+              </button>
+            </div>
+          </div>
+
+{/* Section 3: Payment Method (Clover Gateway) */}
           <div className="bg-surface-lowest rounded-2xl p-6 border border-surface-border shadow-ambient space-y-5">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-surface-border pb-3">
               <h2 className="text-lg font-black text-forest-950 flex items-center gap-2">

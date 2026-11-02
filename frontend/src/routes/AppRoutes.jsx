@@ -26,6 +26,11 @@ import { StateMembershipSignUpPage } from '../pages/public/StateMembershipSignUp
 import { LocalClubMembershipSignUpPage } from '../pages/public/LocalClubMembershipSignUpPage';
 import { LoginPage } from '../pages/public/LoginPage';
 import { HoundSportsPage } from '../pages/public/HoundSportsPage';
+import { HoundFinderPage } from '../pages/public/HoundFinderPage';
+import { StudDogsPage } from '../pages/public/StudDogsPage';
+import { ResourceLibraryPage } from '../pages/public/ResourceLibraryPage';
+import { VirtualHuntsPage } from '../pages/public/VirtualHuntsPage';
+import { HandlerRegistryPage } from '../pages/public/HandlerRegistryPage';
 
 // Member Dashboard Pages
 import { MemberDashboard } from '../pages/member/MemberDashboard';
@@ -104,6 +109,14 @@ export const AppRoutes = () => {
         <Route path="/find-hunt" element={<FindHuntPage />} />
         <Route path="/events" element={<FindHuntPage />} />
         <Route path="/sports" element={<HoundSportsPage />} />
+        <Route path="/hound-finder" element={<HoundFinderPage />} />
+        <Route path="/stud-dogs" element={<StudDogsPage />} />
+        <Route path="/resources" element={<ResourceLibraryPage />} />
+        <Route path="/virtual-hunts" element={<VirtualHuntsPage />} />
+        <Route path="/preview-state-dashboard" element={<StateAdminDashboard />} />
+        <Route path="/preview-club-dashboard" element={<ClubAdminDashboard />} />
+        <Route path="/handlers" element={<HandlerRegistryPage />} />
+        <Route path="/handlers/:handlerId" element={<HandlerRegistryPage />} />
         <Route path="/clubs" element={<FindClubPage />} />
         <Route path="/clubs/:clubId" element={<PublicClubPage />} />
         <Route path="/states" element={<PublicStatePage />} />

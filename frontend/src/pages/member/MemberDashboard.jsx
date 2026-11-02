@@ -422,6 +422,76 @@ export const MemberDashboard = () => {
           </div>
         )}
 
+        {/* 13. MY COURSES & CERTIFICATIONS */}
+        {activeTab === 'MY_COURSES' && (
+          <div className="space-y-6">
+            <div className="border-b border-surface-border pb-3 flex items-center justify-between">
+              <div>
+                <h2 className="text-xl font-black text-forest-950 flex items-center gap-2">
+                  <Award className="w-5 h-5 text-tan-600" />
+                  <span>13. My Courses & Certifications</span>
+                </h2>
+                <p className="text-xs text-charcoal-muted mt-0.5">UHC online training programs, certified judge badges, and credentials.</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => alert('Opening UHC Online Course Academy catalogue.')}
+                className="px-3.5 py-1.5 rounded-xl bg-forest-900 text-white text-xs font-bold"
+              >
+                Browse Course Academy
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              <div className="p-5 rounded-2xl bg-surface-low border border-surface-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800">
+                    Certified & Active
+                  </span>
+                  <span className="text-[10px] text-charcoal-muted">Issued: Jun 12, 2026</span>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-base text-forest-950">Certified Master of Hounds (Level 1)</h4>
+                  <p className="text-xs text-charcoal-muted mt-0.5">Official certification to direct sanctioned UHC Nite Hunts and Bench Shows.</p>
+                </div>
+                <div className="pt-2 border-t border-surface-border flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-bold text-forest-900">Cert # UHC-MOH-2026-88</span>
+                  <button
+                    type="button"
+                    onClick={() => alert('Downloading official Master of Hounds certificate PDF.')}
+                    className="text-xs font-bold text-tan-700 hover:text-tan-800 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Download Certificate</span>
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-5 rounded-2xl bg-surface-low border border-surface-border space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800">
+                    Certified & Active
+                  </span>
+                  <span className="text-[10px] text-charcoal-muted">Issued: Aug 04, 2026</span>
+                </div>
+                <div>
+                  <h4 className="font-extrabold text-base text-forest-950">Field Trial Safety & Canine First Aid</h4>
+                  <p className="text-xs text-charcoal-muted mt-0.5">Emergency field care, heat exhaustion protocols, and kennel hygiene standards.</p>
+                </div>
+                <div className="pt-2 border-t border-surface-border flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-bold text-forest-900">Cert # UHC-CPR-2026-14</span>
+                  <button
+                    type="button"
+                    onClick={() => alert('Downloading official Canine First Aid certificate PDF.')}
+                    className="text-xs font-bold text-tan-700 hover:text-tan-800 flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Download Certificate</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* 12. MEMBERSHIP RENEWALS */}
         {activeTab === 'MEMBERSHIP_RENEWALS' && (
           <div className="space-y-6">
