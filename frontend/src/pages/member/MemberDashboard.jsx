@@ -90,7 +90,7 @@ export const MemberDashboard = () => {
   ];
 
   return (
-    <div className="space-y-8 pb-10 max-w-7xl mx-auto px-4 lg:px-8 py-8">
+    <div className="space-y-6 sm:space-y-8 pb-10">
       {/* ONE MEMBER LOGIN HEADER BANNER */}
       <div className="bg-gradient-to-r from-forest-950 via-forest-900 to-forest-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-tan-500/40 shadow-2xl space-y-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

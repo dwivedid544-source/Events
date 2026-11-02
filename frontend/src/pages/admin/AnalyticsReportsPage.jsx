@@ -161,7 +161,7 @@ export const AnalyticsReportsPage = () => {
       </div>
 
       {/* Top Financial Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total Platform Gross Revenue" value={`$${totalCombinedRev.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} subtext="Merchandise & Membership Combined" icon={DollarSign} />
         <StatCard title="Merchandise Sales Revenue" value={`$${totalMerchRev.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} subtext={`${currentOrders.length} Completed Store Orders`} icon={ShoppingBag} />
         <StatCard title="Membership Dues Revenue" value={`$${totalMembershipRev.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} subtext={`${userMemberships.length} Active Member Subscriptions`} icon={Award} />

@@ -121,7 +121,7 @@ export const ClubAdminDashboard = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4 lg:px-8 py-6">
+    <div className="space-y-6 sm:space-y-8">
       {/* Top Banner Header */}
       <div className="bg-gradient-to-r from-forest-950 via-forest-900 to-forest-950 text-white rounded-3xl p-6 sm:p-10 border-2 border-tan-500/40 shadow-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
@@ -273,7 +273,7 @@ export const ClubAdminDashboard = () => {
       {activeTab === 'MEMBERS' && (
         <div className="space-y-6">
           {/* Members 5 KPI Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
             <div className="bg-surface-lowest p-4 rounded-2xl border border-surface-border shadow-ambient space-y-1">
               <span className="text-[10px] font-bold text-charcoal-muted uppercase">Total Members</span>
               <div className="text-2xl font-black text-forest-950">{totalMembersCount}</div>
@@ -366,7 +366,7 @@ export const ClubAdminDashboard = () => {
       {activeTab === 'EVENTS' && (
         <div className="space-y-6">
           {/* Events 4 KPI Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-surface-lowest p-4 rounded-2xl border border-surface-border shadow-ambient space-y-1">
               <span className="text-[10px] font-bold text-charcoal-muted uppercase">Upcoming Events</span>
               <div className="text-2xl font-black text-forest-950">{upcomingEvents.length || 2}</div>
@@ -467,7 +467,7 @@ export const ClubAdminDashboard = () => {
           </div>
 
           {/* Finances 5 KPI Cards + TOTAL CLUB INCOME Card */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
             {/* 1. Memberships */}
             <div className="bg-surface-lowest p-4 rounded-2xl border border-surface-border shadow-ambient space-y-1">
               <span className="text-[10px] font-black text-forest-950 uppercase block">1. Memberships</span>
@@ -584,7 +584,7 @@ export const ClubAdminDashboard = () => {
       {activeTab === 'MERCHANDISE' && (
         <div className="space-y-6">
           {/* Merchandise 4 KPI Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
             <div className="bg-surface-lowest p-4 rounded-2xl border border-surface-border shadow-ambient space-y-1">
               <span className="text-[10px] font-bold text-charcoal-muted uppercase">Products</span>
               <div className="text-2xl font-black text-forest-950">{totalProductsCount}</div>

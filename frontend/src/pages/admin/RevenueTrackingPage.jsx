@@ -135,7 +135,7 @@ export const RevenueTrackingPage = () => {
       </div>
 
       {/* 6 AUTOMATICALLY CALCULATED CUMULATIVE REVENUE SUMMARY CARDS */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3">
         {/* 1. Vendor Cost */}
         <div className="p-4 rounded-2xl bg-surface-lowest border border-surface-border shadow-ambient space-y-1">
           <span className="text-[10px] uppercase font-bold text-charcoal-muted block">1. Vendor Cost</span>

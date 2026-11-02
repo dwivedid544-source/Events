@@ -86,7 +86,7 @@ export const TransactionsLedgerPage = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total Volume" value={`$${(totalCredits + totalDebits).toFixed(2)}`} subtext="Gross Activity" icon={CreditCard} />
         <StatCard title="Total Credits" value={`+$${totalCredits.toFixed(2)}`} subtext="Incoming Revenues" icon={ArrowDownLeft} />
         <StatCard title="Total Debits" value={`-$${totalDebits.toFixed(2)}`} subtext="Disbursements & Dues" icon={ArrowUpRight} />

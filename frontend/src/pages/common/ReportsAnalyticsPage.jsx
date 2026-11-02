@@ -293,7 +293,7 @@ export const ReportsAnalyticsPage = ({ scopeTitle = 'State Association Performan
       </div>
 
       {/* Top Overview KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total Platform Revenue" value={`$${totalFinancialRevenue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`} subtext={`${periodFilter} Total Revenue`} icon={DollarSign} />
         <StatCard title="Total Registered Members" value={members.length.toString()} subtext="Active Roster" icon={Users} />
         <StatCard title="Sanctioned Events" value={events.length.toString()} subtext="Annual Trials & Hunts" icon={Calendar} />

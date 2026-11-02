@@ -162,7 +162,7 @@ export const CommissionsGovernancePage = () => {
       </div>
 
       {/* Overview Financial Metrics */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total Merchandise Sales" value={`$${totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} subtext="Gross platform retail sales" icon={DollarSign} />
         <StatCard title="Club Commissions (15%)" value={`$${totalClubComms.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} subtext="Local club treasury payouts" icon={Building2} />
         <StatCard title="State Commissions (7%)" value={`$${totalStateComms.toLocaleString(undefined, { minimumFractionDigits: 2 })}`} subtext="State association shares" icon={MapPin} />

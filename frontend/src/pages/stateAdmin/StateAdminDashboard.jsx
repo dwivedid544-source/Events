@@ -128,7 +128,7 @@ export const StateAdminDashboard = () => {
           </span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-3 text-xs">
           <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
             <span className="text-[10px] text-charcoal-muted uppercase font-black block">1. Monthly Memberships</span>
             <div className="text-lg font-black text-forest-950">$2,850.00</div>
@@ -143,7 +143,7 @@ export const StateAdminDashboard = () => {
 
           <div className="p-4 rounded-xl bg-surface-low border border-surface-border space-y-1">
             <span className="text-[10px] text-charcoal-muted uppercase font-black block">3. Merchandise (7% Split)</span>
-            <div className="text-lg font-black text-tan-800">`${stateCommissionsEarned.toFixed(2)}`</div>
+            <div className="text-lg font-black text-tan-800">${stateCommissionsEarned.toFixed(2)}</div>
             <span className="text-[10px] text-charcoal-muted font-bold block">Wholesale Drop-Ship</span>
           </div>
 
@@ -168,11 +168,11 @@ export const StateAdminDashboard = () => {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Active State Members" value={myState.membersCount.toLocaleString()} subtext="Across 42 Clubs" icon={Users} trend="+8% YTD" />
         <StatCard title="Participating Clubs" value={myState.clubsCount.toString()} subtext="Chartered Local Clubs" icon={Building2} />
-        <StatCard title="Merchandise Sales" value={`${stateMerchSales.toFixed(2)}`} subtext={`${myStateOrders.length} State & Club Orders`} icon={Calendar} />
-        <StatCard title="State Commission (7%)" value={`${stateCommissionsEarned.toFixed(2)}`} subtext={`Pending Payout: ${pendingStatePayouts.toFixed(2)}`} icon={DollarSign} trend="+7% Margin Share" />
+        <StatCard title="Merchandise Sales" value={`$${stateMerchSales.toFixed(2)}`} subtext={`${myStateOrders.length} State & Club Orders`} icon={Calendar} />
+        <StatCard title="State Commission (7%)" value={`$${stateCommissionsEarned.toFixed(2)}`} subtext={`Pending Payout: $${pendingStatePayouts.toFixed(2)}`} icon={DollarSign} trend="+7% Margin Share" />
       </div>
 
       {/* State Direct Deposit & Banking Configuration Card */}

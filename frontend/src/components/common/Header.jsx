@@ -55,43 +55,43 @@ export const Header = ({ toggleMobileSidebar }) => {
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-surface-lowest border-b border-surface-border shadow-sm px-4 lg:px-6 py-3 flex items-center justify-between">
+    <header className="sticky top-0 z-30 bg-surface-lowest border-b border-surface-border shadow-sm px-3 sm:px-4 lg:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
       {/* Left section: mobile toggle & search */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <button
           onClick={toggleMobileSidebar}
-          className="lg:hidden p-2 rounded-md hover:bg-surface-low text-charcoal focus:outline-none"
+          className="lg:hidden p-2 rounded-lg hover:bg-surface-low text-charcoal focus:outline-none shrink-0"
           aria-label="Toggle menu"
         >
           <Menu className="w-5 h-5" />
         </button>
 
         <div className="hidden sm:flex items-center gap-2 relative max-w-xs">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-charcoal-light" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-charcoal-light pointer-events-none" />
           <input
             type="text"
             placeholder="Search hunts, members, clubs..."
-            className="pl-9 pr-4 py-1.5 text-xs bg-surface-low border border-surface-border rounded-md focus:outline-none focus:border-forest-800 w-60"
+            className="pl-9 pr-3 py-1.5 text-xs bg-surface-low border border-surface-border rounded-lg focus:outline-none focus:border-forest-800 w-32 md:w-48 lg:w-44 xl:w-60 focus:w-48 sm:focus:w-64 transition-all placeholder:truncate"
           />
         </div>
       </div>
 
       {/* Right section: Authenticated Role Badge, Notifications & User Profile */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {currentUser ? (
           <>
             {/* Authenticated Role Status Badge (Read-only, derived strictly from user profile) */}
             <div
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-low border border-surface-border text-xs font-bold text-forest-900 shadow-xs"
+              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg bg-surface-low border border-surface-border text-xs font-bold text-forest-900 shadow-xs shrink-0"
               title={`Authenticated role: ${userRole}`}
             >
-              <Shield className="w-3.5 h-3.5 text-tan-600" />
-              <span className="font-extrabold">{currentRoleInfo.label}</span>
-              <span className="hidden sm:inline text-[10px] text-charcoal-light font-normal">({userRole})</span>
+              <Shield className="w-3.5 h-3.5 text-tan-600 shrink-0" />
+              <span className="font-extrabold whitespace-nowrap">{currentRoleInfo.label}</span>
+              <span className="hidden xl:inline text-[10px] text-charcoal-light font-normal">({userRole})</span>
             </div>
 
             {/* Notifications Dropdown */}
-            <div className="relative">
+            <div className="relative shrink-0">
               <button
                 onClick={() => {
                   setNotifDropdownOpen(!notifDropdownOpen);
@@ -121,7 +121,7 @@ export const Header = ({ toggleMobileSidebar }) => {
             </div>
 
             {/* User Profile Dropdown */}
-            <div className="relative border-l border-surface-border pl-3">
+            <div className="relative border-l border-surface-border pl-2 sm:pl-3 shrink-0">
               <button
                 onClick={() => {
                   setProfileDropdownOpen(!profileDropdownOpen);
@@ -129,15 +129,15 @@ export const Header = ({ toggleMobileSidebar }) => {
                 }}
                 className="flex items-center gap-2 p-1 rounded-lg hover:bg-surface-low transition-all text-left focus:outline-none group"
               >
-                <div className="w-8 h-8 rounded-full bg-forest-800 text-tan-300 font-extrabold flex items-center justify-center border-2 border-forest-800 text-xs shadow-xs">
+                <div className="w-8 h-8 rounded-full bg-forest-800 text-tan-300 font-extrabold flex items-center justify-center border-2 border-forest-800 text-xs shadow-xs shrink-0">
                   {currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U'}
                 </div>
-                <div className="hidden lg:flex flex-col">
-                  <span className="text-xs font-extrabold text-charcoal leading-tight flex items-center gap-1">
-                    {currentUser.name || currentUser.email}
-                    <ChevronDown className="w-3 h-3 text-charcoal-light group-hover:text-forest-800" />
+                <div className="hidden md:flex flex-col max-w-[120px] lg:max-w-[140px] xl:max-w-[180px]">
+                  <span className="text-xs font-extrabold text-charcoal leading-tight flex items-center gap-1 truncate">
+                    <span className="truncate">{currentUser.name || currentUser.email}</span>
+                    <ChevronDown className="w-3 h-3 text-charcoal-light group-hover:text-forest-800 shrink-0" />
                   </span>
-                  <span className="text-[10px] text-charcoal-light">{currentUser.email}</span>
+                  <span className="text-[10px] text-charcoal-light truncate">{currentUser.email}</span>
                 </div>
               </button>
 
@@ -199,7 +199,7 @@ export const Header = ({ toggleMobileSidebar }) => {
         ) : (
           <Link
             to="/login"
-            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-forest-900 hover:bg-forest-950 text-white font-extrabold text-xs shadow-sm transition-all"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-xl bg-forest-900 hover:bg-forest-950 text-white font-extrabold text-xs shadow-sm transition-all shrink-0"
           >
             <LogIn className="w-3.5 h-3.5 text-tan-400" />
             <span>Sign In</span>

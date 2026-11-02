@@ -128,7 +128,7 @@ export const EventAdminAttendance = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-16 px-2 sm:px-4">
       {/* Header Banner */}
-      <div className="bg-forest-950 text-white rounded-2xl p-4 sm:p-6 lg:p-7 border border-forest-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-forest-950 text-white rounded-2xl p-4 sm:p-6 lg:p-7 border border-forest-800 shadow-xl flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div className="space-y-1.5">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded bg-tan-500 text-forest-950">
@@ -146,12 +146,12 @@ export const EventAdminAttendance = () => {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 w-full xl:w-auto">
           {events.length > 0 && (
             <select
               value={selectedEventId}
               onChange={(e) => setSelectedEventId(e.target.value)}
-              className="px-3 py-2 bg-forest-900 border border-forest-700 text-tan-200 text-xs font-bold rounded-xl focus:outline-none focus:border-tan-500 cursor-pointer"
+              className="w-full sm:w-auto flex-1 sm:flex-initial max-w-full sm:max-w-xs truncate px-3 py-2 bg-forest-900 border border-forest-700 text-tan-200 text-xs font-bold rounded-xl focus:outline-none focus:border-tan-500 cursor-pointer"
             >
               <option value="ALL">All Sanctioned Events</option>
               {events.map((evt) => (
@@ -244,7 +244,7 @@ export const EventAdminAttendance = () => {
         </div>
 
         {/* Filter Pills */}
-        <div className="flex items-center gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <button
             onClick={() => setFilterMode('ALL')}
             className={`flex-1 py-2 text-xs font-extrabold rounded-xl transition-all cursor-pointer ${

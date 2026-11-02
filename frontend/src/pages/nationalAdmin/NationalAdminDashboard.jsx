@@ -95,7 +95,7 @@ export const NationalAdminDashboard = () => {
           <span className="text-xs text-charcoal-muted font-bold">Live Nationwide Aggregation</span>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4">
           {/* 1. Number of States */}
           <div className="bg-surface-lowest p-5 rounded-2xl border border-surface-border shadow-ambient space-y-2">
             <div className="flex items-center justify-between">

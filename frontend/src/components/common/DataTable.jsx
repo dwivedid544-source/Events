@@ -177,7 +177,7 @@ export const DataTable = ({
       </div>
 
       {/* Table Pagination Footer */}
-      <div className="p-3.5 border-t border-surface-border bg-surface-low/40 flex items-center justify-between text-xs text-charcoal-muted">
+      <div className="p-3.5 border-t border-surface-border bg-surface-low/40 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-charcoal-muted">
         <div className="font-semibold">
           Showing {filteredData.length > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0} to{' '}
           {Math.min(currentPage * itemsPerPage, filteredData.length)} of {filteredData.length} records

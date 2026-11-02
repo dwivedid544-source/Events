@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useApp, API_BASE_URL } from '../../context/AppContext';
+import { useApp } from '../../context/AppContext';
+import apiClient from '../../utils/apiClient';
 import { DataTable } from '../../components/common/DataTable';
 import { DollarSign, CheckCircle2, AlertCircle, ShieldAlert } from 'lucide-react';
 
@@ -15,25 +16,17 @@ export const EventPaymentsPage = () => {
     setLoadingId(id);
 
     try {
-      const res = await fetch(`${API_BASE_URL}/events/entries/${id}/payment`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('nh_token') || ''}`
-        },
-        body: JSON.stringify({ paymentStatus: nextStatus })
-      });
-      const data = await res.json();
+      const res = await apiClient.put(`/events/entries/${id}/payment`, { paymentStatus: nextStatus });
 
-      if (res.ok && data.success) {
+      if (res?.success) {
         setEntries((prev) =>
           prev.map((e) => (e.id === id ? { ...e, paymentStatus: nextStatus } : e))
         );
         showToast(`Entry #${id} payment status updated to ${nextStatus}`, 'success');
       } else {
         const errorMsg =
-          data?.error?.message ||
-          'Payment verification required. Unverified payments cannot be marked Paid by administrative fiat.';
+          res?.error?.message ||
+          'Payment update failed. Please check permissions or try again.';
         showToast(errorMsg, 'error');
       }
     } catch (err) {
@@ -81,7 +74,7 @@ export const EventPaymentsPage = () => {
           <h1 className="text-2xl font-extrabold text-forest-800 tracking-tight">Event Entry Payments Ledger</h1>
           <p className="text-xs text-charcoal-muted mt-0.5">Track entry fee collections, Clover digital receipts, and payment settlements</p>
         </div>
-        <div className="flex items-center gap-2 bg-tan-500/10 border border-tan-300 text-forest-900 px-3 py-1.5 rounded-xl text-xs font-semibold">
+        <div className="flex items-center gap-2 bg-tan-500/10 border border-tan-300 text-forest-900 px-3 py-1.5 rounded-xl text-xs font-semibold shrink-0 self-start sm:self-center">
           <ShieldAlert className="w-4 h-4 text-tan-700" />
           <span>Gateway Verification Required for Settlement</span>
         </div>

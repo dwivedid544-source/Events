@@ -30,7 +30,7 @@ export const SuperAdminDashboard = () => {
       </div>
 
       {/* Global Platform KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total States" value="50" subtext="All Charters Active" icon={MapPin} />
         <StatCard title="Total Clubs" value="635" subtext="Chartered Local Clubs" icon={Building2} />
         <StatCard title="Total Members" value="48,526" subtext="Platform Users" icon={Users} trend="+14% YTD" />

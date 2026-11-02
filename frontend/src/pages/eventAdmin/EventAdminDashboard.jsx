@@ -31,7 +31,7 @@ export const EventAdminDashboard = () => {
       </div>
 
       {/* Operational KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4">
         <StatCard title="Total Entries" value={myEvent.entries ? myEvent.entries.toString() : '43'} subtext="Capacity 50" icon={ClipboardList} />
         <StatCard title="Paid Entries" value={myEvent.paidEntries ? myEvent.paidEntries.toString() : '39'} subtext="4 Pending Payment" icon={DollarSign} />
         <StatCard title="Pending Entries" value={myEvent.pendingEntries ? myEvent.pendingEntries.toString() : '4'} subtext="Unconfirmed" icon={Calendar} />

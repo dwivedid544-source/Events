@@ -339,10 +339,10 @@ export const NationalAdminStorePage = () => {
   return (
     <div className="space-y-6 pb-12">
       {/* 1. Modern Page Header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-surface-border pb-5">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b border-surface-border pb-5">
         <div>
           <div className="flex items-center gap-2.5 flex-wrap">
-            <h1 className="text-2xl lg:text-3xl font-extrabold text-forest-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-extrabold text-forest-900 tracking-tight">
               National Merchandise Store & Revenue Audit
             </h1>
             <span className="inline-flex items-center gap-1 px-3 py-1 bg-forest-800 text-tan-400 font-extrabold text-[11px] rounded-full shadow-xs border border-forest-900">
@@ -381,7 +381,7 @@ export const NationalAdminStorePage = () => {
       </div>
 
       {/* 2. Top 5 Financial KPI Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-3.5">
         <StatCard
           title="Gross Retail Sales"
           value={`$${totalSalesGross.toFixed(2)}`}
@@ -427,12 +427,12 @@ export const NationalAdminStorePage = () => {
       {/* 3. Tab Bar & Search / Multi-Filter Toolbar */}
       <div className="bg-surface-lowest rounded-2xl p-4 border border-surface-border shadow-xs space-y-3">
         {/* Row A: Primary Tabs & Live Search */}
-        <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+        <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-between gap-3">
           {/* Main Navigation Tabs */}
-          <div className="flex items-center bg-surface-low p-1 rounded-xl border border-surface-border">
+          <div className="flex items-center bg-surface-low p-1 rounded-xl border border-surface-border overflow-x-auto scrollbar-none max-w-full">
             <button
               onClick={() => setActiveTab('orders')}
-              className={`px-4 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                 activeTab === 'orders'
                   ? 'bg-forest-800 text-tan-400 shadow-xs'
                   : 'text-charcoal-muted hover:text-forest-900'
@@ -444,7 +444,7 @@ export const NationalAdminStorePage = () => {
 
             <button
               onClick={() => setActiveTab('catalog')}
-              className={`px-4 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                 activeTab === 'catalog'
                   ? 'bg-forest-800 text-tan-400 shadow-xs'
                   : 'text-charcoal-muted hover:text-forest-900'
@@ -456,7 +456,7 @@ export const NationalAdminStorePage = () => {
 
             <button
               onClick={() => setActiveTab('governance')}
-              className={`px-4 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 ${
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs font-black transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                 activeTab === 'governance'
                   ? 'bg-forest-800 text-tan-400 shadow-xs'
                   : 'text-charcoal-muted hover:text-forest-900'
@@ -468,7 +468,7 @@ export const NationalAdminStorePage = () => {
           </div>
 
           {/* Search Box & Live Sync Button */}
-          <div className="flex items-center gap-2 flex-1 max-w-lg">
+          <div className="flex items-center gap-2 w-full xl:max-w-md">
             <div className="relative flex-1">
               <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-charcoal-muted" />
               <input
@@ -502,7 +502,7 @@ export const NationalAdminStorePage = () => {
 
         {/* Row B: Channel Pills & Payout Filters */}
         {activeTab === 'orders' && (
-          <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-surface-border/60 text-xs">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-2 border-t border-surface-border/60 text-xs">
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-[10px] font-bold uppercase tracking-wider text-charcoal-muted mr-1 flex items-center gap-1">
                 <Filter className="w-3 h-3" /> Store Channel:
@@ -785,7 +785,7 @@ export const NationalAdminStorePage = () => {
             </button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5">
             {products.map((p) => {
               const wholesale = p.wholesaleCost || Math.round(p.price * 0.7);
               const margin = Number((p.price - wholesale).toFixed(2));
@@ -847,7 +847,7 @@ export const NationalAdminStorePage = () => {
             </div>
 
             {/* Split Cards Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 text-xs">
               <div className="p-5 rounded-2xl border border-emerald-200 bg-emerald-50/50 space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="font-black text-emerald-900 text-sm">Local Club Store Link</span>
