@@ -195,7 +195,7 @@ export const MembershipFlowPage = () => {
                 <input
                   type="text"
                   value={memberPhone}
-                  onChange={(e) => setMemberPhone(e.target.value)}
+                  onChange={(e) => setMemberPhone(e.target.value.replace(/[^\d+()\s-]/g, ''))}
                   className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-bold"
                 />
               </div>

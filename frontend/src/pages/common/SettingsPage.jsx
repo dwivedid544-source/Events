@@ -86,7 +86,7 @@ export const SettingsPage = ({ scopeTitle = 'Configuration & Platform Settings' 
               <input
                 type="text"
                 value={settings.contactPhone}
-                onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value })}
+                onChange={(e) => setSettings({ ...settings, contactPhone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                 className="w-full px-3 py-2 bg-surface-low border rounded focus:border-forest-800 font-medium"
               />
             </div>

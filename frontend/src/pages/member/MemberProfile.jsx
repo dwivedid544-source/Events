@@ -57,7 +57,7 @@ export const MemberProfile = () => {
               <input
                 type="text"
                 value={profile.phone}
-                onChange={(e) => setProfile({ ...profile, phone: e.target.value })}
+                onChange={(e) => setProfile({ ...profile, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                 className="w-full px-3 py-2 bg-surface-low border rounded focus:border-forest-800"
               />
             </div>

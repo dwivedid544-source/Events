@@ -972,7 +972,7 @@ export const StateMembershipPage = () => {
                     type="text"
                     placeholder="(865) 555-0199"
                     value={registerForm.phone}
-                    onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value })}
+                    onChange={(e) => setRegisterForm({ ...registerForm, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                     className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl font-medium text-forest-900 focus:outline-none focus:border-forest-800"
                   />
                 </div>
@@ -1123,7 +1123,7 @@ export const StateMembershipPage = () => {
                   <input
                     type="text"
                     value={editingMember.phone || ''}
-                    onChange={(e) => setEditingMember({ ...editingMember, phone: e.target.value })}
+                    onChange={(e) => setEditingMember({ ...editingMember, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                     className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl font-medium text-forest-900 focus:outline-none focus:border-forest-800"
                   />
                 </div>

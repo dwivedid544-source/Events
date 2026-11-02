@@ -54,7 +54,17 @@ export const CheckoutPage = () => {
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    let { name, value } = e.target;
+    if (name === 'phone') {
+      value = value.replace(/[^\d+()\s-]/g, '');
+    } else if (name === 'zip' || name === 'cardZip') {
+      value = value.replace(/[^\d-]/g, '').slice(0, 10);
+    } else if (name === 'cardCvc') {
+      value = value.replace(/\D/g, '').slice(0, 4);
+    } else if (name === 'cardNumber') {
+      value = value.replace(/[^\d\s]/g, '').slice(0, 19);
+    }
+    setFormData({ ...formData, [name]: value });
     setErrorMsg('');
   };
 

@@ -217,7 +217,7 @@ export const StateMembershipSignUpPage = () => {
                   type="tel"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                   placeholder="e.g. (512) 555-0192"
                   className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
                 />

@@ -145,7 +145,7 @@ export const LocalClubMembershipSignUpPage = () => {
                   type="text"
                   required
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                   placeholder="(936) 555-0182"
                   className="w-full px-3.5 py-2.5 bg-surface-low border border-surface-border rounded-xl font-medium focus:outline-none focus:border-forest-800"
                 />

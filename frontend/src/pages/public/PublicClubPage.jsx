@@ -1238,7 +1238,7 @@ export const PublicClubPage = () => {
                   type="tel"
                   required
                   value={claimForm.phone}
-                  onChange={(e) => setClaimForm({ ...claimForm, phone: e.target.value })}
+                  onChange={(e) => setClaimForm({ ...claimForm, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                   className="w-full p-3 bg-surface-lowest border border-surface-border rounded-xl font-medium focus:outline-none focus:border-forest-800"
                   placeholder="e.g. (865) 555-0199"
                 />

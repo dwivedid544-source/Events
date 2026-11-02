@@ -117,7 +117,7 @@ export const PreSignUpModal = ({ event, onClose }) => {
                     type="text"
                     required
                     value={handlerPhone}
-                    onChange={(e) => setHandlerPhone(e.target.value)}
+                    onChange={(e) => setHandlerPhone(e.target.value.replace(/[^\d+()\s-]/g, ''))}
                     className="w-full px-3.5 py-2.5 text-xs bg-surface-low border border-surface-border rounded-xl font-medium focus:border-tan-500"
                   />
                 </div>

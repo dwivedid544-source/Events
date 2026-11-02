@@ -540,7 +540,7 @@ export const EventAdminEntries = () => {
                   <input
                     type="text"
                     value={newEntryForm.participantPhone}
-                    onChange={(e) => setNewEntryForm({ ...newEntryForm, participantPhone: e.target.value })}
+                    onChange={(e) => setNewEntryForm({ ...newEntryForm, participantPhone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                     className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg font-medium focus:outline-none focus:border-forest-800"
                   />
                 </div>

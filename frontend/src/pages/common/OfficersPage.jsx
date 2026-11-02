@@ -281,7 +281,7 @@ export const OfficersPage = () => {
               type="text"
               placeholder="(865) 555-0199"
               value={formData.phone}
-              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+              onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
               className="w-full px-3 py-2 bg-surface-low border border-surface-border rounded-lg focus:border-forest-800 font-medium"
             />
           </div>

@@ -148,7 +148,7 @@ export const JoinPage = () => {
                 required
                 placeholder="(555) 000-0000"
                 value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                onChange={(e) => setFormData({ ...formData, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                 className="w-full px-3 py-2 text-xs bg-surface-low border border-surface-border rounded focus:border-forest-800"
               />
             </div>
@@ -371,7 +371,7 @@ export const JoinPage = () => {
                     required
                     maxLength={5}
                     value={cardData.zip}
-                    onChange={(e) => setCardData({ ...cardData, zip: e.target.value })}
+                    onChange={(e) => setCardData({ ...cardData, zip: e.target.value.replace(/\D/g, '').slice(0, 5) })}
                     placeholder="77001"
                     className="w-full px-2.5 py-2 text-xs bg-white border border-emerald-200 rounded-lg font-mono font-bold text-charcoal focus:outline-none focus:border-emerald-600 shadow-sm"
                   />

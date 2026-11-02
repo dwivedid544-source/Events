@@ -545,7 +545,7 @@ export const ClubAdminClubPage = () => {
                 <input
                   type="text"
                   value={clubInfo.zip}
-                  onChange={(e) => setClubInfo({ ...clubInfo, zip: e.target.value })}
+                  onChange={(e) => setClubInfo({ ...clubInfo, zip: e.target.value.replace(/\D/g, '').slice(0, 5) })}
                   className="w-1/2 p-2.5 bg-surface-low border border-surface-border rounded-xl font-medium focus:outline-none focus:border-forest-800"
                 />
               </div>
@@ -614,7 +614,7 @@ export const ClubAdminClubPage = () => {
               <input
                 type="text"
                 value={clubInfo.phone}
-                onChange={(e) => setClubInfo({ ...clubInfo, phone: e.target.value })}
+                onChange={(e) => setClubInfo({ ...clubInfo, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                 className="w-full p-2.5 bg-surface-low border border-surface-border rounded-xl font-medium focus:outline-none focus:border-forest-800"
               />
             </div>

@@ -999,7 +999,7 @@ export const PublicStatePage = () => {
                 <input
                   type="text"
                   value={clubZipFilter}
-                  onChange={(e) => setClubZipFilter(e.target.value)}
+                  onChange={(e) => setClubZipFilter(e.target.value.replace(/\D/g, '').slice(0, 5))}
                   placeholder="Search ZIP (e.g. 75835, 78701)..."
                   className="w-full px-3 py-2 bg-surface-lowest border border-surface-border rounded-xl font-bold text-xs focus:outline-none focus:border-forest-800"
                 />
@@ -1541,7 +1541,7 @@ export const PublicStatePage = () => {
                   type="tel"
                   required
                   value={claimForm.phone}
-                  onChange={(e) => setClaimForm({ ...claimForm, phone: e.target.value })}
+                  onChange={(e) => setClaimForm({ ...claimForm, phone: e.target.value.replace(/[^\d+()\s-]/g, '') })}
                   className="w-full p-3 bg-surface-lowest border border-surface-border rounded-xl font-medium focus:outline-none focus:border-forest-800"
                   placeholder="e.g. (800) 555-0192"
                 />
