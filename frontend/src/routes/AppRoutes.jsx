@@ -236,8 +236,8 @@ export const AppRoutes = () => {
         <Route element={<ProtectedRoute allowedRoles={['SUPER_ADMIN']}><Outlet /></ProtectedRoute>}>
           <Route path="/super-admin" element={<SuperAdminDashboard />} />
           <Route path="/super-admin/national" element={<NationalHeadquartersSettings />} />
-          <Route path="/super-admin/states" element={<PublicStatePage />} />
-          <Route path="/super-admin/clubs" element={<StateAdminClubs />} />
+          <Route path="/super-admin/states" element={<NationalAdminStates />} />
+          <Route path="/super-admin/clubs" element={<NationalAdminClubs />} />
           <Route path="/super-admin/club-claims" element={<SuperAdminClubClaims />} />
           <Route path="/super-admin/events" element={<ClubAdminEvents />} />
           <Route path="/super-admin/members" element={<ClubAdminMembers />} />

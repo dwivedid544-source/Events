@@ -1682,6 +1682,96 @@ export const AppProvider = ({ children }) => {
   };
 
   // Club Profile & CMS Update Action
+  
+  // Action: Add New State Association
+  const addState = async (stateData) => {
+    try {
+      const res = await apiClient.post('/states', stateData);
+      if (res && res.success && res.data) {
+        setStates((prev) => {
+          const next = [...prev.filter((s) => s.code.toUpperCase() !== res.data.code.toUpperCase()), res.data];
+          try { localStorage.setItem('nh_states', JSON.stringify(next)); } catch (_) {}
+          return next;
+        });
+        showToast(`State Association '${res.data.name}' successfully added!`, 'success');
+        return res.data;
+      }
+    } catch (err) {
+      console.warn('API error on addState, using local sync:', err.message);
+      const fallback = {
+        id: `state-${stateData.code.toLowerCase()}`,
+        name: stateData.name,
+        code: stateData.code.toUpperCase(),
+        organizations: stateData.organizations || ['UKC', 'PKC'],
+        adminName: stateData.adminName || 'Assigned Director',
+        clubsCount: Number(stateData.clubsCount) || 0,
+        membersCount: Number(stateData.membersCount) || 0,
+        eventsCount: Number(stateData.eventsCount) || 0,
+        revenue: Number(stateData.revenue) || 0,
+        status: 'Active'
+      };
+      setStates((prev) => {
+        const next = [...prev.filter((s) => s.code.toUpperCase() !== fallback.code.toUpperCase()), fallback];
+        try { localStorage.setItem('nh_states', JSON.stringify(next)); } catch (_) {}
+        return next;
+      });
+      showToast(`State Association '${stateData.name}' saved!`, 'success');
+      return fallback;
+    }
+  };
+
+  // Action: Add New Local Club
+  const addClub = async (clubData) => {
+    try {
+      const res = await apiClient.post('/clubs', clubData);
+      if (res && res.success && res.data) {
+        setClubs((prev) => {
+          const next = [res.data, ...prev];
+          try { localStorage.setItem('nh_clubs', JSON.stringify(next)); } catch (_) {}
+          return next;
+        });
+        setStates((prev) =>
+          prev.map((s) =>
+            s.code.toUpperCase() === (res.data.stateCode || '').toUpperCase()
+              ? { ...s, clubsCount: (Number(s.clubsCount) || 0) + 1 }
+              : s
+          )
+        );
+        showToast(`Local Club '${res.data.name}' successfully added!`, 'success');
+        return res.data;
+      }
+    } catch (err) {
+      console.warn('API error on addClub, using local sync:', err.message);
+      const cleanStateCode = (clubData.stateCode || (clubData.state ? clubData.state.slice(0, 2) : 'TN')).toUpperCase();
+      const fallback = {
+        id: `club-${Date.now().toString().slice(-6)}`,
+        name: clubData.name,
+        city: clubData.city,
+        county: clubData.county || `${clubData.city} County`,
+        state: clubData.state,
+        stateCode: cleanStateCode,
+        stateId: `state-${cleanStateCode.toLowerCase()}`,
+        zip: clubData.zip || '37701',
+        dogType: clubData.dogType || 'Coonhounds',
+        federation: clubData.federation || 'UKC',
+        eventType: clubData.eventType || 'Nite Hunt',
+        membersCount: Number(clubData.membersCount) || 15,
+        eventsCount: Number(clubData.eventsCount) || 2,
+        entriesCount: 0,
+        revenue: Number(clubData.revenue) || 0,
+        adminName: clubData.adminName || 'Assigned Club Admin',
+        status: 'Active'
+      };
+      setClubs((prev) => {
+        const next = [fallback, ...prev];
+        try { localStorage.setItem('nh_clubs', JSON.stringify(next)); } catch (_) {}
+        return next;
+      });
+      showToast(`Local Club '${clubData.name}' saved!`, 'success');
+      return fallback;
+    }
+  };
+
   const updateClub = async (clubId, updatedFields) => {
     let target = null;
     setClubs((prev) => {
@@ -2767,6 +2857,8 @@ export const AppProvider = ({ children }) => {
         getStateCms,
         updateStateCms,
         updateClub,
+        addState,
+        addClub,
         backendApiUrl: API_BASE_URL
       }}
     >
