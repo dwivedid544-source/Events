@@ -66,7 +66,7 @@ async function request(endpoint, options = {}) {
   };
 
   // Only attach Bearer token to internal backend requests if not an offline demo token
-  if (isInternalApi && token && !isOffline) {
+  if (isInternalApi && token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 

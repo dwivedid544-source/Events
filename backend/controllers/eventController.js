@@ -79,24 +79,36 @@ const getEntries = async (req, res) => {
 const preSignUpEntry = async (req, res) => {
   try {
     const { id } = req.params;
-    const { dogId, participant, handlerPhone, entryFee } = req.body;
-    const entryId = `ent-${Date.now()}`;
-    const confirmationCode = `UHC-${Date.now().toString().slice(-6)}`;
+    const body = req.body || {};
+    const entryId = body.id || `ent-${Date.now()}`;
+    const confirmationCode = body.confirmationCode || `UHC-${Date.now().toString().slice(-6)}`;
+    const participant = body.participant || 'Handler';
+    const handlerPhone = body.handlerPhone || body.participantPhone || '(865) 555-0192';
+    const fee = Number(body.fee !== undefined ? body.fee : (body.entryFee !== undefined ? body.entryFee : 30.00));
+    const dogId = body.dogId || null;
+    const paymentStatus = body.paymentStatus || 'Paid';
+    const checkInStatus = body.checkInStatus || 'Not Arrived';
 
     await db.query(
-      `INSERT INTO \`EventEntry\` (id, eventId, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode, checkInStatus)
-       VALUES (?, ?, ?, ?, ?, ?, 'Pending Payment', ?, 'Not Arrived')`,
-      [entryId, id, dogId || null, participant || 'Handler', handlerPhone || '', Number(entryFee) || 30.00, confirmationCode]
+      `INSERT INTO \`EventEntry\` (id, eventId, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode, createdAt, checkInStatus)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)
+       ON DUPLICATE KEY UPDATE 
+        participant = VALUES(participant),
+        fee = VALUES(fee),
+        paymentStatus = VALUES(paymentStatus),
+        checkInStatus = VALUES(checkInStatus)`,
+      [entryId, id, dogId, participant, handlerPhone, fee, paymentStatus, confirmationCode, checkInStatus]
     );
 
-    await db.query('UPDATE `Event` SET entriesCount = entriesCount + 1 WHERE id = ?', [id]);
+    await db.query('UPDATE \`Event\` SET entriesCount = entriesCount + 1 WHERE id = ?', [id]);
 
     return res.status(201).json({
       success: true,
-      data: { id: entryId, eventId: id, confirmationCode, status: 'CONFIRMED', paymentStatus: 'Pending Payment', checkInStatus: 'Not Arrived' },
-      message: 'Pre-signup entry saved directly to MySQL database `club`'
+      data: { id: entryId, eventId: id, confirmationCode, status: 'CONFIRMED', paymentStatus, checkInStatus, fee, participant },
+      message: 'Event registration entry saved directly to MySQL database \`club\`'
     });
   } catch (err) {
+    console.error('[Event Registration Error]:', err.message);
     return res.status(500).json({ success: false, error: { code: 'DB_ERROR', message: err.message } });
   }
 };
